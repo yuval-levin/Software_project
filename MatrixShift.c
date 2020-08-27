@@ -39,5 +39,10 @@ void AddScalarMatrix(double* mat,int rows,int cols,double scalar)
 		matPointer=mat+(i*cols)+i;
 		*matPointer=*matPointer+scalar;
 	}
-	
+}
+
+void matrixShift(double* mat,int rows,int cols)
+{
+	double one_norm = one_norm(mat,rows,cols);
+	AddScalarMatrix(mat,rows,cols,one_norm);
 }
