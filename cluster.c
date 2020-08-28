@@ -8,10 +8,10 @@ int main(int args, char** argv)
 
 }
 
-/* PARAMS: n isn number of nodes
+/* PARAMS : n - number of nodes
  * The division is empty by default*/
-//TODO SHOULD WE USE TYPEDEF FOR DIVISION?
 
+//TODO SHOULD WE USE TYPEDEF FOR DIVISION?
 //TODO: add function called "free division" to make sure there are no memoryleaks
 struct division createDivision(int n)
 {
@@ -25,8 +25,8 @@ struct division createDivision(int n)
 	return div;
 }
 
-/*PARAMS: n is number of nodes in grapj
- * DESC: returns a divisonGroup with all nodes in graph
+/*PARAMS : n is number of nodes in graph
+ * DESC : Returns a divisonGroup with all nodes in graph
  */
 struct divisionGroup createDefaultDivision(int n)
 {
@@ -43,8 +43,8 @@ struct divisionGroup createDefaultDivision(int n)
 }
 
 /*PARAMS: P,O are the divisions from the algorithm.
-They are created and initialized outside of the function,
-to enable memory freeing easily and outside of the function */
+		They are created and initialized outside of the function,
+		to enable memory freeing easily and outside of the function */
 struct division* Algorithm3(struct division* P, struct division* O)
 {
 
@@ -77,7 +77,7 @@ void addToOSize1Groups(struct division* P,struct divison* O)
  * PARAMS : groupIndex - groupIndex in P
  *
  * DESC: Removes from P group in groupIndex.
- * Adds that group to O
+ * 		 Adds that group to O
  */
 void updateOAndP(struct division* P,struct divison* O,int groupIndex)
 {
@@ -96,7 +96,7 @@ void removeLastGroupFromDivision(struct division* D)
  * PARAMS : D - division Pointer
  * PARAMS : group - group to be added to D
  *
- * DESC : add group to D at the end
+ * DESC : Ddd group to D at the end
  */
 void addGroupToDivision(struct division* D,struct divisionGroup* group)
 {
@@ -104,7 +104,6 @@ void addGroupToDivision(struct division* D,struct divisionGroup* group)
 	D->len = (D->len)+1;
 }
 
-void removeGroupFrom
 
 
 /*
