@@ -54,7 +54,7 @@ struct division* Algorithm3(struct division* P, struct division* O)
 	{
 		g = (P->divisions)[0];
 		gWasDivided = Algorithm2(&P,0);
-		if (gWasDivided == 0) updateOAndP(&P,&O);
+		if (gWasDivided == 0) updateOAndP(&P,&O,0); //TODO: if we always call with 0, add 0 inside function instead of argument
 		else addToOSize1Groups(&O,&P);
 		// STEP 3.4.2 is automatic, since Algorithm2 edits P.
 		// So g1,g2 still remain in P is their size is > 0.
