@@ -19,6 +19,7 @@ typedef struct spmat_node {
 	struct spmat_node *next;
 } spmat_node;
 
+
 /*
  * arrays implementation of spmat
  */

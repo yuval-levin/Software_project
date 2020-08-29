@@ -53,7 +53,7 @@ struct division* new_division()
 void add_groupDivision(struct division* D,struct divisionGroup* g)
 {
 	struct node* add = (struct node)malloc(sizeof(struct node));
-	add->data = g;
+	add->data.group = g;
 	add->next = NULL;
 	if(D->len == 0) D->divisions = add;
 	else add->next = D->divisions;
@@ -89,14 +89,4 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph)
 }
 
 
-
-void removeLastGroupFromDivision(struct division* D)
-{
-	D->len = (D->len)-1;// WRONGGGGGGGGGGGGG
-
-	// @CR don't delete - its good practice and will aid debugging.
-	D->divisions[D->len] = NULL; //todo: perhaps delete this row, since len-1 is enough?
-	//next time someone will add or iterate it will be up to new len..
-	//make sure this row doesn't delete the last group division, only the reference to it in D
-}
 
