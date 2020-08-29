@@ -10,22 +10,14 @@
 #include <string.h>
 
 /*
- * node structure which implements the linked list.
+ * spmat_node structure which implements the linked list.
  * index contains the column index.
  */
-typedef struct node {
+typedef struct spmat_node {
 	double data;
 	int index;
-	struct node *next;
-} node;
-
-/*
- * linked list implementation of spmat
- */
-typedef struct spmat_ll {
-	node** rows; 	/*a list of nodes, each node is the first node
-					in the corresponding row*/
-} spmat_ll;
+	struct spmat_node *next;
+} spmat_node;
 
 /*
  * arrays implementation of spmat
@@ -54,24 +46,21 @@ double mult_row_by_val(struct spmat_ar *mat_ar, int i_start, int i_end, const do
  * populate the functions with linked list implementation.
  */
 spmat* spmat_allocate_list(int n){
-	spmat *mat;
-	spmat_ll *mat_ll;
+	spmat* mat;
+	spmat_node** rows;
 
 	/*allocating memory*/
 	mat = (spmat*)malloc(sizeof(spmat));
 	assert(mat!= NULL);
-	mat_ll = (spmat_ll*)malloc(sizeof(spmat_ll));
-	assert(mat_ll!= NULL);
-
-	mat_ll->rows = (node**)malloc(n * sizeof(node*));
-	assert(mat_ll->rows != NULL);
+	rows = (spmat_node**)malloc(n * sizeof(spmat_node*));
+	assert(rows!= NULL);
 
 	/*initializing*/
 	mat->n = n;
-	mat->add_row = add_row_ll;
-	mat->free = free_ll;
-	mat->mult = mult_ll;
-	mat->private = &mat_ll;
+	mat->add_row = &add_row_ll;
+	mat->free = &free_ll;
+	mat->mult = &mult_ll;
+	mat->private = rows;
 
 	return mat;
 }
@@ -80,30 +69,25 @@ spmat* spmat_allocate_list(int n){
  * add_row implementation for linked list
  */
 void add_row_ll(struct _spmat *A, const double *row, int i){
-	int n;
 	int first, j;
-	node *cur, *prev;
-	spmat_ll* mat_ll;
-
-	n = A->n;
+	spmat_node *cur, *prev;
 	first = 0;
-	mat_ll = A->private;
 
-	for (j = 0; j < n; j++){
+	for (j = 0; j < A->n; j++){
 		if (row[j] != 0){
-			cur = (node*)malloc(sizeof(node));
+			cur = (spmat_node*)malloc(sizeof(spmat_node));
 			assert(cur != NULL);
 			cur->data = row[j];
 			cur->index = j;		/*column index*/
 			cur->next = NULL;
 
-			/*first node*/
+			/*first spmat_node*/
 			if (first == 0){
-				((node**)mat_ll->rows)[i] = cur;	/*inserted as the 1st node of the ith row*/
+				((spmat_node**)A->private)[i] = cur;	/*inserted as the 1st node of the ith row*/
 				first = 1;							/*no updating prev.next*/
 			}
 			else{
-				prev->next = (node*)cur;		/*cur is not the 1st, update prev.next*/
+				prev->next = (spmat_node*)cur;		/*cur is not the 1st, update prev.next*/
 			}
 			prev = cur;
 		}
@@ -111,32 +95,27 @@ void add_row_ll(struct _spmat *A, const double *row, int i){
 }
 
 /*
+ * helper for free_ll, frees the nodes of the given row recursively
+ */
+void free_row_ll(spmat_node* row){
+	if (row != NULL){
+		free_row_ll((spmat_node*)row->next);
+		free(row);
+	}
+}
+
+/*
  * free implementation for linked list
  */
 void free_ll(struct _spmat *A){
-	int n;
-	node *cur, *next, *p_rows;
-	node **rows;
-	spmat_ll *mat_ll;
+	int i;
+	spmat_node** rows;
+	rows = A->private;
 
-	mat_ll = A->private;
-	rows = mat_ll->rows;
-	n = A->n;
-
-	/*free all nodes in rows*/
-	for (p_rows = rows[0]; p_rows <= rows[n-1]; p_rows++){
-		cur = p_rows;
-		/*free nodes in each row*/
-		while (cur != NULL){
-			next = cur->next;
-			free(cur);
-			cur = next;
-		}
+	for(i = 0; i< A->n; i++){
+		free_row_ll(rows[i]);
 	}
-
-	/*free rows array*/
-	free(rows);
-	free(mat_ll);
+	free(A->private);
 	free(A);
 }
 
@@ -144,41 +123,24 @@ void free_ll(struct _spmat *A){
  * mult implementation for linked list
  */
 void mult_ll(const struct _spmat *A, const double *v, double *result){
-	int n, iter;
+	int row_ind;
 	int index;
 	double sum;
-	double *p_res;
-	node *cur_node, *cur_row;
-	node **rows;
-	spmat_ll *mat_ll;
-
-	mat_ll = A->private;
-	rows = (node**)mat_ll->rows;
-	n = A->n; 
-	p_res = result;
-	printf("TEST mult 1\n");
-	iter = 0;
-	printf(cur_row);
-	cur_row = *rows;
-	printf("TEST mult 2\n");
+	spmat_node* cur_node;
+	spmat_node** rows = (spmat_node** )A->private;
 
 	/*calculate the result of each row*/
-	for (cur_row = rows[0]; cur_row <= rows[n-1]; cur_row++){
+	for(row_ind = 0; row_ind < A->n; row_ind++){
 		sum = 0;
-		cur_node = cur_row;
-		printf("TEST mult 3\n");
-
+		cur_node = rows[row_ind];
+		
 		/*sum all the relevant multiplications*/
-		while (cur_node != NULL){
+		while(cur_node != NULL){
 			index = cur_node->index;
-			sum += cur_node->data * (v[index]);
-			cur_node = (node*)cur_node->next;
-			printf("TEST mult iter %d\n", iter);
+			sum += (cur_node->data) * (v[index]);
+			cur_node = (spmat_node*)cur_node->next;
 		}
-
-		/*sum is updated, place it in result and increment p_res*/
-		*p_res = sum;
-		p_res++;
+		result[row_ind] = sum;
 	}
 }
 
