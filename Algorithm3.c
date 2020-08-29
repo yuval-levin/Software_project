@@ -1,26 +1,102 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
+//TODO: add checks for all mallocs.
 
-
-/*PARAMS: P,O are the divisions from the algorithm.
-		They are created and initialized outside of the function,
-		to enable memory freeing easily and outside of the function */
-// @CR I think it makes more sense to get the graph and output the division and manage the memory allocations internally.
-struct division* Algorithm3(struct division* P, struct division* O)
+struct division* Algorithm3(int numOfNodes,struct graph inputGraph)
 {
+	struct divisionGroup* g = NULL ,g1 = NULL,g2 = NULL;
+	int* vectorS = (int*)malloc(numOfNodes*sizeof(int));
 
-	struct divisionGroup* g; // @CR always give an initial value -probably null in this case. Good practice that will save you lots of debugging.
-	short  gWasDivided; //1 for "true", 0 for "false"; // @CR why start with g? What convention are you following? Also in booleans its usually 0 for false and anything else for true.
-	while (P->len > 0)
+	struct division* P = new_division();
+	struct division* O = new_division();
+	add_groupDivision(P,createTrivialDivision(numOfNodes,&inputGraph));
+
+	while(P->len > 0)
 	{
-		g = (P->divisions)[0];
-		gWasDivided = Algorithm2(&P,0);
-		if (gWasDivided == 0) updateOAndP(&P,&O,0); //TODO: if we always call with 0, add 0 inside function instead of argument
-		else addToOSize1Groups(&O,&P);
-		// STEP 3.4.2 is automatic, since Algorithm2 edits P.
-		// So g1,g2 still remain in P is their size is > 0.
-	}
+		g = removeFirstGroup(P);
+		Algorithm2(vectorS,g);
+		ModularityMaximization(vectorS,g);
+		splitByS(vectorS,g1,g2);
 
-	return &O; // @CR bug - should return O;
+		if (g2 == NULL) add_groupDivision(O,g1);
+		else
+			{
+				updateDivisionPostSplit(g1,P,O);
+				updateDivisionPostSplit(g2,P,O);
+			}
+	}
+	return O;
+
 }
+
+void updateDivisionPostSplit(struct divisionGroup* g,struct division* P,struct division* O)
+{
+	if (g->groupSize == 1) add_groupDivision(O,g);
+	else  add_groupDivision(P,g);
+
+}
+//make sure s freees g
+// if there's a group size = 0, g2 = NULL, g1 = g;
+void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2)
+{
+	//TODO
+}
+struct division* new_division()
+{
+	struct division D =(struct division)malloc(sizeof(struct division));
+	D->len = 0;
+	D->divisions = NULL;
+}
+
+//adds in start
+void add_groupDivision(struct division* D,struct divisionGroup* g)
+{
+	struct node* add = (struct node)malloc(sizeof(struct node));
+	add->data = g;
+	add->next = NULL;
+	if(D->len == 0) D->divisions = add;
+	else add->next = D->divisions;
+
+	D->len = (D->len) +1;
+}
+
+struct divisionGroup* removeFirstGroup(struct division* D)
+{
+	struct divisonGroup* group = D->divisions;
+	struct divisonGroup* nextGroup = group->next;
+	group->next = NULL;
+	D->divisions = nextGroup;
+	D->len = (D->len)-1;
+
+	return group;
+}
+/*PARAMS : n is number of nodes in graph
+ * DESC : Returns a divisonGroup with all nodes in graph
+ */
+struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph)
+{
+	int i;
+	struct divisonGroup* group = (struct divisionGroup)malloc(sizeof(struct divisionGroup));
+	group->size = n;
+	group->groupSubmatrix = &(inputGraph->A);
+	group->sumOfRows = (int*)malloc(n*sizeof(int));
+	for (i = 0; i < n; i++)
+	{
+		group->sumOfRows[i] = 0;
+	}
+	return group;
+}
+
+
+
+void removeLastGroupFromDivision(struct division* D)
+{
+	D->len = (D->len)-1;// WRONGGGGGGGGGGGGG
+
+	// @CR don't delete - its good practice and will aid debugging.
+	D->divisions[D->len] = NULL; //todo: perhaps delete this row, since len-1 is enough?
+	//next time someone will add or iterate it will be up to new len..
+	//make sure this row doesn't delete the last group division, only the reference to it in D
+}
+

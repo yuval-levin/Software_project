@@ -16,7 +16,7 @@ struct graph
 struct division
 {
 	int len;  //number of divisions // @CR why not just call it numDivisions and remove the comment?
-	struct node divisions; //"P" in algorithm // @CR why not just call it P (if you called the graph A and M).
+	struct node* divisions; //"P" in algorithm // @CR why not just call it P (if you called the graph A and M).
 };
 
 // @CR not valid - must be declared before division which uses it (or use forward declaration).
@@ -28,7 +28,7 @@ struct division
 struct divisionGroup
 {
 	int groupSize;
-	struct spmat_ll groupSubmatrix;
+	struct spmat_ll* groupSubmatrix;
 	int* sumOfRows; //(computeS populates it).  0 by default
 	/* For n number of nodes in graph , group vector is size n
 	 * groupVector[i]=0 if node i not in group. 1 if in group.
