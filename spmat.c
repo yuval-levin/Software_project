@@ -1,5 +1,9 @@
 /*
  * spmat.c
+ * how to create a sparse matrix:
+ * spmat* mat;
+ * mat = spmat_allocate_list(n);
+ * create_matrix(mat, input);
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,28 +23,10 @@ typedef struct spmat_node {
 	struct spmat_node *next;
 } spmat_node;
 
-
-/*
- * arrays implementation of spmat
- */
-typedef struct spmat_ar {
-	double* values;		/*compressed array of the non-zero values*/
-	int* colind;		/*colind[i] = column of values[i]
-	 	 	 	 	 	 in the original matrix*/
-	int* rowptr;		/*rowptr[i] = index in the compressed array of
-						the first non-zero value from the ith row onwards*/
-	int val_index;		/*index of the first non-updated cell in values*/
-	int nnz;			/*number of non-zero values*/
-} spmat_ar;
-
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
 void mult_ll(const struct _spmat *A, const double *v, double *result);
-void add_row_ar(struct _spmat *A, const double *row, int i);
-void free_ar(struct _spmat *A);
-void mult_ar(const struct _spmat *A, const double *v, double *result);
-void rowptr_update(struct spmat_ar *A, int n);
-double mult_row_by_val(struct spmat_ar *mat_ar, int i_start, int i_end, const double *v);
+
 
 /*
  * allocating memory for rows.
@@ -146,176 +132,23 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 }
 
 /*
- * allocating memory for the arrays.
- * populate the functions with arrays implementation.
+ * creating the matrix one row at a time
  */
-spmat* spmat_allocate_array(int n, int nnz){
-	spmat *mat;
-	spmat_ar *mat_ar;
-
-	/*allocating memory*/
-	mat = (spmat*)malloc(sizeof(spmat));
-	assert(mat!= NULL);
-	mat_ar = (spmat_ar*)malloc(sizeof(spmat_ar));
-	assert(mat_ar!= NULL);
-
-	mat_ar->values = (double*)malloc(nnz * sizeof(double));
-	assert(mat_ar->values != NULL);
-	mat_ar->colind = (int*)malloc(nnz * sizeof(int));
-	assert(mat_ar->colind != NULL);
-	mat_ar->rowptr = (int*)malloc((n+1) * sizeof(int));
-	assert(mat_ar->rowptr != NULL);
-	mat_ar->val_index = 0;
-	mat_ar->nnz = nnz;
-
-	/*initializing*/
-	mat->n = n;
-	mat->add_row = add_row_ar;
-	mat->free = free_ar;
-	mat->mult = mult_ar;
-	mat->private = mat_ar;
-
-	return mat;
-}
-
-/*
- * add_row implementation for arrays
- */
-void add_row_ar(struct _spmat *A, const double *row, int i){
-	int n, k, cur_row_ptr, j, h;
-	double *values;
-	int *colind, *rowptr;
-	spmat_ar* mat_ar;
+void create_matrix(struct _spmat *A, FILE* input){
+	double *row;
+	int i, k, n;
 
 	n = A->n;
-	mat_ar = A->private;
-	k = mat_ar->val_index;		/*index of the first non-updated cell in values*/
-	values = mat_ar->values;
-	colind = mat_ar->colind;
-	rowptr = mat_ar->rowptr;
-
-	values += k;				/*points to the first cell to be updated*/
-	colind +=k;
-	cur_row_ptr = -1;			/*index of the first non-zero in the row*/
-	j = 0;
-
-	for (h = 0; h < n; h++){
-		if (row[h] != 0){
-			*values = row[h];
-			*colind = j;		/*column num*/
-
-			/* update cur_row_ptr once,
-			 * the first non-zero val in the row*/
-			if (cur_row_ptr == -1){
-				cur_row_ptr = k;
-			}
-			values++;
-			colind++;
-			k++;
-		}
-		j++;
+	fseek(input, 8, SEEK_SET); 	/*skipping dimensions*/
+	row = (double*)malloc(n*sizeof(double));
+	assert(row != NULL);
+	/*add each row*/
+	for (i = 0; i < n; i++){
+		k = fread(row, sizeof(double),n, input);
+		assert (k == n);
+		A->add_row(A, row, i);
 	}
 
-	rowptr[i] = cur_row_ptr;	/*if the row contains only 0, put -1*/
-	mat_ar->val_index = k;		/*next cell to be updated is k*/
-
-	/*last row, handle rowptr*/
-	if (i == n-1 && n != 0){
-		rowptr_update(mat_ar, n);
-	}
-}
-
-/*
- * helper for add_row_ar,
- * updates rowptr.
- */
-void rowptr_update(struct spmat_ar *A, int n){
-	int *p, *rowptr;
-
-	rowptr = A->rowptr;
-	rowptr[n] = A->nnz;
-
-	/* if rowptr[i] == -1, the ith row contains only zeros.
-	 * its value in rowptr should be rowptr[i+1]*/
-	for (p = rowptr + n-1; p >= rowptr; p--){
-		if (*p == -1){
-			*p = *(p+1);
-		}
-	}
-}
-
-/*
- * free implementation for arrays
- */
-void free_ar(struct _spmat *A){
-	double *values;
-	int *colind, *rowptr;
-	spmat_ar *mat_ar;
-
-	mat_ar = A->private;
-	values = mat_ar->values;
-	colind = mat_ar->colind;
-	rowptr = mat_ar->rowptr;
-
-	free(values);
-	free(colind);
-	free(rowptr);
-	free(mat_ar);
-	free(A);
-}
-
-/*
- * mult implementation for arrays
- */
-void mult_ar(const struct _spmat *A, const double *v, double *result){
-	int n, i;
-	int *rowptr, *p_rowptr;
-	spmat_ar* mat_ar;
-
-	n = A->n;
-	mat_ar = A->private;
-	rowptr = mat_ar->rowptr;
-
-	p_rowptr = rowptr + n-1;		/*points to the last row*/
-	result = result + n-1;			/*we will calc result from last entry to first*/
-
-	/*for each row (from last to first), calc res*/
-	for (i = n-1; i >= 0; i--){
-
-		/*if the current row contains only 0, res = 0*/
-		if(*p_rowptr == *(p_rowptr+1)){
-			*result = 0;
-		}
-		else{
-			*result = mult_row_by_val(mat_ar, *p_rowptr, *(p_rowptr+1), v);
-		}
-
-		result--;
-		p_rowptr--;
-	}
-}
-
-/*
- * helper for mult_ar,
- * calculates a specific entry in result.
- */
-double mult_row_by_val(struct spmat_ar *mat_ar, int i_start, int i_end, const double *v){
-	int k, j;
-	double sum;
-	double *values;
-	int *colind;
-
-	values = mat_ar->values;
-	colind = mat_ar->colind;
-	values = &values[i_start];
-	colind = &colind[i_start];
-	sum = 0;
-
-	for (k = i_start; k < i_end; k++){
-		j = *colind;					/*the relevant entry in v is the index colind[k]*/
-		sum += (*values) * (v[j]);		/*mult values[k] by the relevant entry in v*/
-		values++;
-		colind++;
-	}
-	return sum;
+	free(row);
+	rewind(input);
 }
