@@ -41,9 +41,10 @@ struct node
 	union data data;
 	struct node *next;
 };
+
 union data {
 	int num;
-	struct divisionGroup group;
+	struct divisionGroup* group;
 };
 
 #endif

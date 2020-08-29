@@ -53,7 +53,7 @@ struct division* new_division()
 void add_groupDivision(struct division* D,struct divisionGroup* g)
 {
 	struct node* add = (struct node)malloc(sizeof(struct node));
-	add->data = g;
+	add->data.group = g;
 	add->next = NULL;
 	if(D->len == 0) D->divisions = add;
 	else add->next = D->divisions;

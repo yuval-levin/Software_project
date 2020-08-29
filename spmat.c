@@ -13,11 +13,11 @@
  * node structure which implements the linked list.
  * index contains the column index.
  */
-typedef struct node {
+typedef struct spmat_node {
 	double data;
 	int index;
 	struct node *next;
-} node;
+} spmat_node;
 
 /*
  * linked list implementation of spmat
