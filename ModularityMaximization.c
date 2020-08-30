@@ -3,23 +3,39 @@
 #include "modules.h"
 
 //TODO: is DeltaModularity double int long?
-void modularityMaximization(int* vectorS, struct divisionGroup* g)
+void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGroup* g)
 {
 	const double epsilon = 0.00001;
-	double modularityChange,Q0;
-	int i;
-	struct node* unmoved = createUnmovedList(g->groupSize);
+	double modularityChange,Q0,Q1,maxModularityChange;
+	int i, indexOfBiggestIncrease;
+	struct node* unmoved,currentNode,prevOfBiggest = NULL;
 
 	do
 	{
+		unmoved = createUnmovedList(g->groupSize);
+		currentNode = unmoved;
 		for(i = 0;i< g->groupSize;i++)
 		{
+			Q0 = dotProduct(vectorS,modularityTimesS(graph,vectorS,g));
+			while (currentNode != NULL)
+			{
+				vectorS[currentNode->data.num] = (-1)*vectorS[currentNode->data.num];
+				Q1 = calculateChangeModularity(); //helper function in O1, todo
+				if (i == 0 || Q1 > maxModularityChange) maxModularityChange = Q1 , indexOfBiggestIncrease = i;
+				vectorS[currentNode->data.num] = (-1)*vectorS[currentNode->data.num];
+				currentNode = currentNode->next;
+			}
 
 		}
 
 	}while(modularityChange > epsilon);
 
 	free(unmoved);
+}
+double calculateChangeModularity()
+{
+	//TODO: implement me;
+	return 0;
 }
 
 double* modularityTimesS(struct graph* graph,int* vectorS, struct divisionGroup* g)
@@ -88,4 +104,21 @@ struct node* appendToList(struct node* prev, int index)
 	if (prev != NULL) prev->next = current;
 
 	return current;
+}
+
+
+double dotProduct(double* a,double* b,int col)
+{
+	/*dot product of vectors a and b*/
+	int k;
+	double* vec1 = a,vec2 = b;
+	double dot = 0;
+
+	for(k=0;k<col;k++)
+	{
+		dot+=((*vec1)*(*vec2));
+		vec1+=1;
+		vec2+=1;
+	}
+	return dot;
 }
