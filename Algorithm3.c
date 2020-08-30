@@ -6,7 +6,7 @@
 struct division* Algorithm3(int numOfNodes,struct graph inputGraph)
 {
 	struct divisionGroup* g = NULL ,g1 = NULL,g2 = NULL;
-	int* vectorS = (int*)malloc(numOfNodes*sizeof(int));
+	int* vectorS;
 
 	struct division* P = new_division();
 	struct division* O = new_division();
@@ -15,6 +15,8 @@ struct division* Algorithm3(int numOfNodes,struct graph inputGraph)
 	while(P->len > 0)
 	{
 		g = removeFirstGroup(P);
+		vectorS = (int*)malloc(g->groupSize*sizeof(int)); //vectorS is size of group g.
+		if(vectorS == NULL) exit(1); //TODO: print error before exit.
 		Algorithm2(vectorS,g);
 		ModularityMaximization(vectorS,g);
 		splitByS(vectorS,g1,g2);
@@ -25,6 +27,7 @@ struct division* Algorithm3(int numOfNodes,struct graph inputGraph)
 				updateDivisionPostSplit(g1,P,O);
 				updateDivisionPostSplit(g2,P,O);
 			}
+		free(vectorS);
 	}
 	return O;
 
@@ -45,6 +48,7 @@ void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2)
 struct division* new_division()
 {
 	struct division D =(struct division)malloc(sizeof(struct division));
+	if(D == NULL) exit(1); //TODO: print error before exit.
 	D->len = 0;
 	D->divisions = NULL;
 }
@@ -53,6 +57,7 @@ struct division* new_division()
 void add_groupDivision(struct division* D,struct divisionGroup* g)
 {
 	struct node* add = (struct node)malloc(sizeof(struct node));
+	if(add == NULL) exit(1); //TODO: print error before exit.
 	add->data.group = g;
 	add->next = NULL;
 	if(D->len == 0) D->divisions = add;
@@ -78,6 +83,7 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph)
 {
 	int i;
 	struct divisonGroup* group = (struct divisionGroup)malloc(sizeof(struct divisionGroup));
+	if(group == NULL) exit(1); //TODO: print error before exit.
 	group->size = n;
 	group->groupSubmatrix = &(inputGraph->A);
 	group->sumOfRows = (int*)malloc(n*sizeof(int));

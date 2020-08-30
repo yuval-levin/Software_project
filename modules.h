@@ -4,7 +4,7 @@
 
 struct graph
 {
-  struct spmat_ll A;
+  struct _spmat* A;
   long* vectorDegrees;
   long M;
 };
@@ -28,12 +28,9 @@ struct division
 struct divisionGroup
 {
 	int groupSize;
-	struct spmat_ll* groupSubmatrix;
+	struct _spmat* groupSubmatrix;
 	int* sumOfRows; //(computeS populates it).  0 by default
-	/* For n number of nodes in graph , group vector is size n
-	 * groupVector[i]=0 if node i not in group. 1 if in group.
-	 * #{i | groupVector[i]=1 } = groupSize
-	*/
+
 };
 
 struct node
