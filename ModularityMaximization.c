@@ -6,31 +6,85 @@
 void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGroup* g)
 {
 	const double epsilon = 0.00001;
-	double modularityChange,Q0,Q1,maxModularityChange;
+	double modularityChange,Q0,Q1,maxModularityChange,maxImprovedIndex = 0,maxImproveScore;
 	int i, indexOfBiggestIncrease;
-	struct node* unmoved,currentNode,prevOfBiggest = NULL;
+	struct node* unmoved,currentNode,prev,prevOfBiggest;
+	double* improvedVector = (double*)malloc(g->groupSize*sizeof(double));
+	int* indiceVector = (int*)malloc(g->groupSize*sizeof(int));
 
 	do
 	{
+		//improving delta Q by moving ONE index
 		unmoved = createUnmovedList(g->groupSize);
-		currentNode = unmoved;
+
 		for(i = 0;i< g->groupSize;i++)
 		{
+			currentNode = unmoved;
+			prev = NULL, prevOfBiggest = NULL;
 			Q0 = dotProduct(vectorS,modularityTimesS(graph,vectorS,g));
+			//finding vertex with maximal increase in modularity
 			while (currentNode != NULL)
 			{
-				vectorS[currentNode->data.num] = (-1)*vectorS[currentNode->data.num];
+				flipVectorEntry(vectorS,currentNode->data.num);
 				Q1 = calculateChangeModularity(); //helper function in O1, todo
-				if (i == 0 || Q1 > maxModularityChange) maxModularityChange = Q1 , indexOfBiggestIncrease = i;
-				vectorS[currentNode->data.num] = (-1)*vectorS[currentNode->data.num];
+
+				if (i == 0 || Q1 > maxModularityChange)
+					{
+						maxModularityChange = Q1 , indexOfBiggestIncrease = i;
+						maxImproveScore = maxModularityChange;
+						prevOfBiggest = prev;
+					}
+				flipVectorEntry(vectorS,currentNode->data.num);
+
+				prev = currentNode;
 				currentNode = currentNode->next;
 			}
-
+			//moving vertex with maximal increase in modularity
+			flipVectorEntry(vectorS,indexOfBiggestIncrease);
+			removeFromUnmoved(prevOfBiggest,unmoved);
+			//updating vector of indice to save the index we now moved:
+			indiceVector[i]=indexOfBiggestIncrease;
+			//updating the current 'state score'
+			updateImprovedVector(improvedVector,i,maxModularityChange); // incrementing scores
+			if (improvedVector[i] > maxImproveScore) maxImproveScore = improvedVector[i], maxImprovedIndex=i;
 		}
+		modularityChange = maxImproveScore;
+		updateS(vectorS,indiceVector,maxImprovedIndex,g->groupSize);
 
 	}while(modularityChange > epsilon);
 
+	free(improvedVector);
+	free(indiceVector);
 	free(unmoved);
+}
+
+/* we wish for S be in the same state it was when we reached maxImproved Score.
+ * so we reverse everything that came after it*/
+void updateS(int* vectorS,int* indiceVector,int maxImprovedIndex,int length)
+{
+	int i;
+	for(i = maxImprovedIndex +1 ;i < length; i++)
+	{
+		flipVectorEntry(vectorS,indiceVector[i]);
+	}
+}
+void flipVectorEntry(int* vector, int entry)
+{
+	vector[entry] = vector[entry]*(-1);
+}
+
+void updateImprovedVector(int* improvedVector, int entryIndex,double score)
+{
+	if (entryIndex == 0) improvedVector[0] = score;
+	else improvedVector[entryIndex] = improvedVector[entryIndex-1]+score;
+}
+
+void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
+{
+	struct node* removedNode;
+	if (prevOfBiggest == NULL) unmoved = unmoved->next , removedNode = unmoved; //todo: make sure this works
+	else prevOfBiggest->next = removedNode = prevOfBiggest->next, prevOfBiggest->next->next;
+	free(removedNode);
 }
 double calculateChangeModularity()
 {
