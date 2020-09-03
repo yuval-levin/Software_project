@@ -2,6 +2,8 @@
 #ifndef HEADER_FILE
 #define HEADER_FILE
 
+const double epsilon = 0.00001;
+
 struct graph
 {
   struct _spmat* A;

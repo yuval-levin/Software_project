@@ -5,7 +5,7 @@
 //TODO: is DeltaModularity double int long?
 void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGroup* g)
 {
-	const double epsilon = 0.00001;
+
 	double modularityChange,Q0,Q1,maxModularityChange,maxImprovedIndex = 0,maxImproveScore,sumKiSi;
 	int i, indexOfBiggestIncrease,switchFirstUnmovedIteration = 1;
 	struct node* unmoved,currentNode,prev,prevOfBiggest;
