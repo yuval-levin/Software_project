@@ -6,8 +6,8 @@
 void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGroup* g)
 {
 	const double epsilon = 0.00001;
-	double modularityChange,Q0,Q1,maxModularityChange,maxImprovedIndex = 0,maxImproveScore;
-	int i, indexOfBiggestIncrease;
+	double modularityChange,Q0,Q1,maxModularityChange,maxImprovedIndex = 0,maxImproveScore,sumKiSi;
+	int i, indexOfBiggestIncrease,switchFirstUnmovedIteration = 1;
 	struct node* unmoved,currentNode,prev,prevOfBiggest;
 	double* improvedVector = (double*)malloc(g->groupSize*sizeof(double));
 	int* indiceVector = (int*)malloc(g->groupSize*sizeof(int));
@@ -21,18 +21,22 @@ void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGro
 		{
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
-			Q0 = dotProduct(vectorS,modularityTimesS(graph,vectorS,g));
+			sumKiSi=sumOfDegreeByVectorS(graph,vectorS,g);
+			if (i == 0) Q0 = dotProduct(vectorS,modularityTimesS(graph,vectorS,g,sumKiSi));
+			else Q0 = Q0 + calculateChangeModularity(graph,vectorS,g,sumKiSi,Q0,indexOfBiggestIncrease);
+			//change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			//finding vertex with maximal increase in modularity
 			while (currentNode != NULL)
 			{
 				flipVectorEntry(vectorS,currentNode->data.num);
-				Q1 = calculateChangeModularity(); //helper function in O1, todo
+				Q1 = calculateChangeModularity(graph,vectorS,g,sumKiSi,Q0,currentNode->data.num);
 
-				if (i == 0 || Q1 > maxModularityChange)
+				if (switchFirstUnmovedIteration == 1 || Q1 > maxModularityChange)
 					{
 						maxModularityChange = Q1 , indexOfBiggestIncrease = i;
 						maxImproveScore = maxModularityChange;
 						prevOfBiggest = prev;
+						switchFirstUnmovedIteration = 0;
 					}
 				flipVectorEntry(vectorS,currentNode->data.num);
 
@@ -47,6 +51,8 @@ void modularityMaximization(struct graph* graph,int* vectorS, struct divisionGro
 			//updating the current 'state score'
 			updateImprovedVector(improvedVector,i,maxModularityChange); // incrementing scores
 			if (improvedVector[i] > maxImproveScore) maxImproveScore = improvedVector[i], maxImprovedIndex=i;
+			switchFirstUnmovedIteration = 1;
+
 		}
 		modularityChange = maxImproveScore;
 		updateS(vectorS,indiceVector,maxImprovedIndex,g->groupSize);
@@ -86,18 +92,21 @@ void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
 	else prevOfBiggest->next = removedNode = prevOfBiggest->next, prevOfBiggest->next->next;
 	free(removedNode);
 }
-double calculateChangeModularity()
+double calculateChangeModularity(struct graph* graph,int* vectorS, struct divisionGroup* g,double sumKiSi,double prevModularity,int changedIndex)
 {
-	//TODO: implement me;
-	return 0;
+	double result;
+	int degree=graph->vectorDegrees[changedIndex], vectorSChangedIndex = vectorS[changedIndex];
+	result = prevModularity-4*vectorSChangedIndex*(degree/graph->M)*(sumKiSi-(degree*vectorSChangedIndex));
+
+	return result;
 }
 
-double* modularityTimesS(struct graph* graph,int* vectorS, struct divisionGroup* g)
+double* modularityTimesS(struct graph* graph,int* vectorS, struct divisionGroup* g,double sumKiSi)
 {
 	int i;
 	double* resVec = (double*)malloc(g->groupSize*sizeof(double));
 	if(resVec == NULL) exit(1); //TODO: print error before exit.
-	double* KiDividedByMPlusSum = secondArgumentInCalc(graph,vectorS,g);
+	double* KiDividedByMPlusSum = secondArgumentInCalc(graph,vectorS,g,sumKiSi);
 
 	for(i = 0 ; i < g->groupSize;i++)
 	{
@@ -110,29 +119,38 @@ double* modularityTimesS(struct graph* graph,int* vectorS, struct divisionGroup*
 }
 
 //TODO: add explanation.
-double* secondArgumentInCalc(struct graph* graph,int* vectorS,struct divisionGroup* g)
+double* secondArgumentInCalc(struct graph* graph,int* vectorS,struct divisionGroup* g,double sumKiSi)
 {
 	int i,index;
-	double  sum = 0;
-	double* KiDividedByMPlusSum = (double*)malloc(g->groupSize * sizeof(double));
-	if(KiDividedByMPlusSum == NULL) exit(1); //TODO: print error before exit.
+	double M = graph->M;
 	struct spmat_node* current = g->groupSubmatrix->private[0];
+	double* KiDividedByMPlusSum = (double*)malloc(g->groupSize * sizeof(double));
 
-	for(i = 0;i < g->groupSize;i++)
-	{
-		//vectorDegrees is size Of number of nodes in the original A matrix
-		sum = sum + (vectorS[i]*graph->vectorDegrees[current->index]); //vectorS is size of g, we use i
-		current = current->next;
-		KiDividedByMPlusSum[i] = graph->vectorDegrees[current->index] / graph->M;
-	}
+	if(KiDividedByMPlusSum == NULL) exit(1); //TODO: print error before exit.
+
 	//two iterations are a must, cause we need to find sum first..
 	for(i = 0;i < g->groupSize;i++)
 	{
-		KiDividedByMPlusSum[i] = (graph->vectorDegrees[current->index] / graph->M)*sum;
+		KiDividedByMPlusSum[i] = (graph->vectorDegrees[current->index] / M)*sumKiSi;
+		current = current->next;
 	}
 	return KiDividedByMPlusSum;
 
 
+}
+//calculate kisi
+double sumOfDegreeByVectorS(struct graph* graph,int* vectorS,struct divisionGroup* g)
+{
+	double sum = 0;
+	int i;
+	struct spmat_node* current = g->groupSubmatrix->private[0];
+	for(i = 0;i < g->groupSize;i++)
+		{
+			//vectorDegrees is size Of number of nodes in the original A matrix
+			sum = sum + (vectorS[i]*graph->vectorDegrees[current->index]); //vectorS is size of g, we use i
+			current = current->next;
+		}
+	return sum;
 }
 
 struct node* createUnmovedList(int sizeOfg)
