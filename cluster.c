@@ -6,7 +6,6 @@
 int main(int args, char** argv)
 {
 	graph* graph;
-	divisionGroup* div_group;
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			// TODO: error module
@@ -55,5 +54,5 @@ void create_graph(FILE* input, struct _graph* graph)
 	/*initializing graph*/
 	graph->A = A;
 	graph->vectorDegrees = vector_degrees;
-	graph->M = m_sum;
+	graph->M = deg_sum;
 }
