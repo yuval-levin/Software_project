@@ -118,17 +118,24 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 
 	/*calculate the result of each row*/
 	for(row_ind = 0; row_ind < A->n; row_ind++){
-		sum = 0;
 		cur_node = rows[row_ind];
 		
 		/*sum all the relevant multiplications*/
-		while(cur_node != NULL){
-			index = cur_node->index;
-			sum += (cur_node->data) * (v[index]);
-			cur_node = (spmat_node*)cur_node->next;
-		}
+		sum = sumHelper(cur_node);
 		result[row_ind] = sum;
 	}
+}
+
+double sumHelper(spmat_node* cur_node,double *v)
+{
+	int index;
+	double sum = 0;
+	while(cur_node != NULL){
+				index = cur_node->index;
+				sum += (cur_node->data) * (v[index]);
+				cur_node = (spmat_node*)cur_node->next;
+			}
+	return sum;
 }
 
 /*
