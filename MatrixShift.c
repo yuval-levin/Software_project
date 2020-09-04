@@ -3,28 +3,32 @@
 
 /* method to calculate the 1-norm of matrix mat.
 //TODO: check if double is necessary */
-double one_norm(double *mat,int rows,int cols)
+double one_norm(struct graph* graph, int* vectorS,
+		struct divisionGroup* g)
 {
+	double maxColumn = 0, currentSum;
 	int i;
-	int j;
-	double* matPointer;
-	int maxSum = 0;
-	int currentSum;
-	
-	for (i = 0; i < cols; i++) 
+	// iterate through columns
+	for(i = 0;i<g->groupSize;i++)
 	{
-		currentSum = 0 ;
-		for (j = 0; j < rows; j++)
-		{
-			matPointer=mat+(i*cols);
-			currentSum+=*matPointer;
-		}
-		if(currentSum > maxSum)
-		{
-			maxSum = currentSum;
-		}	
+		currentSum = columnSum(graph,g,i);
+		if (maxColumn < currentSum) maxColumn = currentSum;
 	}
-	return maxSum;
+	return maxColumn;
+}
+
+double columnSum(struct graph* graph,
+		struct divisionGroup* g,int column)
+{
+	double sum;
+	int i;
+	for(i = 0; i g->groupSize;i++)
+	{
+		//iterate over all rows
+		sum = sum + g->groupSubmatrix.get(i,column)+g->sumOfRows[column];// TODO: yuval
+		sum = sum - ((graph->vectorDegrees[i]*graph->vectorDegrees[column])/graph->M);
+	}
+	return sum;
 }
 
 /*given a matrix mat,and a scalar, add to mat Id*scalar */
