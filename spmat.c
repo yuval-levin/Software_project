@@ -56,11 +56,18 @@ spmat* spmat_allocate_list(int n){
  * add_row implementation for linked list
  */
 void add_row_ll(struct _spmat *A, const double *row, int i){
+	add_row_of_size_n(A->n);
+}
+
+/*
+ * helper for add_row_ll
+ */
+void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
 	int first, j;
 	spmat_node *cur, *prev;
 	first = 0;
 
-	for (j = 0; j < A->n; j++){
+	for (j = 0; j < n; j++){
 		if (row[j] != 0){
 			cur = (spmat_node*)malloc(sizeof(spmat_node));
 			assert(cur != NULL);
