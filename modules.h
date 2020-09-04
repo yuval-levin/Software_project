@@ -35,6 +35,12 @@ struct divisionGroup
 
 };
 
+struct shiftedDivisionGroup
+{
+	struct divisonGroup* group;
+	double norm;
+};
+
 struct node
 {
 	union data data;
