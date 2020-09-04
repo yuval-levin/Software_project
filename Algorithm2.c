@@ -32,6 +32,10 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	//TODO: step 5. Yuval's
 }
 
+double* computeLeadingEigenvector(struct divisionGroup* g)
+{
+
+}
 void fillVectorWithOnes(int* vector, int length) {
 	int i;
 	for (i = 0; i < length; i++)
