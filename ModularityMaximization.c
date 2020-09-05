@@ -17,7 +17,7 @@ void updateS(int* vectorS, int* indiceVector, int maxImprovedIndex, int length) 
 }
 
 
-void updateImprovedVector(int* improvedVector, int entryIndex, double score) {
+void updateImprovedVector(double* improvedVector, int entryIndex, double score) {
 	if (entryIndex == 0)
 		improvedVector[0] = score;
 	else
@@ -27,9 +27,14 @@ void updateImprovedVector(int* improvedVector, int entryIndex, double score) {
 void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 	struct node* removedNode;
 	if (prevOfBiggest == NULL)
-		unmoved = unmoved->next, removedNode = unmoved; //todo: make sure this works
+		removedNode = unmoved, unmoved = unmoved->next; //todo: make sure this works
 	else
-		prevOfBiggest->next = removedNode = prevOfBiggest->next, prevOfBiggest->next->next;
+	{
+		removedNode = prevOfBiggest->next ;
+		prevOfBiggest->next= prevOfBiggest->next->next;
+	}
+
+
 	free(removedNode);
 }
 double calculateChangeModularity(struct graph* graph, int* vectorS,
@@ -48,7 +53,7 @@ double calculateChangeModularity(struct graph* graph, int* vectorS,
 //TODO: add explanation.
 double* secondArgumentInCalc(struct graph* graph, int* vectorS,
 		struct divisionGroup* g, double sumKiSi) {
-	int i, index;
+	int i;
 	double M = graph->M;
 	struct spmat_node* current = get_private(g->groupSubmatrix)[0];
 	double* KiDividedByMPlusSum = (double*) malloc(
@@ -100,18 +105,6 @@ double sumOfDegreeByVectorS(struct graph* graph, int* vectorS,
 	return sum;
 }
 
-struct node* createUnmovedList(int sizeOfg) {
-	int i;
-	struct node* head = NULL;
-	struct node* prev = NULL;
-	for (i = 0; i < sizeOfg; i++) {
-		prev = appendToList(prev, i);
-		if (i == 0)
-			head = prev;
-	}
-	return head;
-}
-
 struct node* appendToList(struct node* prev, int index) {
 	struct node* current;
 
@@ -126,11 +119,42 @@ struct node* appendToList(struct node* prev, int index) {
 	return current;
 }
 
+struct node* createUnmovedList(int sizeOfg) {
+	int i;
+	struct node* head = NULL;
+	struct node* prev = NULL;
+	for (i = 0; i < sizeOfg; i++) {
+		prev = appendToList(prev, i);
+		if (i == 0)
+			head = prev;
+	}
+	return head;
+}
+
+
 //TODO: remove duplicate and add to module of matrix functions
 double dotProduct(double* a, double* b, int col) {
 	/*dot product of vectors a and b*/
 	int k;
-	double* vec1 ,vec2;
+	double* vec1;
+	double* vec2;
+	double dot = 0;
+	vec1 = a;
+	vec2 = b;
+
+	for (k = 0; k < col; k++) {
+		dot += ((*vec1) * (*vec2));
+		vec1 += 1;
+		vec2 += 1;
+	}
+	return dot;
+}
+
+double dotProductInt(int* a, double* b, int col) {
+	/*dot product of vectors a and b*/
+	int k;
+	double* vec1;
+	double* vec2;
 	double dot = 0;
 	vec1 = a;
 	vec2 = b;
@@ -168,8 +192,7 @@ void modularityMaximization(struct graph* graph, int* vectorS,
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
 			if (i == 0)
-				Q0 = dotProduct(vectorS,
-						modularityTimesS(graph, vectorS, g, sumKiSi));
+				Q0 = dotProductInt(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi),g->groupSize);
 			else
 				Q0 = Q0
 						+ calculateChangeModularity(graph, vectorS, g, sumKiSi,
