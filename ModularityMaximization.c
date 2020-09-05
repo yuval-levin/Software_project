@@ -188,6 +188,7 @@ struct node* appendToList(struct node* prev, int index) {
 	return current;
 }
 
+//TODO: remove duplicate and add to module of matrix functions
 double dotProduct(double* a, double* b, int col) {
 	/*dot product of vectors a and b*/
 	int k;

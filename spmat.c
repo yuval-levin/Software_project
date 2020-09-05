@@ -128,12 +128,12 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 		cur_node = rows[row_ind];
 		
 		/*sum all the relevant multiplications*/
-		sum = sumHelper(cur_node);
+		sum = sumTimesVectorHelper(cur_node);
 		result[row_ind] = sum;
 	}
 }
 
-double sumHelper(spmat_node* cur_node,double *v)
+double sumTimesVectorHelper(spmat_node* cur_node,double *v)
 {
 	int index;
 	double sum = 0;

@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include <stdlib.h>
-#include <assert.h>
-#include <time.h>
+#include "modules.h"
 #include <math.h>
 
 void createB(double* b, int col) {
@@ -83,7 +82,7 @@ void updateB(double* b, double* newB, double c) {
 
 }
 
-void createAbkVec(double* covRow, int row, double* currentB, double* newB,
+void createAbkVec( int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
@@ -92,10 +91,10 @@ void createAbkVec(double* covRow, int row, double* currentB, double* newB,
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
 			&KjDivdedByM); //helper Sums for all rows
 
-	for (i = 0; i < row; i++) {
+	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
-		Abk = spmatProductWithVectorb(i, currentB, row, KjBjDividedByM,
+		Abk = spmatProductWithVectorb(i, currentB, g,graph, KjBjDividedByM,
 				KjDivdedByM);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
@@ -156,7 +155,8 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 	*KjBj = sum / (graph->M);
 
 }
-double* createEigenvalue(FILE* input, int row, double epsilon) {
+double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct graph* graph) {
+	//todo, include epsilon for differnece function
 	/*since row=col in cov matrix, we use only row param*/
 	double* b;
 	double* nextb;
@@ -165,26 +165,26 @@ double* createEigenvalue(FILE* input, int row, double epsilon) {
 	int n;
 	int dif;
 
-	b = (double*) malloc(row * sizeof(double));
+	b = (double*) malloc(rowLength * sizeof(double));
 	//TODO: add exit
-	createB(b, row);
-	covRow = (double*) malloc(row * sizeof(double));
+	createB(b, rowLength);
+	covRow = (double*) malloc(rowLength * sizeof(double));
 	//TODO: add exit
-	nextb = (double*) malloc(row * sizeof(double));
+	nextb = (double*) malloc(rowLength * sizeof(double));
 	//TODO: add exit
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
 
-		createAbkVec(covRow, row, b, origNextB, input);
+		createAbkVec( rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
-		divideByMagnitude(origNextB, magnitude(origNextB, row), row);
+		divideByMagnitude(origNextB, magnitude(origNextB, rowLength), rowLength);
 		/*checking difference between "old" b and "new" b  vectors:*/
 
-		dif = difference(b, origNextB, row, epsilon);
+		dif = difference(b, origNextB, rowLength);
 
 		/*updating b: */
-		updateB(b, origNextB, row);
+		updateB(b, origNextB, rowLength);
 
 	} while (dif == 1);
 
@@ -194,27 +194,4 @@ double* createEigenvalue(FILE* input, int row, double epsilon) {
 
 }
 
-int main(int args, char** argv) {
-	FILE* input;
-	FILE* output;
-	double epsilon;
-	double* eigenVector;
-	int row, n, x;
-
-	//TODO: include modules for epsilon
-	/*writing dimnesion of vector: */
-	/*constant 1*/
-
-	eigenVector = createEigenvalue(input, row, epsilon);
-
-	free(eigenVector);
-
-	return 0;
-}
-/*
- * eigen.c
- *
- *  Created on: 13 Apr 2020
- *      Author: 97254
- */
 
