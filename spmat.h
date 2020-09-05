@@ -22,5 +22,6 @@ typedef struct _spmat {
 
 /* Allocates a new linked-lists sparse matrix of size n */
 spmat* spmat_allocate_list(int n);
+void mult_ll(const struct _spmat *A, const double *v, double *result);
 
 #endif

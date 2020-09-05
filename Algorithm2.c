@@ -3,20 +3,24 @@
 #include "modules.h"
 #include "ModularityMaximization.h"
 #include "OneNorm.h"
-
+#include "power_iter.h"
+#include "spmat.h"
 
 
 void computeS(double* u1, int* s, int n)
+
 {
-	//TODO: is u1 int? long? double?
-	//fill fi?
+
 	int i;
-	for (i = 0; i < n; i++){ s[i] = u1[i] >= 0 ? 1 : -1; }
+	for (i = 0; i < n; i++)
+	{
+		s[i] = u1[i] >= 0 ? 1 : -1;
+	}
 
 }
 
 
-struct shiftedDivisionGroup newShiftedDivsionGroup(struct divisionGroup* g,struct graph* graph)
+struct shiftedDivisionGroup* newShiftedDivsionGroup(struct divisionGroup* g,struct graph* graph)
 {
 	struct shiftedDivisionGroup* shiftedG = (struct shiftedDivisionGroup*) malloc(sizeof(struct shiftedDivisionGroup));
 	shiftedG->group = g;
@@ -52,9 +56,9 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	double eigenvalue, sumKiSi,rightArgument,AtimesS,leftArgument;
 	double* eigenvector;
 
-	struct shiftedDivisionGroup shiftedG = newShiftedDivsionGroup(g,graph);
+	struct shiftedDivisionGroup* shiftedG = newShiftedDivsionGroup(g,graph);
 
-	eigenvector = createEigenvalue(g->groupSize, g, graph);
+	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG,eigenvector,graph);
 
 	if (eigenvalue <= epsilon) {
@@ -64,9 +68,9 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	else {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi));
-		lmult_ll(g->groupSubmatrix,vectorS, &AtimesS);
-		leftArgument = (vectorS,AtimesS);
+		rightArgument = dotProductInt(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi), g->groupSize);
+		mult_ll(g->groupSubmatrix,vectorS, &AtimesS);
+		leftArgument = dotProductInt(vectorS,&AtimesS,g->groupSize);
 		if (leftArgument+rightArgument<= epsilon)
 		{
 			//g is undivisble so S stays the same - everyone are '1';

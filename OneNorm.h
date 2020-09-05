@@ -7,7 +7,7 @@
 
 #ifndef ONENORM_H_
 #define ONENORM_H_
-double one_norm(struct graph* graph, struct divisionGroup* g)
+double one_norm(struct graph* graph, struct divisionGroup* g);
 
 
 #endif /* ONENORM_H_ */

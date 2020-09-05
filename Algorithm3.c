@@ -230,8 +230,8 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
 	// TODO: calc sum of rows
 
-	g1 = (divisionGroup*)malloc(sizeof(divisionGroup));
-	g2 = (divisionGroup*)malloc(sizeof(divisionGroup));
+	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 
 	while (P->len > 0) {
 		g = removeFirstGroup(P);
@@ -239,7 +239,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 		if (vectorS == NULL)
 			exit(1); //TODO: print error before exit.
 		Algorithm2(vectorS, g,&inputGraph);
-		ModularityMaximization(&inputGraph,vectorS, g);
+		modularityMaximization(&inputGraph,vectorS, g);
 		splitByS(vectorS, g, g1, g2);
 
 		if (g2 == NULL)
