@@ -15,9 +15,8 @@ int main(int args, char** argv) {
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	int* row;
-
-	int k, j, cur;
-	for (j = 0; j < n; i++) {
+	int k, i, cur;
+	for (i = 0; i < n; i++) {
 		k = fread(&cur, sizeof(int), 1, input);
 		assert(k==1); 				// TODO: error module
 		row[i] = cur;
