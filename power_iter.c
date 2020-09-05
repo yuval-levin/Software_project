@@ -84,20 +84,19 @@ void updateB(double* b, double* newB, double c) {
 }
 
 void createAbkVec(double* covRow, int row, double* currentB, double* newB,
-		struct shiftedDivisionGroup* g,struct graph* graph) {
+		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
-	double Abk, KjBjDividedByM,KjDivdedByM;
+	double Abk, KjBjDividedByM, KjDivdedByM;
 	int n;
 
-	spmatProductHelperKjBjDividedByM(currentB,g,graph,&KjBjDividedByM,&KjDivdedByM);
+	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
+			&KjDivdedByM); //helper Sums for all rows
+
 	for (i = 0; i < row; i++) {
-		/* we read the cov matrix one row at a time:*/
-		covRow = g->groupSubmatrix.getRow(i)
-		n = fread(covRow, sizeof(double), row, input);
-		assert(n == row);
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
-		Abk = spmatProductWithVectorb(covRow, currentB, row);
+		Abk = spmatProductWithVectorb(i, currentB, row, KjBjDividedByM,
+				KjDivdedByM);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
@@ -106,12 +105,39 @@ void createAbkVec(double* covRow, int row, double* currentB, double* newB,
 
 }
 double spmatProductWithVectorb(int rowIndex, double* vector,
-		struct shiftedDivisionGroup* g, struct graph* graph) {
-
+		struct shiftedDivisionGroup* g, struct graph* graph,
+		double KjBjDividedByM, double KjDivdedByM) {
+	double rowResult = 0;
+	double rowSum = 0, ki = graph->vectorDegrees[rowIndex], bi =
+			vector[rowIndex];
 	struct divisionGroup group = g->group; //eran: consider making it a const; you know no O3 and stuff...
 
 	struct spmat_node* cur_node = group->groupSubmatrix->private[rowIndex];
-	double Atimesb = sumHelper(cur_node, vector);
+	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
+
+	rowResult -= ((KjBjDividedByM) * ki);
+	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
+	rowResult += (g->norm * bi);
+
+	return rowResult;
+
+}
+
+//helper function calculates row (given by cur_node) sum , and row times vector v;
+// it does two things to prevent iterating the same row twice.
+double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
+	int index;
+	double sum = 0;
+	while (cur_node != NULL) {
+		index = cur_node->index;
+		*rowSum = (*rowSum) + cur_node->data;
+		sum += (cur_node->data) * (v[index]);
+		cur_node = (struct spmat_node*) cur_node->next;
+	}
+	return sum;
+}
+
+double sparseRowSum(int rowIndex, struct shiftedDivisionGroup* g) {
 
 }
 
