@@ -4,7 +4,7 @@
 
 // @CR as discussed, should probably come in its own file.
 int main(int args, char** argv) {
-	graph* graph;
+	struct graph* graph;
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			// TODO: error module
