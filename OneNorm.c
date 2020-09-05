@@ -10,7 +10,7 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	struct spmat_node* currentNode = get_private(g->groupSubmatrix)[0];
 	//iterate over all rows
 	for (i = 0; i < g->groupSize; i++) {
-		sum = sum + currentNode->data - g->sumOfRows[column];
+		sum = sum + (currentNode->data) - g->sumOfRows[column];
 		sum = sum
 				- ((graph->vectorDegrees[i] * graph->vectorDegrees[column])
 						/ graph->M);

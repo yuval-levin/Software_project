@@ -1,14 +1,18 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "ModularityMaximization.c"
+#include "ModularityMaximization.h"
+#include "OneNorm.h"
 
-//TODO: is u1 int? long? double?
-//fill fi?
-void computeS(double* u1, int* s, int n) {
+
+
+void computeS(double* u1, int* s, int n)
+{
+	//TODO: is u1 int? long? double?
+	//fill fi?
 	int i;
-	for (i = 0; i < n; i++)
-		s[i] = u1[i] >= 0 ? 1 : -1;
+	for (i = 0; i < n; i++) s[i] = u1[i] >= 0 ? 1 : -1;
+
 }
 
 
@@ -41,9 +45,7 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 
 void fillVectorWithOnes(int* vector, int length) {
 	int i;
-
-	for (i = 0; i < length; i++)
-		vector[i] = 1;
+	for (i = 0; i < length; i++) vector[i] = 1;
 }
 
 void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
@@ -58,21 +60,23 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	if (eigenvalue <= epsilon) {
 		//g is undivisble so S stays the same - everyone are '1';
 		fillVectorWithOnes(vectorS, g->groupSize);
-	} else {
+	}
+	else {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
 		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi));
 		lmult_ll(g->groupSubmatrix,vectorS, &AtimesS);
 		leftArgument = (vectorS,AtimesS);
-		if (leftArgument+rightArgument<= epsilon) {
+		if (leftArgument+rightArgument<= epsilon)
+		{
 			//g is undivisble so S stays the same - everyone are '1';
 			fillVectorWithOnes(vectorS, g->groupSize);
 		}
 	}
 
-	free();
+	free(shiftedG);
 
-	//TODO: step 5. Yuval's
+	/*TODO: step 5. Yuval's*/
 }
 
 

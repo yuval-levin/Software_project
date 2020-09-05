@@ -91,7 +91,7 @@ double sumOfDegreeByVectorS(struct graph* graph, int* vectorS,
 		struct divisionGroup* g) {
 	double sum = 0;
 	int i;
-	struct spmat_node* current = g->groupSubmatrix->private[0];
+	struct spmat_node* current = get_private(g->groupSubmatrix)[0];
 	for (i = 0; i < g->groupSize; i++) {
 		//vectorDegrees is size Of number of nodes in the original A matrix
 		sum = sum + (vectorS[i] * graph->vectorDegrees[current->index]); //vectorS is size of g, we use i
@@ -102,7 +102,8 @@ double sumOfDegreeByVectorS(struct graph* graph, int* vectorS,
 
 struct node* createUnmovedList(int sizeOfg) {
 	int i;
-	struct node* head, prev = NULL;
+	struct node* head = NULL;
+	struct node* prev = NULL;
 	for (i = 0; i < sizeOfg; i++) {
 		prev = appendToList(prev, i);
 		if (i == 0)
@@ -129,8 +130,10 @@ struct node* appendToList(struct node* prev, int index) {
 double dotProduct(double* a, double* b, int col) {
 	/*dot product of vectors a and b*/
 	int k;
-	double* vec1 = a, vec2 = b;
+	double* vec1 ,vec2;
 	double dot = 0;
+	vec1 = a;
+	vec2 = b;
 
 	for (k = 0; k < col; k++) {
 		dot += ((*vec1) * (*vec2));
@@ -148,7 +151,11 @@ void modularityMaximization(struct graph* graph, int* vectorS,
 	double modularityChange, Q0, Q1, maxModularityChange, maxImprovedIndex = 0,
 			maxImproveScore, sumKiSi;
 	int i, indexOfBiggestIncrease, switchFirstUnmovedIteration = 1;
-	struct node* unmoved, currentNode, prev, prevOfBiggest;
+	struct node* unmoved;
+	struct node* currentNode;
+	struct node* prev;
+	struct node* prevOfBiggest;
+
 	double* improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	int* indiceVector = (int*) malloc(g->groupSize * sizeof(int));
 

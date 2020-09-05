@@ -7,7 +7,6 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "spmat.h"
 #include <time.h>
 #include <math.h>
@@ -59,7 +58,7 @@ void add_row_ll(struct _spmat *A, const double *row, int i){
 	add_row_of_size_n(A->n);
 }
 
-spmat_node* get_private(struct _spmat* mat)
+spmat_node** get_private(struct _spmat* mat)
 {
 	return mat->private;
 }
