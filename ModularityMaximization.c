@@ -50,7 +50,7 @@ double* secondArgumentInCalc(struct graph* graph, int* vectorS,
 		struct divisionGroup* g, double sumKiSi) {
 	int i, index;
 	double M = graph->M;
-	struct spmat_node* current = g->groupSubmatrix->private[0];
+	struct spmat_node* current = get_private(g->groupSubmatrix)[0];
 	double* KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 

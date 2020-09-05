@@ -59,6 +59,10 @@ void add_row_ll(struct _spmat *A, const double *row, int i){
 	add_row_of_size_n(A->n);
 }
 
+spmat_node* get_private(struct _spmat* mat)
+{
+	return mat->private;
+}
 /*
  * helper for add_row_ll
  */

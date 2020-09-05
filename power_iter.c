@@ -91,7 +91,7 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 			vector[rowIndex];
 	struct divisionGroup group = g->group; //eran: consider making it a const; you know no O3 and stuff...
 
-	struct spmat_node* cur_node = group->groupSubmatrix->private[rowIndex];
+	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
 	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
 
 	rowResult -= ((KjBjDividedByM) * ki);
