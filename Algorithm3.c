@@ -163,11 +163,11 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	for (i = 0; i < n; i++) {
 		if (vectorS[i] == 1) {
 			g1_rows[i1] = g_rows[i];
-			g1_sum_of_rows[i1] == g_sum_of_rows[i];
+			g1_sum_of_rows[i1] = g_sum_of_rows[i];
 			i1++;
 		} else {
 			g2_rows[i2] = g_rows[i];
-			g2_sum_of_rows[i2] == g_sum_of_rows[i];
+			g2_sum_of_rows[i2] = g_sum_of_rows[i];
 			i2++;
 		}
 	}
@@ -228,6 +228,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
+	// TODO: calc sum of rows
 
 	g1 = (divisionGroup*)malloc(sizeof(divisionGroup));
 	g2 = (divisionGroup*)malloc(sizeof(divisionGroup));
