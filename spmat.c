@@ -8,35 +8,6 @@
 #include <math.h>
 #include <string.h>
 
-void add_row_ll(struct _spmat *A, const int *row, int i);
-void free_ll(struct _spmat *A);
-void mult_ll(const struct _spmat *A, const int *v, int *result);
-
-
-/*
- * allocating memory for rows.
- * populate the functions with linked list implementation.
- */
-spmat* spmat_allocate_list(int n){
-	spmat* mat;
-	struct spmat_node** rows;
-
-	/*allocating memory*/
-	mat = (spmat*)malloc(sizeof(spmat));
-	assert(mat!= NULL);
-	rows = (struct spmat_node**)malloc(n * sizeof(struct spmat_node*));
-	assert(rows!= NULL);
-
-	/*initializing*/
-	mat->n = n;
-	mat->add_row = &add_row_ll;
-	mat->free = &free_ll;
-	mat->mult = &mult_ll;
-	mat->private = rows;
-
-	return mat;
-}
-
 /*
  * add_row implementation for linked list
  */
@@ -168,4 +139,29 @@ void create_matrix(struct _spmat *A, FILE* input){
 
 	free(row);
 	rewind(input);
+}
+
+
+/*
+ * allocating memory for rows.
+ * populate the functions with linked list implementation.
+ */
+spmat* spmat_allocate_list(int n){
+	spmat* mat;
+	struct spmat_node** rows;
+
+	/*allocating memory*/
+	mat = (spmat*)malloc(sizeof(spmat));
+	assert(mat!= NULL);
+	rows = (struct spmat_node**)malloc(n * sizeof(struct spmat_node*));
+	assert(rows!= NULL);
+
+	/*initializing*/
+	mat->n = n;
+	mat->add_row = &add_row_ll;
+	mat->free = &free_ll;
+	mat->mult = &mult_ll;
+	mat->private = rows;
+
+	return mat;
 }
