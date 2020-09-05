@@ -83,26 +83,6 @@ void updateB(double* b, double* newB, double c) {
 
 }
 
-
-double spmatProductWithVectorb(int rowIndex, double* vector,
-		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double KjDivdedByM) {
-	double rowResult = 0;
-	double rowSum = 0, ki = graph->vectorDegrees[rowIndex], bi =
-			vector[rowIndex];
-	struct divisionGroup group = g->group; //eran: consider making it a const; you know no O3 and stuff...
-
-	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
-	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
-
-	rowResult -= ((KjBjDividedByM) * ki);
-	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
-	rowResult += (g->norm * bi);
-
-	return rowResult;
-
-}
-
 //helper function calculates row (given by cur_node) sum , and row times vector v;
 // it does two things to prevent iterating the same row twice.
 double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
@@ -117,9 +97,26 @@ double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
 	return sum;
 }
 
-double sparseRowSum(int rowIndex, struct shiftedDivisionGroup* g) {
+double spmatProductWithVectorb(int rowIndex, double* vector,
+		struct shiftedDivisionGroup* g, struct graph* graph,
+		double KjBjDividedByM, double KjDivdedByM) {
+	double rowResult = 0;
+	double rowSum = 0, ki = graph->vectorDegrees[rowIndex], bi =
+			vector[rowIndex];
+	struct divisionGroup* group = g->group; //eran: consider making it a const; you know no O3 and stuff...
+
+	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
+	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
+
+	rowResult -= ((KjBjDividedByM) * ki);
+	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
+	rowResult += (g->norm * bi);
+
+	return rowResult;
 
 }
+
+
 
 void spmatProductHelperKjBjDividedByM(double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
