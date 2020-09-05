@@ -37,7 +37,7 @@ struct divisionGroup
 
 struct shiftedDivisionGroup
 {
-	struct divisonGroup* group;
+	struct divisionGroup* group;
 	double norm;
 };
 

@@ -1,14 +1,14 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "Algorithm2.c"
-#include "ModularityMaximization.c"
+#include "Algorithm2.h"
+#include "ModularityMaximization.h"
 
 //TODO: is include file.c ok? or should we do headers?
 //TODO: add checks for all mallocs.
 //adds in start
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
-	struct node* add = (struct node) malloc(sizeof(struct node));
+	struct node* add = (struct node*) malloc(sizeof(struct node));
 	if (add == NULL)
 		exit(1); //TODO: print error before exit.
 	add->data.group = g;
@@ -30,7 +30,7 @@ struct divisionGroup* removeFirstGroup(struct division* D) {
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
 
-	return group->data->group;
+	return group->data.group;
 }
 
 void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
@@ -47,7 +47,7 @@ void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2) 
 	//TODO
 }
 struct division* new_division() {
-	struct division D = (struct division) malloc(sizeof(struct division));
+	struct division* D = (struct division*) malloc(sizeof(struct division));
 	if (D == NULL)
 		exit(1); //TODO: print error before exit.
 	D->len = 0;
@@ -74,9 +74,10 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
 
 
 struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
-	struct divisionGroup* g = NULL, g1 = NULL, g2 = NULL;
+	struct divisionGroup* g;
+	struct divisionGroup* g1;
+	struct divisionGroup* g2;
 	int* vectorS;
-
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
@@ -86,7 +87,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 		vectorS = (int*) malloc(g->groupSize * sizeof(int)); //vectorS is size of group g.
 		if (vectorS == NULL)
 			exit(1); //TODO: print error before exit.
-		Algorithm2(vectorS, g);
+		Algorithm2(vectorS, g,&inputGraph);
 		ModularityMaximization(vectorS, g);
 		splitByS(vectorS, g1, g2);
 

@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "modules.h"
 #include <math.h>
+#include "spmat.c"
 
 void createB(double* b, int col) {
 	/*creates a random vector */
@@ -57,7 +58,7 @@ double dotProduct(double* a, double* b, int col) {
 
 double magnitude(double* vec, int col) {
 	/*returns magnitude (norm) of vec with col columns*/
-	return sqrt(dotProduct2(vec, vec, col));
+	return sqrt(dotProduct(vec, vec, col));
 }
 
 void divideByMagnitude(double* vec, double magnitude, int col) {
@@ -125,7 +126,7 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 		double* KjBjMultiply, double* KjBj) {
 	double sum = 0, sumMultiply = 0;
 	int i;
-	struct divisionGroup group = g->group;
+	struct divisionGroup* group = g->group;
 	for (i = 0; i < group->groupSize; i++) {
 		sumMultiply += (vector[i] * graph->vectorDegrees[i]);
 		sum += graph->vectorDegrees[i];
