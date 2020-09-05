@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
+#include "spmat.h"
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
 
@@ -59,7 +60,7 @@ int calc_size (int* vectorS, int n) {
  * removes irrelevant nodes and updates sum of rows accordingly*/
 void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** g_rows, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
 	int i_row, i_group_members;
-	spmat_node *cur, *prev, *next, *cur_g;
+	struct spmat_node *cur, *prev, *next;
 	prev = NULL;
 
 	for (i_row = 0; i_row < num_members; i_row++) {
@@ -72,7 +73,7 @@ void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int gr
 				i_group_members++;
 			/* remove cur, prev remains the same*/
 			if (vectorS[i_group_members] != group_indicator) {
-				g1_sum_of_rows[i_row]--;
+				gt_sum_of_rows[i_row]--;
 				if (prev == NULL) {
 					gt_rows[i_row] = cur->next;
 				} else {
@@ -109,6 +110,7 @@ void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat
 	g->groupMembers = group_members;
 }
 
+/* splitByS helper, free old div group*/
 void free_div_group(struct divisionGroup* g) {
 	free(g->sumOfRows);
 	free(g->groupMembers);
