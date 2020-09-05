@@ -55,7 +55,7 @@ spmat* spmat_allocate_list(int n){
  * add_row implementation for linked list
  */
 void add_row_ll(struct _spmat *A, const double *row, int i){
-	add_row_of_size_n(A->n);
+	add_row_of_size_n(A, row, i, A->n, 0);
 }
 
 spmat_node** get_private(struct _spmat* mat)
@@ -65,7 +65,7 @@ spmat_node** get_private(struct _spmat* mat)
 /*
  * helper for add_row_ll
  */
-void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
+void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat){
 	int first, j;
 	spmat_node *cur, *prev;
 	first = 0;
@@ -74,8 +74,15 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
 		if (row[j] != 0){
 			cur = (spmat_node*)malloc(sizeof(spmat_node));
 			assert(cur != NULL);
-			cur->data = row[j];
-			cur->index = j;		/*column index*/
+			if (is_adjacency_mat == 1)
+			{
+				cur->data = 1;
+				cur->index = row[j];
+			} 
+			else {
+				cur->data = row[j];
+				cur->index = j;		/*column index*/
+			}
 			cur->next = NULL;
 
 			/*first spmat_node*/

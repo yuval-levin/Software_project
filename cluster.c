@@ -22,14 +22,14 @@ void read_row(int i, int n, FILE* input, struct _spmat* A)
 		assert(k==1); 				// TODO: error module
 		row[i] = cur;
 	}
-	add_row_of_size_n(A, row, i, n);
+	add_row_of_size_n(A, row, i, n, 1);
 }
 
 void create_graph(FILE* input, struct _graph* graph)
 {
 	spmat* A;
 	long* vector_degrees;
-	int n, cur_deg, deg_sum;
+	int k, n, cur_deg, deg_sum;
 
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);
