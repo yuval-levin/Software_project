@@ -33,7 +33,7 @@ void create_graph(FILE* input, struct _graph* graph) {
 	graph = (graph*)malloc(sizeof(graph));
 	assert(graph!=NULL)				// TODO: error module
 	A = spmat_allocate_list(n);
-	vector_degrees = (long*)malloc(n * sizeof(long*));
+	vector_degrees = (long*)malloc(n * sizeof(long));
 	assert(vector_degrees!=NULL);	// TODO: error module
 
 	/*reading input to struct*/

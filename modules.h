@@ -32,6 +32,7 @@ struct divisionGroup
 	int groupSize;
 	struct _spmat* groupSubmatrix;
 	int* sumOfRows; //(computeS populates it).  0 by default
+	int* groupMembers;
 
 };
 

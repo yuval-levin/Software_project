@@ -42,7 +42,7 @@ void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 
 }
 
-/*splitByS helper, returns the size of g1*/
+/* splitByS helper, returns the size of g1*/
 int calc_size (int* vectorS, int n) {
 	int i, size;
 	size = 0;
@@ -55,20 +55,50 @@ int calc_size (int* vectorS, int n) {
 	return size;
 }
 
-/*splits g to groups, populating g1 and g2
- *if there's a group of size 0, g1 = g, g2 = NULL */
+/* splitByS helper, updates the mat rows,
+ * removes irrelevant nodes and updates sum of rows accordingly*/
+void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** g_rows, struct spmat_node** g1_rows, int* g1_sum_of_rows) {
+	int i_row, i_group_members;
+	spmat_node *cur, *prev, *next, *cur_g;
+	prev = NULL;
+
+	for (i_row = 0; i_row < num_members; i_row++) {
+		cur = g1_rows[i_row];
+		i_group_members = 0;
+		while (cur != NULL) {
+			next = cur->next;
+			/* search for the index in vectorS/groupMembers that fits cur*/
+			while (i_group_members < num_members && g_group_members[i_group_members] != cur->index)
+				i_group_members++;
+			/* remove cur, prev remains the same*/
+			if (vectorS[i_group_members] != group_indicator) {
+				g1_sum_of_rows[i_row]--;
+				// TODO: write remove_node, don't forget to free node
+				remove_node(prev, cur, next);
+			/* don't remove cur, prev should advance*/
+			} else {
+				prev = cur;
+			}
+			cur = next;
+		}
+	}
+}
+
+/* splits g to groups, populates g1 and g2
+ * if there's a group of size 0, g1 = g, g2 = NULL */
 void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
 	int i, n, g1_size, g2_size, i1, i2;
 	struct _spmat *g1_mat, *g2_mat;
 	struct spmat_node **g_rows, **g1_rows, **g2_rows;
 	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
+	int *g1_group_members, *g2_group_members;
 
 	n = g->groupSize;
 	g_rows = get_private(g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
 
-	/*if there's a group of size 0, g1 = g, g2 = NULL
-	 *in this case, no need to free g*/
+	/* if there's a group of size 0, g1 = g, g2 = NULL
+	 * in this case, no need to free g*/
 	g1_size = calc_size(vectorS, n);
 	g2_size = n - g1_size;
 	if (g1_size == n || g2_size == n) {
@@ -77,11 +107,21 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 		return;
 	}
 
-	/*allocate spmats*/
+	/* allocate spmats*/
 	g1_mat = spmat_allocate_list(g1_size);
 	g2_mat = spmat_allocate_list(g2_size);
+	/* allocate sumOfRows*/
+	g1_sum_of_rows = (int*)malloc(g1_size * sizeof(int));
+	assert(g1_sum_of_rows != NULL);							// TODO: error module
+	g2_sum_of_rows = (int*)malloc(g2_size * sizeof(int));
+	assert(g2_sum_of_rows != NULL);							// TODO: error module
+	/*allocate groupMembers*/
+	g1_group_members = (int*)malloc(g1_size * sizeof(int));
+	assert(g1_group_members != NULL);						// TODO: error module
+	g2_group_members = (int*)malloc(g2_size * sizeof(int));
+	assert(g2_group_members != NULL);						// TODO: error module
 
-	/*move rows from g to g1, g2*/
+	/* move rows from g to g1, g2*/
 	i1 = 0;
 	i2 = 0;
 	for (i = 0; i < n; i++) {
@@ -96,23 +136,29 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 		}
 	}
 
-	/*edit rows and sum_of_rows, remove irrelevant nodes*/
-	//TODO: edit rows and sum_of_rows
+	/* edit rows and sum_of_rows, remove irrelevant nodes*/
+	update_mat_rows(vectorS, g->groupMembers, g1_size, 1, g_rows, g1_rows, g1_sum_of_rows);
+	update_mat_rows(vectorS, g->groupMembers, g2_size, -1, g_rows, g2_rows, g2_sum_of_rows);
 
-	/*update spmats*/
+	/* update spmats*/
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
 
-	/*create divisionGroups*/
-	//TODO: write create_division_group
-	create_division_group(g1_size, g1_mat, g1_sum_of_rows);
-	create_division_group(g2_size, g2_mat, g2_sum_of_rows);
+	/* update group_members*/
+	// TODO: write update_group_members
+	update_group_members(vectorS, g->groupMembers, g1_group_members, 1);
+	update_group_members(vectorS, g->groupMembers, g2_group_members, -1);
 
-	/*free unnecessary memory*/
-	//TODO: write free_div_group
+	/* create divisionGroups*/
+	// TODO: write create_division_group
+	create_division_group(g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
+	create_division_group(g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
+
+	/* free unnecessary memory*/
+	// TODO: write free_div_group
 	free_div_group(g);
-
 }
+
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));
 	if (D == NULL)
@@ -122,7 +168,7 @@ struct division* new_division() {
 }
 
 
-/*PARAMS : n is number of nodes in graph
+/* PARAMS : n is number of nodes in graph
  * DESC : Returns a divisonGroup with all nodes in graph
  */
 struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
