@@ -162,7 +162,6 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	double* nextb;
 	double* covRow;
 	double* origNextB;
-	int n;
 	int dif;
 
 	b = (double*) malloc(rowLength * sizeof(double));
