@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
 #include "ModularityMaximization.h"
@@ -11,7 +11,7 @@ void computeS(double* u1, int* s, int n)
 	//TODO: is u1 int? long? double?
 	//fill fi?
 	int i;
-	for (i = 0; i < n; i++) s[i] = u1[i] >= 0 ? 1 : -1;
+	for (i = 0; i < n; i++){ s[i] = u1[i] >= 0 ? 1 : -1; }
 
 }
 

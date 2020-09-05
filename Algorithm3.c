@@ -165,6 +165,7 @@ struct division* new_division() {
 		exit(1); //TODO: print error before exit.
 	D->len = 0;
 	D->divisions = NULL;
+	return D;
 }
 
 
@@ -177,7 +178,7 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
 	if (group == NULL)
 		exit(1); //TODO: print error before exit.
 	group->groupSize = n;
-	group->groupSubmatrix = &(inputGraph->A);
+	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
 	for (i = 0; i < n; i++) {
 		group->sumOfRows[i] = 0;
@@ -201,7 +202,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 		if (vectorS == NULL)
 			exit(1); //TODO: print error before exit.
 		Algorithm2(vectorS, g,&inputGraph);
-		ModularityMaximization(vectorS, g);
+		ModularityMaximization(&inputGraph,vectorS, g);
 		splitByS(vectorS, g1, g2);
 
 		if (g2 == NULL)
