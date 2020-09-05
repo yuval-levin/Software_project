@@ -1,14 +1,16 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
+#include "spmat.h"
 
 // @CR as discussed, should probably come in its own file.
 int main(int args, char** argv) {
-	struct graph* graph;
+	struct graph* new_graph;
+	FILE* input;
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			// TODO: error module
-	create_graph(input, graph);
+	create_graph(input, new_graph);
 }
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
@@ -22,16 +24,16 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	add_row_of_size_n(A, row, i, n, 1);
 }
 
-void create_graph(FILE* input, struct _graph* graph) {
-	spmat* A;
+void create_graph(FILE* input, struct _graph* new_graph) {
+	struct spmat* A;
 	long* vector_degrees;
-	int k, n, cur_deg, deg_sum;
+	int i, k, n, cur_deg, deg_sum;
 
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);
 	assert(k==1); 					// TODO: error module
-	graph = (graph*)malloc(sizeof(graph));
-	assert(graph!=NULL)				// TODO: error module
+	new_graph = (struct graph*)malloc(sizeof(struct graph));
+	assert(new_graph!=NULL);				// TODO: error module
 	A = spmat_allocate_list(n);
 	vector_degrees = (long*)malloc(n * sizeof(long));
 	assert(vector_degrees!=NULL);	// TODO: error module
@@ -47,7 +49,7 @@ void create_graph(FILE* input, struct _graph* graph) {
 	}
 
 	/*initializing graph*/
-	graph->A = A;
-	graph->vectorDegrees = vector_degrees;
-	graph->M = deg_sum;
+	new_graph->A = A;
+	new_graph->vectorDegrees = vector_degrees;
+	new_graph->M = deg_sum;
 }
