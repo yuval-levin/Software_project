@@ -57,13 +57,13 @@ int calc_size (int* vectorS, int n) {
 
 /* splitByS helper, updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
-void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** g_rows, struct spmat_node** g1_rows, int* g1_sum_of_rows) {
+void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** g_rows, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
 	int i_row, i_group_members;
 	spmat_node *cur, *prev, *next, *cur_g;
 	prev = NULL;
 
 	for (i_row = 0; i_row < num_members; i_row++) {
-		cur = g1_rows[i_row];
+		cur = gt_rows[i_row];
 		i_group_members = 0;
 		while (cur != NULL) {
 			next = cur->next;
@@ -73,8 +73,12 @@ void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int gr
 			/* remove cur, prev remains the same*/
 			if (vectorS[i_group_members] != group_indicator) {
 				g1_sum_of_rows[i_row]--;
-				// TODO: write remove_node, don't forget to free node
-				remove_node(prev, cur, next);
+				if (prev == NULL) {
+					gt_rows[i_row] = cur->next;
+				} else {
+					prev->next = cur->next;
+				}
+				free(cur);
 			/* don't remove cur, prev should advance*/
 			} else {
 				prev = cur;
@@ -103,6 +107,16 @@ void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat
 	g->groupSubmatrix = mat;
 	g->sumOfRows = sum_of_rows;
 	g->groupMembers = group_members;
+}
+
+void free_div_group(struct divisionGroup* g) {
+	free(g->sumOfRows);
+	free(g->groupMembers);
+
+	/* free submatrix, don't use free_ll, since we don't want to free rows*/
+	free(get_private(g->groupSubmatrix));
+	free(g->groupSubmatrix);
+	free(g);
 }
 
 /* splits g to groups, populates g1 and g2
@@ -174,8 +188,7 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
 	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 
-	/* free unnecessary memory*/
-	// TODO: write free_div_group
+	/* free memory*/
 	free_div_group(g);
 }
 
