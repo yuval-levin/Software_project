@@ -84,6 +84,18 @@ void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int gr
 	}
 }
 
+void update_group_members(int* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
+	int i, i_target;
+	i_target = 0;
+
+	for (i = 0; i < n; i++) {
+		if (vectorS[i] == group_indicator) {
+			target_group_members[i_target] = source_group_members[i];
+			i_target++;
+		}
+	}
+}
+
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
 void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
@@ -145,9 +157,8 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	set_private(g2_mat, g2_rows);
 
 	/* update group_members*/
-	// TODO: write update_group_members
-	update_group_members(vectorS, g->groupMembers, g1_group_members, 1);
-	update_group_members(vectorS, g->groupMembers, g2_group_members, -1);
+	update_group_members(vectorS, g->groupMembers, g1_group_members, 1, n);
+	update_group_members(vectorS, g->groupMembers, g2_group_members, -1, n);
 
 	/* create divisionGroups*/
 	// TODO: write create_division_group
