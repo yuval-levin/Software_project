@@ -4,7 +4,8 @@
 
 // @CR as discussed, should probably come in its own file.
 int main(int args, char** argv) {
-	graph* graph;
+	struct graph* graph;
+	FILE* input;
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			// TODO: error module
@@ -13,8 +14,9 @@ int main(int args, char** argv) {
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	int* row;
-	int k, i, cur;
-	for (i = 0; i < n; i++) {
+
+	int k, j, cur;
+	for (j = 0; j < n; i++) {
 		k = fread(&cur, sizeof(int), 1, input);
 		assert(k==1); 				// TODO: error module
 		row[i] = cur;
