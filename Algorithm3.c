@@ -52,6 +52,7 @@ struct division* new_division() {
 		exit(1); //TODO: print error before exit.
 	D->len = 0;
 	D->divisions = NULL;
+	return D;
 }
 
 

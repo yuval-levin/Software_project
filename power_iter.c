@@ -138,7 +138,6 @@ void createAbkVec( int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
-	int n;
 
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
 			&KjDivdedByM); //helper Sums for all rows
