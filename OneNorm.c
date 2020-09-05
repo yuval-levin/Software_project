@@ -1,19 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-
-/* method to calculate the 1-norm of matrix mat.
- //TODO: check if double is necessary */
-double one_norm(struct graph* graph, struct divisionGroup* g) {
-	double maxColumn = 0, currentSum;
-	int i;
-	// iterate through columns
-	for (i = 0; i < g->groupSize; i++) {
-		currentSum = columnSum(graph, g, i);
-		if (maxColumn < currentSum)
-			maxColumn = currentSum;
-	}
-	return maxColumn;
-}
+#include "modules.h"
+#include "spmat.c"
+//TODO make sure include c is fine
 
 double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum;
@@ -29,5 +18,21 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	}
 	return sum;
 }
+
+
+/* method to calculate the 1-norm of matrix mat.
+ //TODO: check if double is necessary */
+double one_norm(struct graph* graph, struct divisionGroup* g) {
+	double maxColumn = 0, currentSum;
+	int i;
+	// iterate through columns
+	for (i = 0; i < g->groupSize; i++) {
+		currentSum = columnSum(graph, g, i);
+		if (maxColumn < currentSum)
+			maxColumn = currentSum;
+	}
+	return maxColumn;
+}
+
 
 
