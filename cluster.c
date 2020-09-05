@@ -3,28 +3,22 @@
 #include "modules.h"
 #include "spmat.h"
 
-// @CR as discussed, should probably come in its own file.
-int main(int args, char** argv) {
-	struct graph* new_graph;
-	FILE* input;
-
-	input = fopen(argv[1], "r");
-	assert(input!=NULL);			// TODO: error module
-	create_graph(input, new_graph);
-}
-
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	int* row;
-	int k, i, cur;
-	for (i = 0; i < n; i++) {
+	int k, j, cur;
+
+	row = (int*)malloc(n * sizeof(int));
+	assert(row!=NULL);				// TODO: error module
+
+	for (j = 0; j < n; j++) {
 		k = fread(&cur, sizeof(int), 1, input);
 		assert(k==1); 				// TODO: error module
-		row[i] = cur;
+		row[j] = cur;
 	}
 	add_row_of_size_n(A, row, i, n, 1);
 }
 
-void create_graph(FILE* input, struct _graph* new_graph) {
+void create_graph(FILE* input, struct graph* new_graph) {
 	struct spmat* A;
 	long* vector_degrees;
 	int i, k, n, cur_deg, deg_sum;
@@ -52,4 +46,14 @@ void create_graph(FILE* input, struct _graph* new_graph) {
 	new_graph->A = A;
 	new_graph->vectorDegrees = vector_degrees;
 	new_graph->M = deg_sum;
+}
+
+// @CR as discussed, should probably come in its own file.
+int main(int args, char** argv) {
+	struct graph* new_graph;
+	FILE* input;
+
+	input = fopen(argv[1], "r");
+	assert(input!=NULL);			// TODO: error module
+	create_graph(input, new_graph);
 }
