@@ -1,9 +1,5 @@
 /*
  * spmat.c
- * how to create a sparse matrix:
- * spmat* mat;
- * mat = spmat_allocate_list(n);
- * create_matrix(mat, input);
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,9 +8,9 @@
 #include <math.h>
 #include <string.h>
 
-void add_row_ll(struct _spmat *A, const double *row, int i);
+void add_row_ll(struct _spmat *A, const int *row, int i);
 void free_ll(struct _spmat *A);
-void mult_ll(const struct _spmat *A, const double *v, double *result);
+void mult_ll(const struct _spmat *A, const int *v, int *result);
 
 
 /*
@@ -44,7 +40,7 @@ spmat* spmat_allocate_list(int n){
 /*
  * add_row implementation for linked list
  */
-void add_row_ll(struct _spmat *A, const double *row, int i){
+void add_row_ll(struct _spmat *A, const int *row, int i){
 	add_row_of_size_n(A, row, i, A->n, 0);
 }
 
@@ -60,9 +56,10 @@ void set_private(struct _spmat* mat, struct spmat_node** rows){
 /*
  * helper for add_row_ll
  */
-void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat){
+void add_row_of_size_n(struct _spmat *A, const int *row, int i, int n, int is_adjacency_mat){
 	int first, j;
-	struct spmat_node *cur, *prev;
+	struct spmat_node *cur;
+	struct spmat_node *prev;
 	first = 0;
 
 	for (j = 0; j < n; j++){
@@ -119,10 +116,10 @@ void free_ll(struct _spmat *A){
 }
 
 
-double sumTimesVectorHelper(struct spmat_node* cur_node,double *v)
+int sumTimesVectorHelper(struct spmat_node* cur_node, int *v)
 {
 	int index;
-	double sum = 0;
+	int sum = 0;
 	while(cur_node != NULL){
 				index = cur_node->index;
 				sum += (cur_node->data) * (v[index]);
@@ -134,10 +131,9 @@ double sumTimesVectorHelper(struct spmat_node* cur_node,double *v)
 /*
  * mult implementation for linked list
  */
-void mult_ll(const struct _spmat *A, const double *v, double *result){
+void mult_ll(const struct _spmat *A, const int *v, int *result){
 	int row_ind;
-	int index;
-	double sum;
+	int sum;
 	struct spmat_node* cur_node;
 	struct spmat_node** rows = (struct spmat_node** )A->private;
 
@@ -146,7 +142,7 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 		cur_node = rows[row_ind];
 		
 		/*sum all the relevant multiplications*/
-		sum = sumTimesVectorHelper(cur_node,v);
+		sum = sumTimesVectorHelper(cur_node, v);
 		result[row_ind] = sum;
 	}
 }
@@ -156,16 +152,16 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
  * creating the matrix one row at a time
  */
 void create_matrix(struct _spmat *A, FILE* input){
-	double *row;
+	int *row;
 	int i, k, n;
 
 	n = A->n;
 	fseek(input, 8, SEEK_SET); 	/*skipping dimensions*/
-	row = (double*)malloc(n*sizeof(double));
+	row = (int*)malloc(n*sizeof(int));
 	assert(row != NULL);
 	/*add each row*/
 	for (i = 0; i < n; i++){
-		k = fread(row, sizeof(double),n, input);
+		k = fread(row, sizeof(int),n, input);
 		assert (k == n);
 		A->add_row(A, row, i);
 	}

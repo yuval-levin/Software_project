@@ -1,4 +1,4 @@
-#include<stdio.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
 #include "spmat.h"
@@ -26,8 +26,6 @@ void create_graph(FILE* input, struct graph* new_graph) {
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);
 	assert(k==1); 					// TODO: error module
-	new_graph = (struct graph*)malloc(sizeof(struct graph));
-	assert(new_graph!=NULL);				// TODO: error module
 	A = spmat_allocate_list(n);
 	vector_degrees = (long*)malloc(n * sizeof(long));
 	assert(vector_degrees!=NULL);	// TODO: error module
@@ -52,6 +50,9 @@ void create_graph(FILE* input, struct graph* new_graph) {
 int main(int args, char** argv) {
 	struct graph* new_graph;
 	FILE* input;
+
+	new_graph = (struct graph*)malloc(sizeof(struct graph));
+	assert(new_graph!=NULL);		// TODO: error module
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			// TODO: error module
