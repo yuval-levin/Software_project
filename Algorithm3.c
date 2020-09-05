@@ -41,10 +41,77 @@ void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 		add_groupDivision(P, g);
 
 }
-//make sure s freees g
-// if there's a group size = 0, g2 = NULL, g1 = g;
-void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2) {
-	//TODO
+
+/*splitByS helper, returns the size of g1*/
+int calc_size (int* vectorS, int n) {
+	int i, size;
+	size = 0;
+
+	for (i = 0; i < n; i++) {
+		if (vectorS[i] == 1) {
+			size++;
+		}
+	}
+	return size;
+}
+
+/*splits g to groups, populating g1 and g2
+ *if there's a group of size 0, g1 = g, g2 = NULL */
+void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
+	int i, n, g1_size, g2_size, i1, i2;
+	struct _spmat *g1_mat, *g2_mat;
+	struct spmat_node **g_rows, **g1_rows, **g2_rows;
+	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
+
+	n = g->groupSize;
+	g_rows = get_private(g->groupSubmatrix);
+	g_sum_of_rows = g->sumOfRows;
+
+	/*if there's a group of size 0, g1 = g, g2 = NULL
+	 *in this case, no need to free g*/
+	g1_size = calc_size(vectorS, n);
+	g2_size = n - g1_size;
+	if (g1_size == n || g2_size == n) {
+		g1 = g;
+		g2 = NULL;
+		return;
+	}
+
+	/*allocate spmats*/
+	g1_mat = spmat_allocate_list(g1_size);
+	g2_mat = spmat_allocate_list(g2_size);
+
+	/*move rows from g to g1, g2*/
+	i1 = 0;
+	i2 = 0;
+	for (i = 0; i < n; i++) {
+		if (vectorS[i] == 1) {
+			g1_rows[i1] = g_rows[i];
+			g1_sum_of_rows[i1] == g_sum_of_rows[i];
+			i1++;
+		} else {
+			g2_rows[i2] = g_rows[i];
+			g2_sum_of_rows[i2] == g_sum_of_rows[i];
+			i2++;
+		}
+	}
+
+	/*edit rows and sum_of_rows, remove irrelevant nodes*/
+	//TODO: edit rows and sum_of_rows
+
+	/*update spmats*/
+	set_private(g1_mat, g1_rows);
+	set_private(g2_mat, g2_rows);
+
+	/*create divisionGroups*/
+	//TODO: write create_division_group
+	create_division_group(g1_size, g1_mat, g1_sum_of_rows);
+	create_division_group(g2_size, g2_mat, g2_sum_of_rows);
+
+	/*free unnecessary memory*/
+	//TODO: write free_div_group
+	free_div_group(g);
+
 }
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));

@@ -62,6 +62,11 @@ spmat_node** get_private(struct _spmat* mat)
 {
 	return mat->private;
 }
+
+void set_private(struct _spmat* mat, spmat_node** rows){
+	mat->private = rows;
+}
+
 /*
  * helper for add_row_ll
  */
