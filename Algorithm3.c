@@ -1,7 +1,77 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
+#include "Algorithm2.c"
+#include "ModularityMaximization.c"
+
+//TODO: is include file.c ok? or should we do headers?
 //TODO: add checks for all mallocs.
+//adds in start
+void add_groupDivision(struct division* D, struct divisionGroup* g) {
+	struct node* add = (struct node) malloc(sizeof(struct node));
+	if (add == NULL)
+		exit(1); //TODO: print error before exit.
+	add->data.group = g;
+	add->next = NULL;
+	if (D->len == 0)
+		D->divisions = add;
+	else
+		add->next = D->divisions;
+
+	D->len = (D->len) + 1;
+}
+
+/* removes  first group from D and returns it*/
+struct divisionGroup* removeFirstGroup(struct division* D) {
+	struct node* group = D->divisions;
+	struct node* nextGroup = group->next;
+
+	group->next = NULL;
+	D->divisions = nextGroup;
+	D->len = (D->len) - 1;
+
+	return group->data->group;
+}
+
+void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
+		struct division* O) {
+	if (g->groupSize == 1)
+		add_groupDivision(O, g);
+	else
+		add_groupDivision(P, g);
+
+}
+//make sure s freees g
+// if there's a group size = 0, g2 = NULL, g1 = g;
+void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2) {
+	//TODO
+}
+struct division* new_division() {
+	struct division D = (struct division) malloc(sizeof(struct division));
+	if (D == NULL)
+		exit(1); //TODO: print error before exit.
+	D->len = 0;
+	D->divisions = NULL;
+}
+
+
+/*PARAMS : n is number of nodes in graph
+ * DESC : Returns a divisonGroup with all nodes in graph
+ */
+struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
+	int i;
+	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+	if (group == NULL)
+		exit(1); //TODO: print error before exit.
+	group->groupSize = n;
+	group->groupSubmatrix = &(inputGraph->A);
+	group->sumOfRows = (int*) malloc(n * sizeof(int));
+	for (i = 0; i < n; i++) {
+		group->sumOfRows[i] = 0;
+	}
+	return group;
+}
+
 
 struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	struct divisionGroup* g = NULL, g1 = NULL, g2 = NULL;
@@ -30,68 +100,5 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	}
 	return O;
 
-}
-
-void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
-		struct division* O) {
-	if (g->groupSize == 1)
-		add_groupDivision(O, g);
-	else
-		add_groupDivision(P, g);
-
-}
-//make sure s freees g
-// if there's a group size = 0, g2 = NULL, g1 = g;
-void splitByS(int* vectorS, struct divisionGroup* g1, struct divisionGroup* g2) {
-	//TODO
-}
-struct division* new_division() {
-	struct division D = (struct division) malloc(sizeof(struct division));
-	if (D == NULL)
-		exit(1); //TODO: print error before exit.
-	D->len = 0;
-	D->divisions = NULL;
-}
-
-//adds in start
-void add_groupDivision(struct division* D, struct divisionGroup* g) {
-	struct node* add = (struct node) malloc(sizeof(struct node));
-	if (add == NULL)
-		exit(1); //TODO: print error before exit.
-	add->data.group = g;
-	add->next = NULL;
-	if (D->len == 0)
-		D->divisions = add;
-	else
-		add->next = D->divisions;
-
-	D->len = (D->len) + 1;
-}
-
-struct divisionGroup* removeFirstGroup(struct division* D) {
-	struct divisonGroup* group = D->divisions;
-	struct divisonGroup* nextGroup = group->next;
-	group->next = NULL;
-	D->divisions = nextGroup;
-	D->len = (D->len) - 1;
-
-	return group;
-}
-/*PARAMS : n is number of nodes in graph
- * DESC : Returns a divisonGroup with all nodes in graph
- */
-struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
-	int i;
-	struct divisonGroup* group = (struct divisionGroup) malloc(
-			sizeof(struct divisionGroup));
-	if (group == NULL)
-		exit(1); //TODO: print error before exit.
-	group->size = n;
-	group->groupSubmatrix = &(inputGraph->A);
-	group->sumOfRows = (int*) malloc(n * sizeof(int));
-	for (i = 0; i < n; i++) {
-		group->sumOfRows[i] = 0;
-	}
-	return group;
 }
 

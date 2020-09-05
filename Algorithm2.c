@@ -1,6 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
+#include "ModularityMaximization.c"
 
 //TODO: is u1 int? long? double?
 //fill fi?
@@ -13,7 +14,7 @@ void computeS(double* u1, int* s, int n) {
 
 struct shiftedDivisionGroup newShiftedDivsionGroup(struct divisionGroup* g,struct graph* graph)
 {
-	struct shiftedDivisionGroup shiftedG = (struct shiftedDivisionGroup) malloc(sizeof(struct shiftedDivisionGroup));
+	struct shiftedDivisionGroup* shiftedG = (struct shiftedDivisionGroup*) malloc(sizeof(struct shiftedDivisionGroup));
 	shiftedG->group = g;
 	shiftedG->norm = one_norm(graph,g);
 	return shiftedG;
@@ -22,7 +23,7 @@ struct shiftedDivisionGroup newShiftedDivsionGroup(struct divisionGroup* g,struc
 double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* eigenvector,struct graph* graph)
 {
 	double eigenvalue,numerator,denominator,rowLength;
-	struct divisionGroup g = shiftedG->group;
+	struct divisionGroup* g = shiftedG->group;
 	rowLength =g->groupSize;
 
 	double* BShiftedTimesEigenvector = (double*)malloc(rowLength*sizeof(double));
@@ -32,6 +33,7 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 	denominator = dotProduct(eigenvector,eigenvector,rowLength);
 	//todo: check division by zero and add exit
 	eigenvalue = numerator / denominator;
+	eigenvalue -= shiftedG->norm;
 
 	free(BShiftedTimesEigenvector);
 	return eigenvalue;
@@ -45,7 +47,7 @@ void fillVectorWithOnes(int* vector, int length) {
 }
 
 void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
-	double eigenvalue, sumKiSi;
+	double eigenvalue, sumKiSi,rightArgument,AtimesS,leftArgument;
 	double* eigenvector;
 
 	struct shiftedDivisionGroup shiftedG = newShiftedDivsionGroup(g,graph);
@@ -59,8 +61,10 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	} else {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-		if (dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi))
-				<= epsilon) {
+		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi));
+		lmult_ll(g->groupSubmatrix,vectorS, &AtimesS);
+		leftArgument = (vectorS,AtimesS);
+		if (leftArgument+rightArgument<= epsilon) {
 			//g is undivisble so S stays the same - everyone are '1';
 			fillVectorWithOnes(vectorS, g->groupSize);
 		}

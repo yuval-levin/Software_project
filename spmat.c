@@ -59,6 +59,10 @@ void add_row_ll(struct _spmat *A, const double *row, int i){
 	add_row_of_size_n(A, row, i, A->n, 0);
 }
 
+spmat_node* get_private(struct _spmat* mat)
+{
+	return mat->private;
+}
 /*
  * helper for add_row_ll
  */
@@ -120,6 +124,19 @@ void free_ll(struct _spmat *A){
 	free(A);
 }
 
+
+double sumTimesVectorHelper(spmat_node* cur_node,double *v)
+{
+	int index;
+	double sum = 0;
+	while(cur_node != NULL){
+				index = cur_node->index;
+				sum += (cur_node->data) * (v[index]);
+				cur_node = (spmat_node*)cur_node->next;
+			}
+	return sum;
+}
+
 /*
  * mult implementation for linked list
  */
@@ -135,22 +152,11 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 		cur_node = rows[row_ind];
 		
 		/*sum all the relevant multiplications*/
-		sum = sumTimesVectorHelper(cur_node);
+		sum = sumTimesVectorHelper(cur_node,v);
 		result[row_ind] = sum;
 	}
 }
 
-double sumTimesVectorHelper(spmat_node* cur_node,double *v)
-{
-	int index;
-	double sum = 0;
-	while(cur_node != NULL){
-				index = cur_node->index;
-				sum += (cur_node->data) * (v[index]);
-				cur_node = (spmat_node*)cur_node->next;
-			}
-	return sum;
-}
 
 /*
  * creating the matrix one row at a time

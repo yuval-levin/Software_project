@@ -13,7 +13,7 @@ void createB(double* b, int col) {
 
 }
 
-int difference(double * a, double *b, int col, double epsilon) {
+int difference(double * a, double *b, int col) {
 	/*returns 1 if: difference of some coordinate in a and b differ by more than epsilon,
 	 * 0 otherwise
 	 */
@@ -82,27 +82,7 @@ void updateB(double* b, double* newB, double c) {
 
 }
 
-void createAbkVec( int rowLength, double* currentB, double* newB,
-		struct shiftedDivisionGroup* g, struct graph* graph) {
-	int i;
-	double Abk, KjBjDividedByM, KjDivdedByM;
-	int n;
 
-	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
-			&KjDivdedByM); //helper Sums for all rows
-
-	for (i = 0; i < rowLength; i++) {
-
-		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
-		Abk = spmatProductWithVectorb(i, currentB, g,graph, KjBjDividedByM,
-				KjDivdedByM);
-		/*updating vector Abk in current coordinate */
-		*newB = Abk;
-		/*move nextb to next coordinate */
-		newB += 1;
-	}
-
-}
 double spmatProductWithVectorb(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
 		double KjBjDividedByM, double KjDivdedByM) {
@@ -111,7 +91,7 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 			vector[rowIndex];
 	struct divisionGroup group = g->group; //eran: consider making it a const; you know no O3 and stuff...
 
-	struct spmat_node* cur_node = group->groupSubmatrix->private[rowIndex];
+	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
 	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
 
 	rowResult -= ((KjBjDividedByM) * ki);
@@ -155,6 +135,29 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 	*KjBj = sum / (graph->M);
 
 }
+
+void createAbkVec( int rowLength, double* currentB, double* newB,
+		struct shiftedDivisionGroup* g, struct graph* graph) {
+	int i;
+	double Abk, KjBjDividedByM, KjDivdedByM;
+	int n;
+
+	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
+			&KjDivdedByM); //helper Sums for all rows
+
+	for (i = 0; i < rowLength; i++) {
+
+		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
+		Abk = spmatProductWithVectorb(i, currentB, g,graph, KjBjDividedByM,
+				KjDivdedByM);
+		/*updating vector Abk in current coordinate */
+		*newB = Abk;
+		/*move nextb to next coordinate */
+		newB += 1;
+	}
+
+}
+
 double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct graph* graph) {
 	//todo, include epsilon for differnece function
 	/*since row=col in cov matrix, we use only row param*/
