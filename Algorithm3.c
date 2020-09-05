@@ -96,7 +96,7 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 		}
 	}
 
-	/*edit rows and sum_of_rows, remove irrelevent nodes*/
+	/*edit rows and sum_of_rows, remove irrelevant nodes*/
 	//TODO: edit rows and sum_of_rows
 
 	/*update spmats*/
