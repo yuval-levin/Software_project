@@ -84,6 +84,7 @@ void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int gr
 	}
 }
 
+/* splitByS helper, updates group members of target, according to group indicator (+-1)*/
 void update_group_members(int* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
 	int i, i_target;
 	i_target = 0;
@@ -96,6 +97,14 @@ void update_group_members(int* vectorS, int* source_group_members, int* target_g
 	}
 }
 
+/* splitByS helper, updates the group fields*/
+void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat, int* sum_of_rows, int* group_members) {
+	g->groupSize = size;
+	g->groupSubmatrix = mat;
+	g->sumOfRows = sum_of_rows;
+	g->groupMembers = group_members;
+}
+
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
 void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
@@ -103,11 +112,12 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	struct _spmat *g1_mat, *g2_mat;
 	struct spmat_node **g_rows, **g1_rows, **g2_rows;
 	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
-	int *g1_group_members, *g2_group_members;
+	int *g1_group_members, *g2_group_members, *g_group_members;
 
 	n = g->groupSize;
 	g_rows = get_private(g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
+	g_group_members = g->groupMembers;
 
 	/* if there's a group of size 0, g1 = g, g2 = NULL
 	 * in this case, no need to free g*/
@@ -149,21 +159,20 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	}
 
 	/* edit rows and sum_of_rows, remove irrelevant nodes*/
-	update_mat_rows(vectorS, g->groupMembers, g1_size, 1, g_rows, g1_rows, g1_sum_of_rows);
-	update_mat_rows(vectorS, g->groupMembers, g2_size, -1, g_rows, g2_rows, g2_sum_of_rows);
+	update_mat_rows(vectorS, g_group_members, g1_size, 1, g_rows, g1_rows, g1_sum_of_rows);
+	update_mat_rows(vectorS, g_group_members, g2_size, -1, g_rows, g2_rows, g2_sum_of_rows);
 
 	/* update spmats*/
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
 
 	/* update group_members*/
-	update_group_members(vectorS, g->groupMembers, g1_group_members, 1, n);
-	update_group_members(vectorS, g->groupMembers, g2_group_members, -1, n);
+	update_group_members(vectorS, g_group_members, g1_group_members, 1, n);
+	update_group_members(vectorS, g_group_members, g2_group_members, -1, n);
 
 	/* create divisionGroups*/
-	// TODO: write create_division_group
-	create_division_group(g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
-	create_division_group(g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
+	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
+	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 
 	/* free unnecessary memory*/
 	// TODO: write free_div_group
