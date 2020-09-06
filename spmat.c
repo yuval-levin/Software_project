@@ -10,20 +10,12 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
-/*
- * spmat_node structure which implements the linked list.
- * index contains the column index.
- */
-typedef struct spmat_node {
-	int data;
-	int index;
-	struct spmat_node *next;
-} spmat_node;
+#include "spmat.h"
 
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
 
-double sumTimesVectorHelper(struct spmat_node* cur_node,double *v)
+double sumTimesVectorHelper(struct spmat_node* cur_node, double *v)
 {
 	int index;
 	double sum = 0;
