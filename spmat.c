@@ -10,6 +10,15 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
+/*
+ * spmat_node structure which implements the linked list.
+ * index contains the column index.
+ */
+typedef struct spmat_node {
+	int data;
+	int index;
+	struct spmat_node *next;
+} spmat_node;
 
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
@@ -68,47 +77,6 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 	}
 }
 
-
-/*
- * allocating memory for rows.
- * populate the functions with linked list implementation.
- */
-spmat* spmat_allocate_list(int n){
-	spmat* mat;
-	struct spmat_node** rows;
-
-	/*allocating memory*/
-	mat = (spmat*)malloc(sizeof(spmat));
-	assert(mat!= NULL);
-	rows = (struct spmat_node**)malloc(n * sizeof(struct spmat_node*));
-	assert(rows!= NULL);
-
-	/*initializing*/
-	mat->n = n;
-	mat->add_row = &add_row_ll;
-	mat->free = &free_ll;
-	mat->mult = &mult_ll;
-	mat->private = rows;
-
-	return mat;
-}
-
-/*
- * add_row implementation for linked list
- */
-void add_row_ll(struct _spmat *A, const double *row, int i){
-	add_row_of_size_n(A, row, i, A->n, 0);
-}
-
-struct spmat_node** get_private(struct _spmat* mat)
-{
-	return mat->private;
-}
-
-void set_private(struct _spmat* mat, struct spmat_node** rows){
-	mat->private = rows;
-}
-
 /*
  * helper for add_row_ll
  */
@@ -146,6 +114,23 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is
 }
 
 /*
+ * add_row implementation for linked list
+ */
+void add_row_ll(struct _spmat *A, const double *row, int i){
+	add_row_of_size_n(A, row, i, A->n, 0);
+}
+
+struct spmat_node** get_private(struct _spmat* mat)
+{
+	return mat->private;
+}
+
+void set_private(struct _spmat* mat, struct spmat_node** rows){
+	mat->private = rows;
+}
+
+
+/*
  * helper for free_ll, frees the nodes of the given row recursively
  */
 void free_row_ll(struct spmat_node* row){
@@ -168,4 +153,28 @@ void free_ll(struct _spmat *A){
 	}
 	free(A->private);
 	free(A);
+}
+
+/*
+ * allocating memory for rows.
+ * populate the functions with linked list implementation.
+ */
+spmat* spmat_allocate_list(int n){
+	spmat* mat;
+	struct spmat_node** rows;
+
+	/*allocating memory*/
+	mat = (spmat*)malloc(sizeof(spmat));
+	assert(mat!= NULL);
+	rows = (struct spmat_node**)malloc(n * sizeof(struct spmat_node*));
+	assert(rows!= NULL);
+
+	/*initializing*/
+	mat->n = n;
+	mat->add_row = &add_row_ll;
+	mat->free = &free_ll;
+	mat->mult = &mult_ll;
+	mat->private = rows;
+
+	return mat;
 }
