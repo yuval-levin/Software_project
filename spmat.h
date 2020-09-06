@@ -32,7 +32,7 @@ typedef struct _spmat {
 
 /* Allocates a new linked-lists sparse matrix of size n */
 spmat* spmat_allocate_list(int n);
-void mult_ll(const struct _spmat *A, const int *v, int *result);
-void add_row_of_size_n(struct _spmat *A, const int *row, int i, int n, int is_adjacency_mat);
+void mult_ll(const struct _spmat *A, const double *v, double *result);
+void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat);
 
 #endif
