@@ -16,7 +16,7 @@
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
 
-double sumTimesVectorHelper(struct spmat_node* cur_node, double *v)
+double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v)
 {
 	int index;
 	double sum = 0;
@@ -55,7 +55,6 @@ void create_matrix(struct _spmat *A, FILE* input){
  */
 void mult_ll(const struct _spmat *A, const double *v, double *result){
 	int row_ind;
-	int index;
 	double sum;
 	struct spmat_node* cur_node;
 	struct spmat_node** rows = (struct spmat_node** )A->private;
@@ -65,7 +64,7 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 		cur_node = rows[row_ind];
 
 		/*sum all the relevant multiplications*/
-		sum = sumTimesVectorHelper(cur_node,v);
+		sum = sumTimesVectorHelper(cur_node, v);
 		result[row_ind] = sum;
 	}
 }
