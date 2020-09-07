@@ -39,7 +39,7 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 			shiftedG,graph);
 	numerator = dotProduct(BShiftedTimesEigenvector, eigenvector, rowLength);
 	denominator = dotProduct(eigenvector,eigenvector,rowLength);
-	//todo: check division by zero and add exit
+	/*todo: check division by zero and add exit*/
 	eigenvalue = numerator / denominator;
 	eigenvalue -= shiftedG->norm;
 
@@ -62,7 +62,7 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	eigenvalue = computeLeadingEigenvalue(shiftedG,eigenvector,graph);
 
 	if (eigenvalue <= epsilon) {
-		//g is undivisble so S stays the same - everyone are '1';
+		/*g is undivisble so S stays the same - everyone are '1';*/
 		fillVectorWithOnes(vectorS, g->groupSize);
 	}
 	else {
@@ -73,7 +73,7 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 		leftArgument = dotProductInt(vectorS,&AtimesS,g->groupSize);
 		if (leftArgument+rightArgument<= epsilon)
 		{
-			//g is undivisble so S stays the same - everyone are '1';
+			/*g is undivisble so S stays the same - everyone are '1';*/
 			fillVectorWithOnes(vectorS, g->groupSize);
 		}
 	}

@@ -6,13 +6,13 @@
 #include "ModularityMaximization.h"
 #include "<assert.h>"
 
-//TODO: is include file.c ok? or should we do headers?
-//TODO: add checks for all mallocs.
-//adds in start
+/*TODO: is include file.c ok? or should we do headers?*/
+/*TODO: add checks for all mallocs.*/
+/*adds in start*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));
 	if (add == NULL)
-		exit(1); //TODO: print error before exit.
+		exit(1); /*TODO: print error before exit.*/
 	add->data.group = g;
 	add->next = NULL;
 	if (D->len == 0)
@@ -198,7 +198,7 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));
 	if (D == NULL)
-		exit(1); //TODO: print error before exit.
+		exit(1);  /*TODO: print error before exit.*/
 	D->len = 0;
 	D->divisions = NULL;
 	return D;
@@ -231,16 +231,16 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
-	// TODO: calc sum of rows
+	/* TODO: calc sum of rows*/
 
 	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 
 	while (P->len > 0) {
 		g = removeFirstGroup(P);
-		vectorS = (int*) malloc(g->groupSize * sizeof(int)); //vectorS is size of group g.
+		vectorS = (int*) malloc(g->groupSize * sizeof(int)); /*vectorS is size of group g.*/
 		if (vectorS == NULL)
-			exit(1); //TODO: print error before exit.
+			exit(1); /*TODO: print error before exit.*/
 		Algorithm2(vectorS, g,&inputGraph);
 		modularityMaximization(&inputGraph,vectorS, g);
 		splitByS(vectorS, g, g1, g2);
