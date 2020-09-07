@@ -4,7 +4,6 @@
 #include "spmat.h"
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
-#include "<assert.h>"
 
 /*TODO: is include file.c ok? or should we do headers?*/
 /*TODO: add checks for all mallocs.*/
@@ -117,7 +116,7 @@ void free_div_group(struct divisionGroup* g) {
 	free(g->groupMembers);
 
 	/* free submatrix, don't use free_ll, since we don't want to free rows*/
-	free(get_private(g->groupSubmatrix));
+	free(get_private((struct _spmat*)g->groupSubmatrix));
 	free(g->groupSubmatrix);
 	free(g);
 }
@@ -132,7 +131,7 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	int *g1_group_members, *g2_group_members, *g_group_members;
 
 	n = g->groupSize;
-	g_rows = get_private(g->groupSubmatrix);
+	g_rows = get_private((struct _spmat*)g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
 	g_group_members = g->groupMembers;
 
@@ -154,10 +153,15 @@ void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, s
 	assert(g1_sum_of_rows != NULL);							// TODO: error module
 	g2_sum_of_rows = (int*)malloc(g2_size * sizeof(int));
 	assert(g2_sum_of_rows != NULL);							// TODO: error module
-	/*allocate groupMembers*/
+	/* allocate groupMembers*/
 	g1_group_members = (int*)malloc(g1_size * sizeof(int));
 	assert(g1_group_members != NULL);						// TODO: error module
 	g2_group_members = (int*)malloc(g2_size * sizeof(int));
+	assert(g2_group_members != NULL);						// TODO: error module
+	/* allocate rows*/
+	g1_rows = (struct spmat_node**)malloc(g1_size * sizeof(struct spmat_node*));
+	assert(g1_group_members != NULL);						// TODO: error module
+	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
 	assert(g2_group_members != NULL);						// TODO: error module
 
 	/* move rows from g to g1, g2*/
