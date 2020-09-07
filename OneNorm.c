@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "spmat.c"
+#include "spmat.h"
 //TODO make sure include c is fine
 
 double columnSum(struct graph* graph, struct divisionGroup* g, int column) {

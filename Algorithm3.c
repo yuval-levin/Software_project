@@ -4,6 +4,7 @@
 #include "spmat.h"
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
+#include "assert.h"
 
 /*TODO: is include file.c ok? or should we do headers?*/
 /*TODO: add checks for all mallocs.*/

@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "spmat.c"
+#include "spmat.h"
 
 void flipVectorEntry(int* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);

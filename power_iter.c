@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include "modules.h"
 #include <math.h>
-#include "spmat.c"
+#include "spmat.h"
+#include "ModularityMaximization.h"
 
 void createB(double* b, int col) {
 	/*creates a random vector */
@@ -38,23 +39,6 @@ int difference(double * a, double *b, int col) {
 
 }
 
-double dotProduct(double* a, double* b, int col) {
-	/*dot product of vectors a and b
-	 * */
-	int k;
-	double dot;
-	double* vec1;
-	double* vec2;
-	dot = 0;
-	vec1 = a;
-	vec2 = b;
-	for (k = 0; k < col; k++) {
-		dot += ((*vec1) * (*vec2));
-		vec1 += 1;
-		vec2 += 1;
-	}
-	return dot;
-}
 
 double magnitude(double* vec, int col) {
 	/*returns magnitude (norm) of vec with col columns*/
