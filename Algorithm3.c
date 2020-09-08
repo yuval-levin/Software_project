@@ -239,7 +239,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	struct divisionGroup* g;
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
-	int* vectorS;
+	double* vectorS;
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));

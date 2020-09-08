@@ -11,8 +11,7 @@
 double* modularityTimesS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g, double sumKiSi);
 double dotProduct(double* a, double* b, int col);
-void modularityMaximization(struct graph* graph, double* vectorS,
-		struct divisionGroup* g);
+void modularityMaximization(struct graph* graph, double* vectorS,struct divisionGroup* g);
 double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g);
 

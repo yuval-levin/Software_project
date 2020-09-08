@@ -87,7 +87,7 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	double rowResult = 0;
 	double rowSum = 0, ki = graph->vectorDegrees[rowIndex], bi =
 			vector[rowIndex];
-	struct divisionGroup* group = g->group; //eran: consider making it a const; you know no O3 and stuff...
+	struct divisionGroup* group = g->group; /*eran: consider making it a const; you know no O3 and stuff...*/
 
 	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
 	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
