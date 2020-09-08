@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h> /* remove later todo*/
+#include <assert.h>
 #include "modules.h"
 #include "spmat.h"
-
+/* remove assert todo*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;

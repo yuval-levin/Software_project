@@ -36,6 +36,6 @@ void mult_ll(const struct _spmat *A, const double *v, double *result);
 void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat);
 struct spmat_node** get_private(struct _spmat* mat);
 void set_private(struct _spmat* mat, struct spmat_node** rows);
-struct spmat_node** get_private(struct _spmat* mat);
+
 
 #endif

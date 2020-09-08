@@ -72,7 +72,7 @@ double* secondArgumentInCalc(struct graph* graph,
 
 }
 
-double* modularityTimesS(struct graph* graph, int* vectorS,
+double* modularityTimesS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double* KiDividedByMPlusSum;
@@ -169,7 +169,7 @@ double dotProductInt(int* a, double* b, int col) {
 }
 
 
-//*ODO: is DeltaModularity double int long?*/
+/*ODO: is DeltaModularity double int long?*/
 void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
@@ -193,16 +193,16 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
 			if (i == 0)
-				Q0 = dotProductInt(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi),g->groupSize);
+				Q0 = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi),g->groupSize);
 			else
 				Q0 = Q0
-						+ calculateChangeModularity(graph, g, sumKiSi,
+						+ calculateChangeModularity(graph, vectorS, sumKiSi,
 								Q0, indexOfBiggestIncrease);
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
 			while (currentNode != NULL) {
 				flipVectorEntry(vectorS, currentNode->data.num);
-				Q1 = calculateChangeModularity(graph, g, sumKiSi, Q0,
+				Q1 = calculateChangeModularity(graph, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
 
 				if (switchFirstUnmovedIteration == 1

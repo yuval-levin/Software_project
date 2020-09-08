@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include <stdlib.h>
-#include "modules.h"
 #include <math.h>
+#include "modules.h"
 #include "spmat.h"
 #include "ModularityMaximization.h"
 
