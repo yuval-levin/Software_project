@@ -8,11 +8,9 @@
 #ifndef MODULARITYMAXIMIZATION_H_
 #define MODULARITYMAXIMIZATION_H_
 
-double* modularityTimesS(struct graph* graph, double* vectorS,
-		struct divisionGroup* g, double sumKiSi);
+double* modularityTimesS(struct graph* graph, double* vectorS,struct divisionGroup* g, double sumKiSi);
 double dotProduct(double* a, double* b, int col);
 void modularityMaximization(struct graph* graph, double* vectorS,struct divisionGroup* g);
-double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
-		struct divisionGroup* g);
+double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,struct divisionGroup* g);
 
 #endif /* MODULARITYMAXIMIZATION_H_ */
