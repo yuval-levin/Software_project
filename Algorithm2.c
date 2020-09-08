@@ -5,6 +5,7 @@
 #include "OneNorm.h"
 #include "power_iter.h"
 #include "spmat.h"
+#include "Algorithm3.h"
 
 
 void computeS(double* u1, double* s, int n)
@@ -77,8 +78,6 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	}
 
 	free(shiftedG);
-
-	/*TODO: step 5. Yuval's*/
 }
 
 
