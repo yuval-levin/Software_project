@@ -9,7 +9,7 @@ void flipVectorEntry(int* vector, int entry) {
 
 /* we wish for S be in the same state it was when we reached maxImproved Score.
  * so we reverse everything that came after it*/
-void updateS(int* vectorS, int* indiceVector, int maxImprovedIndex, int length) {
+void updateS(double* vectorS, int* indiceVector, int maxImprovedIndex, int length) {
 	int i;
 	for (i = maxImprovedIndex + 1; i < length; i++) {
 		flipVectorEntry(vectorS, indiceVector[i]);
@@ -170,7 +170,7 @@ double dotProductInt(int* a, double* b, int col) {
 
 
 //TODO: is DeltaModularity double int long?
-void modularityMaximization(struct graph* graph, int* vectorS,
+void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
 	double modularityChange, Q0, Q1, maxModularityChange, maxImprovedIndex = 0,
