@@ -15,6 +15,7 @@
 
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
+void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat);
 
 double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v)
 {
@@ -151,8 +152,8 @@ void free_ll(struct _spmat *A){
  * allocating memory for rows.
  * populate the functions with linked list implementation.
  */
-spmat* spmat_allocate_list(int n){
-	spmat* mat;
+struct _spmat* spmat_allocate_list(int n){
+	struct _spmat* mat;
 	struct spmat_node** rows;
 
 	/*allocating memory*/
