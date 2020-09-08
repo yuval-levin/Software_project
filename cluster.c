@@ -20,9 +20,13 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 }
 
 void create_graph(FILE* input, struct graph* new_graph) {
-	struct spmat* A;
+	struct _spmat* A;
 	long* vector_degrees;
-	int i, k, n, cur_deg, deg_sum;
+	int i;
+	int k;
+	int n;
+	int cur_deg;
+	int deg_sum;
 
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);

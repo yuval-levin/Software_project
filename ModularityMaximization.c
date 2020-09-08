@@ -153,7 +153,7 @@ double dotProduct(double* a, double* b, int col) {
 double dotProductInt(int* a, double* b, int col) {
 	/*dot product of vectors a and b*/
 	int k;
-	double* vec1;
+	int* vec1;
 	double* vec2;
 	double dot = 0;
 	vec1 = a;

@@ -7,7 +7,7 @@
 #include "spmat.h"
 
 
-void computeS(double* u1, int* s, int n)
+void computeS(double* u1, double* s, int n)
 {
 	int i;
 	for (i = 0; i < n; i++)
@@ -45,12 +45,12 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 	return eigenvalue;
 }
 
-void fillVectorWithOnes(int* vector, int length) {
+void fillVectorWithOnes(double* vector, int length) {
 	int i;
 	for (i = 0; i < length; i++) vector[i] = 1;
 }
 
-void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
+void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	double eigenvalue, sumKiSi,rightArgument,AtimesS,leftArgument;
 	double* eigenvector;
 
@@ -66,9 +66,9 @@ void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph) {
 	else {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-		rightArgument = dotProductInt(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi), g->groupSize);
+		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi), g->groupSize);
 		mult_ll(g->groupSubmatrix,vectorS, &AtimesS);
-		leftArgument = dotProductInt(vectorS,&AtimesS,g->groupSize);
+		leftArgument = dotProduct(vectorS,&AtimesS,g->groupSize);
 		if (leftArgument+rightArgument<= epsilon)
 		{
 			/*g is undivisble so S stays the same - everyone are '1';*/

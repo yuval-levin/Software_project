@@ -125,8 +125,14 @@ void free_div_group(struct divisionGroup* g) {
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
 void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
-	int i, n, g1_size, g2_size, i1, i2;
-	struct _spmat *g1_mat, *g2_mat;
+	int i;
+	int n;
+	int g1_size;
+	int g2_size;
+	int i1;
+	int i2;
+	struct _spmat *g1_mat;
+	struct _spmat *g2_mat;
 	struct spmat_node **g_rows, **g1_rows, **g2_rows;
 	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
 	int *g1_group_members, *g2_group_members, *g_group_members;
@@ -243,7 +249,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 
 	while (P->len > 0) {
 		g = removeFirstGroup(P);
-		vectorS = (int*) malloc(g->groupSize * sizeof(int)); /*vectorS is size of group g.*/
+		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL)
 			exit(1); /*TODO: print error before exit.*/
 		Algorithm2(vectorS, g,&inputGraph);

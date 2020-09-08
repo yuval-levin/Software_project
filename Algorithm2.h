@@ -8,6 +8,6 @@
 #ifndef ALGORITHM2_H_
 #define ALGORITHM2_H_
 
-void Algorithm2(int* vectorS, struct divisionGroup* g, struct graph* graph);
+void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph);
 
 #endif /* ALGORITHM2_H_ */
