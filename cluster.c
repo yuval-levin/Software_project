@@ -5,7 +5,7 @@
 #include <assert.h> /* remove later todo*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
-	int* row;
+	double* row;
 	int k, j, cur;
 
 	row = (double*)malloc(n * sizeof(double));

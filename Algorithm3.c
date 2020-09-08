@@ -92,7 +92,7 @@ void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int
 }
 
 /* splitByS helper, updates group members of target, according to group indicator (+-1)*/
-void update_group_members(int* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
+void update_group_members(double* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
 	int i, i_target;
 	i_target = 0;
 
@@ -125,7 +125,7 @@ void free_div_group(struct divisionGroup* g) {
 
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
-void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
+void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
 	int i;
 	int n;
 	int g1_size;

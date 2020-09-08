@@ -38,7 +38,7 @@ void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 	free(removedNode);
 }
 double calculateChangeModularity(struct graph* graph, double* vectorS,
-		struct divisionGroup* g, double sumKiSi, double prevModularity,
+	 double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
 	int degree = graph->vectorDegrees[changedIndex], vectorSChangedIndex =
@@ -50,8 +50,8 @@ double calculateChangeModularity(struct graph* graph, double* vectorS,
 	return result;
 }
 
-//TODO: add explanation.
-double* secondArgumentInCalc(struct graph* graph, int* vectorS,
+/*TODO: add explanation.*/
+double* secondArgumentInCalc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double M = graph->M;
@@ -60,9 +60,9 @@ double* secondArgumentInCalc(struct graph* graph, int* vectorS,
 			g->groupSize * sizeof(double));
 
 	if (KiDividedByMPlusSum == NULL)
-		exit(1); //TODO: print error before exit.
+		exit(1); /*TODO: print error before exit.*/
 
-	//two iterations are a must, cause we need to find sum first..
+	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
 		KiDividedByMPlusSum[i] = (graph->vectorDegrees[current->index] / M)
 				* sumKiSi;
