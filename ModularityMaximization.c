@@ -55,8 +55,10 @@ double* secondArgumentInCalc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double M = graph->M;
-	struct spmat_node* current = get_private(g->groupSubmatrix)[0];
-	double* KiDividedByMPlusSum = (double*) malloc(
+	spmat_node* current;
+	double* KiDividedByMPlusSum;
+	 current = get_private(g->groupSubmatrix)[0];
+	KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 
 	if (KiDividedByMPlusSum == NULL)
@@ -79,7 +81,7 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 	double* resVec = (double*) malloc(g->groupSize * sizeof(double));
 	if (resVec == NULL)
 		exit(1); /*TODO: print error before exit.*/
-	KiDividedByMPlusSum= secondArgumentInCalc(graph, vectorS, g,
+	KiDividedByMPlusSum= secondArgumentInCalc(graph, g,
 			sumKiSi);
 
 	for (i = 0; i < g->groupSize; i++) {
