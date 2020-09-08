@@ -45,7 +45,7 @@ void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 }
 
 /* splitByS helper, returns the size of g1*/
-int calc_size (int* vectorS, int n) {
+int calc_size (double* vectorS, int n) {
 	int i, size;
 	size = 0;
 

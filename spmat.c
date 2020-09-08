@@ -11,7 +11,7 @@
 #include <math.h>
 #include <string.h>
 #include <assert.h>
-#include "spmat.h"
+
 
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);

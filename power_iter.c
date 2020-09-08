@@ -153,7 +153,7 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	covRow = (double*) malloc(rowLength * sizeof(double));
 	/*TODO: add exit*/
 	nextb = (double*) malloc(rowLength * sizeof(double));
-	//TODO: add exit
+	/*TODO: add exit*/
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
