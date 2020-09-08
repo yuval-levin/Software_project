@@ -57,7 +57,7 @@ double* secondArgumentInCalc(struct graph* graph,
 	double M = graph->M;
 	spmat_node* current;
 	double* KiDividedByMPlusSum;
-	 current = get_private(g->groupSubmatrix)[0];
+	current = get_private((struct _spmat*) g->groupSubmatrix)[0];
 	KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 
