@@ -3,7 +3,7 @@
 #include "modules.h"
 #include "spmat.h"
 
-void flipVectorEntry(int* vector, int entry) {
+void flipVectorEntry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
 
@@ -37,7 +37,7 @@ void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 
 	free(removedNode);
 }
-double calculateChangeModularity(struct graph* graph, int* vectorS,
+double calculateChangeModularity(struct graph* graph, double* vectorS,
 		struct divisionGroup* g, double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
@@ -93,7 +93,7 @@ double* modularityTimesS(struct graph* graph, int* vectorS,
 
 
 //calculate kisi
-double sumOfDegreeByVectorS(struct graph* graph, int* vectorS,
+double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 	double sum = 0;
 	int i;

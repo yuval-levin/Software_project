@@ -90,7 +90,7 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	struct divisionGroup* group = g->group; /*eran: consider making it a const; you know no O3 and stuff...*/
 
 	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
-	rowResult += sumHelper(cur_node, vector, &rowSum); //A times b
+	rowResult += sumHelper(cur_node, vector, &rowSum); /*A times b*/
 
 	rowResult -= ((KjBjDividedByM) * ki);
 	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
@@ -118,13 +118,12 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 
 }
 
-void createAbkVec( int rowLength, double* currentB, double* newB,
-		struct shiftedDivisionGroup* g, struct graph* graph) {
+void createAbkVec( int rowLength, double* currentB, double* newB,struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
 
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
-			&KjDivdedByM); //helper Sums for all rows
+			&KjDivdedByM); /*helper Sums for all rows*/
 
 	for (i = 0; i < rowLength; i++) {
 
@@ -140,7 +139,7 @@ void createAbkVec( int rowLength, double* currentB, double* newB,
 }
 
 double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct graph* graph) {
-	//todo, include epsilon for differnece function
+	/*todo, include epsilon for differnece function*/
 	/*since row=col in cov matrix, we use only row param*/
 	double* b;
 	double* nextb;
@@ -149,10 +148,10 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	int dif;
 
 	b = (double*) malloc(rowLength * sizeof(double));
-	//TODO: add exit
+	/*TODO: add exit*/
 	createB(b, rowLength);
 	covRow = (double*) malloc(rowLength * sizeof(double));
-	//TODO: add exit
+	/*TODO: add exit*/
 	nextb = (double*) malloc(rowLength * sizeof(double));
 	//TODO: add exit
 	/*saving its' original start pointer*/
