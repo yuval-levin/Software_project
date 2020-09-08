@@ -31,9 +31,10 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 {
 	double eigenvalue,numerator,denominator,rowLength;
 	struct divisionGroup* g = shiftedG->group;
+	double* BShiftedTimesEigenvector;
 	rowLength =g->groupSize;
 
-	double* BShiftedTimesEigenvector = (double*)malloc(rowLength*sizeof(double));
+	BShiftedTimesEigenvector = (double*)malloc(rowLength*sizeof(double));
 	createAbkVec(rowLength, eigenvector, BShiftedTimesEigenvector,
 			shiftedG,graph);
 	numerator = dotProduct(BShiftedTimesEigenvector, eigenvector, rowLength);

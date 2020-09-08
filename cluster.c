@@ -27,7 +27,6 @@ void create_graph(FILE* input, struct graph* new_graph) {
 	int n;
 	int cur_deg;
 	int deg_sum;
-
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);
 	assert(k==1); 					/* TODO: error module*/
@@ -55,11 +54,13 @@ void create_graph(FILE* input, struct graph* new_graph) {
 int main(int args, char** argv) {
 	struct graph* new_graph;
 	FILE* input;
-
+	if(args != 2) exit(1); /* todo error module*/
 	new_graph = (struct graph*)malloc(sizeof(struct graph));
 	assert(new_graph!=NULL);		/* TODO: error module*/
 
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			/* TODO: error module*/
 	create_graph(input, new_graph);
+
+	return 1; /*todo: check ok */
 }

@@ -27,7 +27,7 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score) 
 void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 	struct node* removedNode;
 	if (prevOfBiggest == NULL)
-		removedNode = unmoved, unmoved = unmoved->next; //todo: make sure this works
+		removedNode = unmoved, unmoved = unmoved->next; /*todo: make sure this works*/
 	else
 	{
 		removedNode = prevOfBiggest->next ;
@@ -75,10 +75,11 @@ double* secondArgumentInCalc(struct graph* graph, int* vectorS,
 double* modularityTimesS(struct graph* graph, int* vectorS,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
+	double* KiDividedByMPlusSum;
 	double* resVec = (double*) malloc(g->groupSize * sizeof(double));
 	if (resVec == NULL)
 		exit(1); //TODO: print error before exit.
-	double* KiDividedByMPlusSum = secondArgumentInCalc(graph, vectorS, g,
+	KiDividedByMPlusSum= secondArgumentInCalc(graph, vectorS, g,
 			sumKiSi);
 
 	for (i = 0; i < g->groupSize; i++) {

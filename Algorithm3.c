@@ -157,19 +157,19 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	g2_mat = spmat_allocate_list(g2_size);
 	/* allocate sumOfRows*/
 	g1_sum_of_rows = (int*)malloc(g1_size * sizeof(int));
-	assert(g1_sum_of_rows != NULL);							// TODO: error module
+	assert(g1_sum_of_rows != NULL);							/* TODO: error module*/
 	g2_sum_of_rows = (int*)malloc(g2_size * sizeof(int));
-	assert(g2_sum_of_rows != NULL);							// TODO: error module
+	assert(g2_sum_of_rows != NULL);							/* TODO: error module*/
 	/* allocate groupMembers*/
 	g1_group_members = (int*)malloc(g1_size * sizeof(int));
-	assert(g1_group_members != NULL);						// TODO: error module
+	assert(g1_group_members != NULL);						/* TODO: error module*/
 	g2_group_members = (int*)malloc(g2_size * sizeof(int));
-	assert(g2_group_members != NULL);						// TODO: error module
+	assert(g2_group_members != NULL);						/* TODO: error module*/
 	/* allocate rows*/
 	g1_rows = (struct spmat_node**)malloc(g1_size * sizeof(struct spmat_node*));
-	assert(g1_group_members != NULL);						// TODO: error module
+	assert(g1_group_members != NULL);						/* TODO: error module*/
 	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
-	assert(g2_group_members != NULL);						// TODO: error module
+	assert(g2_group_members != NULL);						/* TODO: error module*/
 
 	/* move rows from g to g1, g2*/
 	i1 = 0;
@@ -223,7 +223,7 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
 	int i;
 	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	if (group == NULL)
-		exit(1); //TODO: print error before exit.
+		exit(1); /* TODO: error module*/
 	group->groupSize = n;
 	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));

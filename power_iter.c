@@ -67,8 +67,8 @@ void updateB(double* b, double* newB, double c) {
 
 }
 
-//helper function calculates row (given by cur_node) sum , and row times vector v;
-// it does two things to prevent iterating the same row twice.
+/*helper function calculates row (given by cur_node) sum , and row times vector v;
+/ it does two things to prevent iterating the same row twice.*/
 double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
 	int index;
 	double sum = 0;
