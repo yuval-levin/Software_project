@@ -5,10 +5,10 @@
 #include <assert.h> /* remove later todo*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
-	double* row;
+	int* row;
 	int k, j, cur;
 
-	row = (double*)malloc(n * sizeof(double));
+	row = (int*)malloc(n * sizeof(int));
 	assert(row!=NULL);				/* TODO: error module*/
 
 	for (j = 0; j < n; j++) {

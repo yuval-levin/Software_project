@@ -45,7 +45,7 @@ void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 }
 
 /* splitByS helper, returns the size of g1*/
-int calc_size (double* vectorS, int n) {
+int calc_size (int* vectorS, int n) {
 	int i, size;
 	size = 0;
 
@@ -59,7 +59,11 @@ int calc_size (double* vectorS, int n) {
 
 /* splitByS helper, updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
+<<<<<<< HEAD
 void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
+=======
+void update_mat_rows(int* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** g_rows, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
+>>>>>>> parent of c130747... clean build
 	int i_row, i_group_members;
 	struct spmat_node *cur, *prev, *next;
 	prev = NULL;
@@ -91,7 +95,7 @@ void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int
 }
 
 /* splitByS helper, updates group members of target, according to group indicator (+-1)*/
-void update_group_members(double* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
+void update_group_members(int* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
 	int i, i_target;
 	i_target = 0;
 
@@ -124,7 +128,7 @@ void free_div_group(struct divisionGroup* g) {
 
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
-void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
+void splitByS(int* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
 	int i;
 	int n;
 	int g1_size;
@@ -238,7 +242,7 @@ struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
 	struct divisionGroup* g;
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
-	double* vectorS;
+	int* vectorS;
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
