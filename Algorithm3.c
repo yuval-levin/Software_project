@@ -220,11 +220,13 @@ struct division* new_division() {
 /* PARAMS : n is number of nodes in graph
  * DESC : Returns a divisonGroup with all nodes in graph
  */
-struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
+struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	int i;
+	int n;
 	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	if (group == NULL)
 		exit(1); /* TODO: error module*/
+	n = inputGraph -> numOfNodes;
 	group->groupSize = n;
 	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
@@ -235,27 +237,29 @@ struct divisionGroup* createTrivialDivision(int n, struct graph* inputGraph) {
 }
 
 
-struct division* Algorithm3(int numOfNodes, struct graph inputGraph) {
+struct division* Algorithm3(struct graph* inputGraph) {
 	struct divisionGroup* g;
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
 	double* vectorS;
 	struct division* P = new_division();
 	struct division* O = new_division();
-	add_groupDivision(P, createTrivialDivision(numOfNodes, &inputGraph));
+	add_groupDivision(P, createTrivialDivision( inputGraph));
 	/* TODO: calc sum of rows*/
 
 	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-
 	while (P->len > 0) {
 		g = removeFirstGroup(P);
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL)
 			exit(1); /*TODO: print error before exit.*/
-		Algorithm2(vectorS, g,&inputGraph);
-		modularityMaximization(&inputGraph,vectorS, g);
+		Algorithm2(vectorS, g,inputGraph);
+		printf("%s", "d\n");
+		modularityMaximization(inputGraph,vectorS, g);
+		printf("%s", "e\n");
 		splitByS(vectorS, g, g1, g2);
+		printf("%s", "f\n");
 
 		if (g2 == NULL)
 			add_groupDivision(O, g1);

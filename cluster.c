@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "modules.h"
 #include "spmat.h"
+#include "Algorithm3.h"
 
 /* remove assert todo*/
 
@@ -50,19 +51,21 @@ void create_graph(FILE* input, struct graph* new_graph) {
 	new_graph->A = A;
 	new_graph->vectorDegrees = vector_degrees;
 	new_graph->M = deg_sum;
+	new_graph->numOfNodes = n;
 }
 
 
 int main(int args, char** argv) {
-	struct graph* new_graph;
+	struct graph* inputGraph;
 	FILE* input;
 	if(args != 2) exit(1); /* todo error module*/
-	new_graph = (struct graph*)malloc(sizeof(struct graph));
-	assert(new_graph!=NULL);		/* TODO: error module*/
-
+	inputGraph = (struct graph*)malloc(sizeof(struct graph));
+	assert(inputGraph!=NULL);		/* TODO: error module*/
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			/* TODO: error module*/
-	create_graph(input, new_graph);
+	create_graph(input, inputGraph);
+	Algorithm3(inputGraph);
 
+	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
 }

@@ -8,6 +8,6 @@
 #ifndef ALGORITHM3_H_
 #define ALGORITHM3_H_
 
-struct division* Algorithm3(int numOfNodes, struct graph inputGraph);
+struct division* Algorithm3(struct graph* inputGraph);
 
 #endif /* ALGORITHM3_H_ */

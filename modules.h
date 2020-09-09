@@ -9,6 +9,7 @@ struct graph
   struct _spmat* A;
   long* vectorDegrees;
   long M;
+  int numOfNodes;
 };
 
 /* @CR the comment is a bit non-informative. Either you recognize the need for previous knowledge

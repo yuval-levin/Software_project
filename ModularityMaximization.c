@@ -99,11 +99,10 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 	double sum = 0;
 	int i;
-	struct spmat_node* current = get_private(g->groupSubmatrix)[0];
-	for (i = 0; i < g->groupSize; i++) {
+	struct spmat_node** rows = get_private(g->groupSubmatrix);
+	for (i = 0; i < g->groupSize; i++) { /*we don't know how many are really in group, since it sparse. so we use while */
 		/*vectorDegrees is size Of number of nodes in the original A matrix*/
-		sum = sum + (vectorS[i] * graph->vectorDegrees[current->index]); /*vectorS is size of g, we use i*/
-		current = current->next;
+		sum = sum + (vectorS[i] * graph->vectorDegrees[rows[i]->index]); /*vectorS is size of g, we use i*/
 	}
 	return sum;
 }
