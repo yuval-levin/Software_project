@@ -53,9 +53,12 @@ void fillVectorWithOnes(double* vector, int length) {
 }
 
 void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
-	double eigenvalue, sumKiSi,rightArgument,AtimesS,leftArgument;
+	double eigenvalue, sumKiSi,rightArgument,leftArgument;
 	double* eigenvector;
+	double* AtimesS;
 	struct shiftedDivisionGroup* shiftedG;
+
+	AtimesS = (double*) malloc(g->groupSize*(sizeof(double)));
 	shiftedG = newShiftedDivsionGroup(g,graph);
 	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG,eigenvector,graph);
@@ -67,8 +70,8 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
 		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi), g->groupSize);
-		mult_ll(g->groupSubmatrix,vectorS, &AtimesS);
-		leftArgument = dotProduct(vectorS,&AtimesS,g->groupSize);;
+		mult_ll(g->groupSubmatrix,vectorS, AtimesS);
+		leftArgument = dotProduct(vectorS,AtimesS,g->groupSize);;
 		if (leftArgument+rightArgument <= epsilon)
 		{
 			/*g is undivisble so S stays the same - everyone are '1';*/

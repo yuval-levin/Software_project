@@ -20,10 +20,12 @@ double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v)
 {
 	int index;
 	double sum = 0;
-	while(cur_node != NULL){
-				index = cur_node->index;
-				sum += (cur_node->data) * (v[index]);
-				cur_node = (struct spmat_node*)cur_node->next;
+	struct spmat_node* cur ;
+	cur = cur_node;
+	while(cur != NULL){
+				index = cur->index;
+				sum += (cur->data) * (v[index]);
+				cur = (struct spmat_node*)cur->next;
 			}
 	return sum;
 }
