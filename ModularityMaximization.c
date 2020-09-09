@@ -55,9 +55,10 @@ double* secondArgumentInCalc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double M = graph->M;
-	spmat_node* current;
+	spmat_node** rows;
 	double* KiDividedByMPlusSum;
-	current = get_private((struct _spmat*) g->groupSubmatrix)[0];
+
+	rows = get_private((struct _spmat*) g->groupSubmatrix);
 	KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 
@@ -66,9 +67,8 @@ double* secondArgumentInCalc(struct graph* graph,
 
 	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
-		KiDividedByMPlusSum[i] = (graph->vectorDegrees[current->index] / M)
+		KiDividedByMPlusSum[i] = (graph->vectorDegrees[rows[i]->index] / M)
 				* sumKiSi;
-		current = current->next;
 	}
 	return KiDividedByMPlusSum;
 
@@ -89,7 +89,6 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 	}
 
 	free(KiDividedByMPlusSum);
-
 	return resVec;
 }
 
@@ -143,7 +142,6 @@ double dotProduct(double* a, double* b, int col) {
 	double dot = 0;
 	vec1 = a;
 	vec2 = b;
-
 	for (k = 0; k < col; k++) {
 		dot += ((*vec1) * (*vec2));
 		vec1 += 1;
