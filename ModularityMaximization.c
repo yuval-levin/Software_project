@@ -24,32 +24,36 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score) 
 		improvedVector[entryIndex] = improvedVector[entryIndex - 1] + score;
 }
 
-void removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
+struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 	struct node* removedNode;
 	if (prevOfBiggest == NULL)
 	{
 		removedNode = unmoved;
-		printf("%s", "issue HERE \n");
 		unmoved = unmoved->next; /*todo: does this actually change unmoved? */
+		free(removedNode);
+		return unmoved;
 	}
 
 	else
 	{
-		printf("%s", "or HERE \n");
 		removedNode = prevOfBiggest->next ;
-		printf("%s", "or HERE \n");
 		prevOfBiggest->next= prevOfBiggest->next->next;
+		free(removedNode);
+		return unmoved;
 	}
 
 
-	free(removedNode);
+
 }
-double calculateChangeModularity(struct graph* graph, double* vectorS,
+double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, double* vectorS,
 	 double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
-	int degree = graph->vectorDegrees[changedIndex], vectorSChangedIndex =
-			vectorS[changedIndex];
+	int nodeNum = get_private(g->groupSubmatrix)[changedIndex]->index;
+	int degree = graph->vectorDegrees[nodeNum];
+	int vectorSChangedIndex;
+
+	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
 			- 4 * vectorSChangedIndex * (degree / graph->M)
 					* (sumKiSi - (degree * vectorSChangedIndex));
@@ -193,30 +197,32 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	do {
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
-		printf("%s", "B\n");
+
 		for (i = 0; i < g->groupSize; i++) {
+
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-			printf("%s", "C\n");
 			if (i == 0)
 				Q0 = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi),g->groupSize);
 			else
 				Q0 = Q0
-						+ calculateChangeModularity(graph, vectorS, sumKiSi,
+
+						+ calculateChangeModularity(graph, g,vectorS, sumKiSi,
 								Q0, indexOfBiggestIncrease);
+			switchFirstUnmovedIteration = 1; /*indicator we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
 			while (currentNode != NULL) {
 				flipVectorEntry(vectorS, currentNode->data.num);
-				printf("%s", "D \n");
-				Q1 = calculateChangeModularity(graph, vectorS, sumKiSi, Q0,
+				Q1 = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
 
+				printf("%f",Q1);
 				if (switchFirstUnmovedIteration == 1
 						|| Q1 > maxModularityChange) {
-					printf("%s", "F \n");
-					maxModularityChange = Q1, indexOfBiggestIncrease = i;
+					maxModularityChange = Q1;
+					indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
 					maxImproveScore = maxModularityChange;
 					prevOfBiggest = prev;
 					switchFirstUnmovedIteration = 0;
@@ -229,25 +235,25 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 
 			/*moving vertex with maximal increase in modularity*/
 			flipVectorEntry(vectorS, indexOfBiggestIncrease);
-			printf("%s", "H \n");
-			removeFromUnmoved(prevOfBiggest, unmoved);
-			printf("%s", "ACDJD \n");
+			unmoved = removeFromUnmoved(prevOfBiggest, unmoved);
 			/*updating vector of indice to save the index we now moved:*/
 			indiceVector[i] = indexOfBiggestIncrease;
 			/*updating the current 'state score'*/
 			updateImprovedVector(improvedVector, i, maxModularityChange); /*incrementing scores*/
-			printf("%s", "M \n");
 			if (improvedVector[i] > maxImproveScore)
-				maxImproveScore = improvedVector[i], maxImprovedIndex = i;
-			switchFirstUnmovedIteration = 1;
+			{
+				maxImproveScore = improvedVector[i];
+				maxImprovedIndex = i;
+			}
 
 		}
-		printf("%s", "M TREE\n");
 		modularityChange = maxImproveScore;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
+		/*printf("%f",modularityChange);
+		printf("%s","x");*/
 
 	} while (modularityChange > epsilon);
-
+	printf("%s","done");
 	free(improvedVector);
 	free(indiceVector);
 	free(unmoved);
