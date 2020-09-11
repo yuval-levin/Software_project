@@ -74,15 +74,18 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	double* currentAS ;
 	int nodeNum, degree, vectorSChangedIndex, size;
 
-	prevAS = (double*)malloc(g->groupSize*sizeof(double));
-	currentAS = (double*)malloc(g->groupSize*sizeof(double));
+	size = g->groupSize;
+
+	prevAS = (double*)malloc(size*sizeof(double));
+	currentAS = (double*)malloc(size*sizeof(double));
 	mult_ll(g->groupSubmatrix,vectorS,prevAS);
-	previousSAS = dotProduct(vectorS,prevAS,g->groupSize);
+	previousSAS = dotProduct(vectorS,prevAS,size);
 	mult_ll(g->groupSubmatrix,vectorS,currentAS);
-	currentSAS = dotProduct(vectorS,currentAS,g->groupSize);
+	currentSAS = dotProduct(vectorS,currentAS,size);
 	free(prevAS);
 	free(currentAS);
-	size = g->groupSize; 						/*TODO: delete*/
+
+						/*TODO: delete*/
 	printf("changedIndex: %d\n", changedIndex);	/*TODO: delete*/
 	printf("groupSize: %d\n", size);			/*TODO: delete*/
 	nodeNum = g->groupMembers[changedIndex];
