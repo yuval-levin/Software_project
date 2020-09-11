@@ -72,7 +72,8 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	double currentSAS;
 	double* prevAS;
 	double* currentAS ;
-	int nodeNum, degree, vectorSChangedIndex, size;
+	int size;
+	int nodeNum, degree, vectorSChangedIndex;
 
 	size = g->groupSize;
 
@@ -85,15 +86,12 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	free(prevAS);
 	free(currentAS);
 
-						/*TODO: delete*/
-	printf("changedIndex: %d\n", changedIndex);	/*TODO: delete*/
-	printf("groupSize: %d\n", size);			/*TODO: delete*/
 	nodeNum = g->groupMembers[changedIndex];
 	degree = graph->vectorDegrees[nodeNum];
 
 	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
-			+ 4 * vectorSChangedIndex * (degree / graph->M)
+			- 4 * vectorSChangedIndex * (degree / graph->M)
 					* (sumKiSi - (degree * vectorSChangedIndex));
 	result = result + (currentSAS-previousSAS);
 	return result;
@@ -104,10 +102,8 @@ double* secondArgumentInCalc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double M = graph->M;
-	spmat_node** rows;
 	double* KiDividedByMPlusSum;
 
-	rows = get_private((struct _spmat*) g->groupSubmatrix);
 	KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 
@@ -116,7 +112,7 @@ double* secondArgumentInCalc(struct graph* graph,
 
 	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
-		KiDividedByMPlusSum[i] = (graph->vectorDegrees[rows[i]->index] / M)
+		KiDividedByMPlusSum[i] = (graph->vectorDegrees[g->groupMembers[i]] / M)
 				* sumKiSi;
 	}
 	return KiDividedByMPlusSum;
@@ -147,10 +143,9 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 	double sum = 0;
 	int i;
-	struct spmat_node** rows = get_private(g->groupSubmatrix);
 	for (i = 0; i < g->groupSize; i++) { /*we don't know how many are really in group, since it sparse. so we use while */
 		/*vectorDegrees is size Of number of nodes in the original A matrix*/
-		sum = sum + (vectorS[i] * graph->vectorDegrees[rows[i]->index]); /*vectorS is size of g, we use i*/
+		sum = sum + (vectorS[i] * graph->vectorDegrees[g->groupMembers[i]]); /*vectorS is size of g, we use i*/
 	}
 	return sum;
 }
