@@ -44,22 +44,20 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score) 
 }
 
 struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
-	struct node* removedNode;
+	/*struct node* removedNode;*/
 	if (prevOfBiggest == NULL)
 	{
-		removedNode = unmoved;
+		/*removedNode = unmoved;*/
 		unmoved = unmoved->next; /*todo: does this actually change unmoved? */
-		free(removedNode);
+		/*free(removedNode);  FREE CAUSED MAJOR Bug, handle free of list todo*/
 		return unmoved;
 	}
-
-	else
-	{
-		removedNode = prevOfBiggest->next ;
+	/*else*/
+	/*removedNode = prevOfBiggest->next ;*/
 		prevOfBiggest->next= prevOfBiggest->next->next;
-		free(removedNode);
+		/*free(removedNode); FREE CAUSED MAJOR Bug, handle free of list todo*/
 		return unmoved;
-	}
+
 
 
 
@@ -161,6 +159,7 @@ struct node* appendToList(struct node* prev, int index) {
 		exit(1); /*TODO: print error before exit.*/
 	current->data.num = index;
 	current->next = NULL;
+
 	if (prev != NULL)
 		prev->next = current;
 
@@ -219,7 +218,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		unmoved = createUnmovedList(g->groupSize);
 
 		for (i = 0; i < g->groupSize; i++) {
-			printf("FOR LOOP:   i = %d\n", i);	/*TODO: delete*/
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
@@ -238,7 +236,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 				Q1 = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
 
-				printf("%f",Q1);
 				if (switchFirstUnmovedIteration == 1
 						|| Q1 > maxModularityChange) {
 					maxModularityChange = Q1;
@@ -273,7 +270,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		printf("%s","x");*/
 
 	} while (modularityChange > epsilon);
-	printf("%s","done");
+	printf("%s \n","done");
 	free(improvedVector);
 	free(indiceVector);
 	free(unmoved);

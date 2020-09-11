@@ -18,20 +18,26 @@ void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	if (D->len == 0)
 		D->divisions = add;
 	else
+	{
 		add->next = D->divisions;
+		 D->divisions = add; /*todo make sure no cycle*/
+	}
 
 	D->len = (D->len) + 1;
 }
 
 /* removes  first group from D and returns it*/
 struct divisionGroup* removeFirstGroup(struct division* D) {
-	struct node* group = D->divisions;
-	struct node* nextGroup = group->next;
+	struct node* group;
+	struct node* nextGroup;
 
+	group= D->divisions;
+	printf("%s", "removeFirstGroupA  3\n");
+	nextGroup= group->next;
+	printf("%s", "removeFirstGroup B 3\n");
 	group->next = NULL;
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
-
 	return group->data.group;
 }
 
@@ -256,25 +262,27 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	while (P->len > 0) {
+		printf("%s", "startLoop algo 3\n");
 		g = removeFirstGroup(P);
+		printf("%s", "removed FirstGroup algo 3\n");
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL)
 			exit(1); /*TODO: print error before exit.*/
 		Algorithm2(vectorS, g,inputGraph);
-		printf("%s", "d\n");
+		printf("%s", "return algo2 algo 3\n");
 		modularityMaximization(inputGraph,vectorS, g);
-		printf("%s", "e\n");
 		splitByS(vectorS, g, g1, g2);
-		printf("%s", "f\n");
 
 		if (g2 == NULL)
 			add_groupDivision(O, g1);
+
 		else {
 			updateDivisionPostSplit(g1, P, O);
 			updateDivisionPostSplit(g2, P, O);
 		}
 		free(vectorS);
 	}
+	printf("%s", "return algo 3\n");
 	return O;
 
 }

@@ -85,13 +85,21 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
 		double KjBjDividedByM, double KjDivdedByM) {
 	double rowResult = 0;
-	double rowSum = 0, ki = graph->vectorDegrees[rowIndex], bi =
-			vector[rowIndex];
-	struct divisionGroup* group = g->group; /*eran: consider making it a const; you know no O3 and stuff...*/
+	double rowSum;
+	double ki;
+	double bi;
+	struct divisionGroup* group;
+	struct spmat_node* cur_node;
+	rowSum = 0;
+	ki = graph->vectorDegrees[rowIndex];
+	bi =vector[rowIndex];
+	printf("%s \n","spmat product A");
+	 group = g->group; /*eran: consider making it a const; you know no O3 and stuff...*/
 
-	struct spmat_node* cur_node =get_private(group->groupSubmatrix)[rowIndex];
+	 cur_node =get_private(group->groupSubmatrix)[rowIndex];
+	printf("%s \n","spmat product B");
 	rowResult += sumHelper(cur_node, vector, &rowSum); /*A times b*/
-
+	printf("%s \n","spmat product C");
 	rowResult -= ((KjBjDividedByM) * ki);
 	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
 	rowResult += (g->norm * bi);
@@ -121,13 +129,13 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 void createAbkVec( int rowLength, double* currentB, double* newB,struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
-
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
 			&KjDivdedByM); /*helper Sums for all rows*/
 
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
+		printf("%s", " AKVEC before product 3\n");
 		Abk = spmatProductWithVectorb(i, currentB, g,graph, KjBjDividedByM,
 				KjDivdedByM);
 		/*updating vector Abk in current coordinate */
@@ -157,19 +165,21 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
-
+		printf("%s", " eigenValue before ABK 3\n");
 		createAbkVec( rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
+		printf("%s", " eigenValue before divide 3\n");
 		divideByMagnitude(origNextB, magnitude(origNextB, rowLength), rowLength);
 		/*checking difference between "old" b and "new" b  vectors:*/
-
+		printf("%s", " eigenValue before dif 3\n");
 		dif = difference(b, origNextB, rowLength);
 
 		/*updating b: */
+		printf("%s", " eigenValue before update 3\n");
 		updateB(b, origNextB, rowLength);
 
 	} while (dif == 1);
-
+	printf("%s", "eigenValue preFree 3\n");
 	free(origNextB);
 	free(covRow);
 	return b;
