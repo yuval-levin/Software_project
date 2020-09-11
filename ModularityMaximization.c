@@ -49,7 +49,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	 double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
-	int nodeNum = get_private(g->groupSubmatrix)[changedIndex]->index;
+	int nodeNum = get_private(g->groupMembers)[changedIndex];
 	int degree = graph->vectorDegrees[nodeNum];
 	int vectorSChangedIndex;
 
