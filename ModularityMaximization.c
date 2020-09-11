@@ -81,6 +81,9 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	currentAS = (double*)malloc(size*sizeof(double));
 	mult_ll(g->groupSubmatrix,vectorS,prevAS);
 	previousSAS = dotProduct(vectorS,prevAS,size);
+	/*changing Si to be -Si*/
+	flipVectorEntry(vectorS, changedIndex);
+
 	mult_ll(g->groupSubmatrix,vectorS,currentAS);
 	currentSAS = dotProduct(vectorS,currentAS,size);
 	free(prevAS);
@@ -91,7 +94,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 
 	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
-			- 4 * vectorSChangedIndex * (degree / graph->M)
+			+ 4 * vectorSChangedIndex * (degree / graph->M)
 					* (sumKiSi - (degree * vectorSChangedIndex));
 	result = result + (currentSAS-previousSAS);
 	return result;
@@ -231,7 +234,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
 			while (currentNode != NULL) {
-				flipVectorEntry(vectorS, currentNode->data.num);
+
 				Q1 = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
 
