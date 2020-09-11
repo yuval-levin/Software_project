@@ -3,6 +3,25 @@
 #include "modules.h"
 #include "spmat.h"
 
+
+/*TODO: remove duplicate and add to module of matrix functions*/
+double dotProduct(double* a, double* b, int col) {
+	/*dot product of vectors a and b*/
+	int k;
+	double* vec1;
+	double* vec2;
+	double dot = 0;
+	vec1 = a;
+	vec2 = b;
+	for (k = 0; k < col; k++) {
+		dot += ((*vec1) * (*vec2));
+		vec1 += 1;
+		vec2 += 1;
+	}
+	return dot;
+}
+
+
 void flipVectorEntry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
@@ -52,13 +71,17 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	double previousSAS;
 	double currentSAS;
 	double* prevAS;
-	double currentAS;
+	double* currentAS ;
 	int nodeNum, degree, vectorSChangedIndex, size;
-	mult_ll(g->groupSubmatrix,vectorS,&prevAS);
-	previousSAS = dotProduct(vectorS,prevAS);
-	mult_ll(g->groupSubmatrix,vectorS,&currentAS);
-	currentSAS = dotProduct(vectorS,currentAS);
 
+	prevAS = (double*)malloc(g->groupSize*sizeof(double));
+	currentAS = (double*)malloc(g->groupSize*sizeof(double));
+	mult_ll(g->groupSubmatrix,vectorS,prevAS);
+	previousSAS = dotProduct(vectorS,prevAS,g->groupSize);
+	mult_ll(g->groupSubmatrix,vectorS,currentAS);
+	currentSAS = dotProduct(vectorS,currentAS,g->groupSize);
+	free(prevAS);
+	free(currentAS);
 	size = g->groupSize; 						/*TODO: delete*/
 	printf("changedIndex: %d\n", changedIndex);	/*TODO: delete*/
 	printf("groupSize: %d\n", size);			/*TODO: delete*/
@@ -156,22 +179,6 @@ struct node* createUnmovedList(int sizeOfg) {
 }
 
 
-/*TODO: remove duplicate and add to module of matrix functions*/
-double dotProduct(double* a, double* b, int col) {
-	/*dot product of vectors a and b*/
-	int k;
-	double* vec1;
-	double* vec2;
-	double dot = 0;
-	vec1 = a;
-	vec2 = b;
-	for (k = 0; k < col; k++) {
-		dot += ((*vec1) * (*vec2));
-		vec1 += 1;
-		vec2 += 1;
-	}
-	return dot;
-}
 
 double dotProductInt(int* a, double* b, int col) {
 	/*dot product of vectors a and b*/
