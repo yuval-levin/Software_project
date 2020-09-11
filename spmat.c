@@ -87,12 +87,12 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is
 			{
 				cur->data = 1;
 				cur->index = row[j];
-				cur->node_name = cur->index;
+				cur->node_name = row[j];
 			}
 			else {
 				cur->data = row[j];
 				cur->index = j;		/*column index*/
-				cur->node_name = cur->index;
+				cur->node_name = j;
 			}
 			cur->next = NULL;
 
