@@ -20,6 +20,7 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 		row[j] = cur;
 	}
 	add_row_of_size_n(A, row, i, n, 1);
+	free(row);
 }
 
 void create_graph(FILE* input, struct graph* new_graph) {

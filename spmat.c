@@ -87,10 +87,12 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is
 			{
 				cur->data = 1;
 				cur->index = row[j];
+				cur->node_name = cur->index;
 			}
 			else {
 				cur->data = row[j];
 				cur->index = j;		/*column index*/
+				cur->node_name = cur->index;
 			}
 			cur->next = NULL;
 
@@ -99,7 +101,7 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is
 				((struct spmat_node**)A->private)[i] = cur;	/*inserted as the 1st node of the ith row*/
 				first = 1;							/*no updating prev.next*/
 			}
-			else{
+			else {
 				prev->next = (struct spmat_node*)cur;		/*cur is not the 1st, update prev.next*/
 			}
 			prev = cur;
