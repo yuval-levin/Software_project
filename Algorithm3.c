@@ -223,6 +223,7 @@ struct division* new_division() {
 struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	int i;
 	int n;
+	int* group_members;
 	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	if (group == NULL)
 		exit(1); /* TODO: error module*/
@@ -230,9 +231,14 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	group->groupSize = n;
 	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
+	group_members = (int*)malloc(n * sizeof(int));
+	assert(group_members != NULL);						/* TODO: error module*/
 	for (i = 0; i < n; i++) {
 		group->sumOfRows[i] = 0;
+		group_members[i] = i;
 	}
+	group->groupMembers = group_members;
+
 	return group;
 }
 

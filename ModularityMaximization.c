@@ -49,9 +49,13 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	 double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
-	int nodeNum = g->groupMembers[changedIndex];
-	int degree = graph->vectorDegrees[nodeNum];
-	int vectorSChangedIndex;
+	int nodeNum, degree, vectorSChangedIndex, size;
+
+	size = g->groupSize; 						//TODO: delete
+	printf("changedIndex: %d\n", changedIndex);	//TODO: delete
+	printf("groupSize: %d\n", size);			//TODO: delete
+	nodeNum = g->groupMembers[changedIndex];
+	degree = graph->vectorDegrees[nodeNum];
 
 	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
