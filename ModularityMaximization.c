@@ -51,9 +51,9 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	double result;
 	int nodeNum, degree, vectorSChangedIndex, size;
 
-	size = g->groupSize; 						//TODO: delete
-	printf("changedIndex: %d\n", changedIndex);	//TODO: delete
-	printf("groupSize: %d\n", size);			//TODO: delete
+	size = g->groupSize; 						/*TODO: delete*/
+	printf("changedIndex: %d\n", changedIndex);	/*TODO: delete*/
+	printf("groupSize: %d\n", size);			/*TODO: delete*/
 	nodeNum = g->groupMembers[changedIndex];
 	degree = graph->vectorDegrees[nodeNum];
 
@@ -203,7 +203,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		unmoved = createUnmovedList(g->groupSize);
 
 		for (i = 0; i < g->groupSize; i++) {
-
+			printf("FOR LOOP:   i = %d\n", i);	/*TODO: delete*/
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
