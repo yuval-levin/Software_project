@@ -49,7 +49,15 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	 double sumKiSi, double prevModularity,
 		int changedIndex) {
 	double result;
+	double previousSAS;
+	double currentSAS;
+	double* prevAS;
+	double currentAS;
 	int nodeNum, degree, vectorSChangedIndex, size;
+	mult_ll(g->groupSubmatrix,vectorS,&prevAS);
+	previousSAS = dotProduct(vectorS,prevAS);
+	mult_ll(g->groupSubmatrix,vectorS,&currentAS);
+	currentSAS = dotProduct(vectorS,currentAS);
 
 	size = g->groupSize; 						/*TODO: delete*/
 	printf("changedIndex: %d\n", changedIndex);	/*TODO: delete*/
@@ -59,9 +67,9 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 
 	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
-			- 4 * vectorSChangedIndex * (degree / graph->M)
+			+ 4 * vectorSChangedIndex * (degree / graph->M)
 					* (sumKiSi - (degree * vectorSChangedIndex));
-
+	result = result + (currentSAS-previousSAS);
 	return result;
 }
 
