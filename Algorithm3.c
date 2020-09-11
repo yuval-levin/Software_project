@@ -65,19 +65,19 @@ int calc_size (double* vectorS, int n) {
 
 /* splitByS helper, updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
-
 void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
 	int i_row, i_group_members;
 	struct spmat_node *cur, *prev, *next;
 	prev = NULL;
 
+	/* delete irrelevant nodes*/
 	for (i_row = 0; i_row < num_members; i_row++) {
 		cur = gt_rows[i_row];
 		i_group_members = 0;
 		while (cur != NULL) {
 			next = cur->next;
 			/* search for the index in vectorS/groupMembers that fits cur*/
-			while (i_group_members < num_members && g_group_members[i_group_members] != cur->index)
+			while (i_group_members < num_members && g_group_members[i_group_members] != cur->node_name)
 				i_group_members++;
 			/* remove cur, prev remains the same*/
 			if (vectorS[i_group_members] != group_indicator) {
@@ -95,6 +95,31 @@ void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int
 			cur = next;
 		}
 	}
+}
+
+/* splitByS helper, updates nodes index according to the new mat */
+void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_node** g_rows) {
+	int i_row, count, i;
+	int* map_name_to_col_index;
+	struct spmat_node *cur;
+
+	/* create a map, will be used to update index field to fit the new column index in the new spmat*/
+	count = 0;
+	map_name_to_col_index = (int*) malloc(g_group_members[num_members-1] * sizeof(int));
+	for (i = 0; i < num_members; i++) {
+		map_name_to_col_index[g_group_members[i]] = count;
+		count++;
+	}
+
+	/* delete irrelevant nodes*/
+	for (i_row = 0; i_row < num_members; i_row++) {
+		cur = g_rows[i_row];
+		while (cur != NULL) {
+			cur->index = map_name_to_col_index[cur->node_name];
+			cur = cur->next;
+		}
+	}
+	free(map_name_to_col_index);
 }
 
 /* splitByS helper, updates group members of target, according to group indicator (+-1)*/
@@ -204,6 +229,10 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	/* update group_members*/
 	update_group_members(vectorS, g_group_members, g1_group_members, 1, n);
 	update_group_members(vectorS, g_group_members, g2_group_members, -1, n);
+
+	/* update index value=s of the nodes*/
+	update_mat_rows_index(g1_group_members, g1_size, g1_rows);
+	update_mat_rows_index(g2_group_members, g2_size, g2_rows);
 
 	/* create divisionGroups*/
 	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);

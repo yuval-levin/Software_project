@@ -8,6 +8,7 @@
 typedef struct spmat_node {
 	int data;
 	int index;
+	int node_name;
 	struct spmat_node *next;
 } spmat_node;
 
