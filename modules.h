@@ -43,15 +43,17 @@ struct shiftedDivisionGroup
 	double norm;
 };
 
-
+;
 struct node
 {
-	union data {
+	struct node* next;
+	union  _data {
 		int num;
 		struct divisionGroup* group;
-	} data;
-	struct node* next;
+	}data;
+
 };
+
 
 
 

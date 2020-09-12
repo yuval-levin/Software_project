@@ -154,12 +154,11 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 struct node* appendToList(struct node* prev, int index) {
 	struct node* current;
 
-	current = (struct node*) malloc(sizeof(struct node*));
+	current = (struct node*) malloc(sizeof(struct node));
 	if (current == NULL)
 		exit(1); /*TODO: print error before exit.*/
 	current->data.num = index;
 	current->next = NULL;
-
 	if (prev != NULL)
 		prev->next = current;
 

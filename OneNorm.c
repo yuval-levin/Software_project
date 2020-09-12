@@ -5,7 +5,7 @@
 /*TODO make sure include c is fine*/
 
 double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
-	double sum;
+	double sum = 0;
 	int cnt;
 	struct spmat_node* currentNode;
 	 currentNode = get_private(g->groupSubmatrix)[column];
@@ -26,7 +26,8 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 /* method to calculate the 1-norm of matrix mat.
  TODO: check if double is necessary */
 double one_norm(struct graph* graph, struct divisionGroup* g) {
-	double maxColumn = 0, currentSum;
+	double maxColumn = 0;
+	double currentSum = 0;
 	int i;
 	/* iterate through columns*/
 	for (i = 0; i < g->groupSize; i++) {

@@ -53,13 +53,15 @@ void fillVectorWithOnes(double* vector, int length) {
 }
 
 void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
-	double eigenvalue, sumKiSi,rightArgument,leftArgument;
+	double eigenvalue = 0, sumKiSi,rightArgument,leftArgument;
 	double* eigenvector;
 	double* AtimesS;
 	struct shiftedDivisionGroup* shiftedG;
 
 	AtimesS = (double*) malloc(g->groupSize*(sizeof(double)));
+	printf("%s", "malloc algo2\n");
 	shiftedG = newShiftedDivsionGroup(g,graph);
+	printf("%s", "shiftedG algo2\n");
 	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG,eigenvector,graph);
 	if (eigenvalue <= epsilon) {
