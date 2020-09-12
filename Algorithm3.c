@@ -212,8 +212,10 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	for (i = 0; i < n; i++) {
 		if (vectorS[i] == 1) {
 
-			printf("%s", "splitbyS C3\n");
+			printf("%d \n", g_rows[i][0].index);
+			printf("%d \n", g_rows[i][0].node_name);
 			g1_rows[i1] = g_rows[i];
+			printf("%s", "splitbyS C3 B\n");
 			g1_sum_of_rows[i1] = g_sum_of_rows[i];
 			i1++;
 		} else {

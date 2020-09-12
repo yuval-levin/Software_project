@@ -141,7 +141,6 @@ void createAbkVec( int rowLength, double* currentB, double* newB,struct shiftedD
 		/*move nextb to next coordinate */
 		newB += 1;
 	}
-	printf("%s","loop abkvec ended \n");
 
 }
 
@@ -164,10 +163,10 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
-		printf("%s", " createEigenValue before createAK 3\n");
+
 		createAbkVec( rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
-		printf("%s", " createEigenValue after createAK 3\n");
+
 		divideByMagnitude(origNextB, magnitude(origNextB, rowLength), rowLength);
 		/*checking difference between "old" b and "new" b  vectors:*/
 
@@ -178,7 +177,6 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 		updateB(b, origNextB, rowLength);
 
 	} while (dif == 1);
-	printf("%s", "eigenValue preFree 3 \n");
 	free(origNextB);
 	free(covRow);
 	return b;
