@@ -68,10 +68,10 @@ int calc_size (double* vectorS, int n) {
 void update_mat_rows(double* vectorS, int num_members, int group_indicator, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
 	int i_row;
 	struct spmat_node *cur, *prev, *next;
-	prev = NULL;
 
 	/* delete irrelevant nodes*/
 	for (i_row = 0; i_row < num_members; i_row++) {
+		prev = NULL;
 		cur = gt_rows[i_row];
 		while (cur != NULL) {
 			next = cur->next;
@@ -219,10 +219,6 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	update_mat_rows(vectorS, g1_size, 1, g1_rows, g1_sum_of_rows);
 	update_mat_rows(vectorS, g2_size, -1, g2_rows, g2_sum_of_rows);
 
-	/* update spmats*/
-	set_private(g1_mat, g1_rows);
-	set_private(g2_mat, g2_rows);
-
 	/* update group_members*/
 	update_group_members(vectorS, g_group_members, g1_group_members, 1, n);
 	update_group_members(vectorS, g_group_members, g2_group_members, -1, n);
@@ -234,6 +230,10 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	/* create divisionGroups*/
 	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
 	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
+
+	/* update spmats*/
+	set_private(g1_mat, g1_rows);
+	set_private(g2_mat, g2_rows);
 
 	/* free memory*/
 	free_div_group(g);
