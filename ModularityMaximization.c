@@ -273,6 +273,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	printf("%s \n","done");
 	free(improvedVector);
 	free(indiceVector);
-	free(unmoved);
+	/*free(unmoved);* this was freeing 0x0 so removed. but unmoved is still unfreed ! TODO*/
 }
 
