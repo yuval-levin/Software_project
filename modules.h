@@ -43,7 +43,7 @@ struct shiftedDivisionGroup
 	double norm;
 };
 
-;
+
 struct node
 {
 	struct node* next;
