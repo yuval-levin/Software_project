@@ -175,7 +175,7 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	g1_size = calc_size(vectorS, n);
 	printf("%s", "splitbyS B\n");
 	g2_size = n - g1_size;
-	if (g1_size == n || g2_size == n) {
+	if (g1_size == 0 || g2_size == 0) {
 		g1 = g;
 		g2 = NULL;
 		return;
@@ -208,8 +208,8 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	for (i = 0; i < n; i++) {
 		if (vectorS[i] == 1) {
 
-			printf("%d \n", g_rows[i][0].index);
-			printf("%d \n", g_rows[i][0].node_name);
+			/* printf("%d \n", g_rows[i][0].index);
+			printf("%d \n", g_rows[i][0].node_name);*/
 			g1_rows[i1] = g_rows[i];
 			printf("%s", "splitbyS C3 B\n");
 			g1_sum_of_rows[i1] = g_sum_of_rows[i];
@@ -238,7 +238,7 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
 	/* free memory*/
-	free_div_group(g);
+	/*free_div_group(g);*/
 }
 
 struct division* new_division() {
