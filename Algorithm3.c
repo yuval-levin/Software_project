@@ -102,7 +102,7 @@ void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_n
 
 	/* create a map, will be used to update index field to fit the new column index in the new spmat*/
 	count = 0;
-	map_name_to_col_index = (int*) malloc(g_group_members[num_members-1] * sizeof(int));
+	map_name_to_col_index = (int*) malloc((g_group_members[num_members-1]+1) * sizeof(int));
 	for (i = 0; i < num_members; i++) {
 		map_name_to_col_index[g_group_members[i]] = count;
 		count++;
@@ -142,27 +142,23 @@ void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat
 	g->sumOfRows = sum_of_rows;
 	g->groupMembers = group_members;
 }
-/*
-splitByS helper, free old div group
+
+/*splitByS helper, free old div group*/
 void free_div_group(struct divisionGroup* g) {
+
 	free(g->sumOfRows);
 	free(g->groupMembers);
 
-	 free submatrix, don't use free_ll, since we don't want to free rows
+	/*free submatrix, don't use free_ll, since we don't want to free rows*/
 	free(get_private((struct _spmat*)g->groupSubmatrix));
 	free(g->groupSubmatrix);
 	free(g);
-}*/
+}
 
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
 void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
-	int i;
-	int n;
-	int g1_size;
-	int g2_size;
-	int i1;
-	int i2;
+	int i, n, g1_size, g2_size, i1, i2;
 	struct _spmat *g1_mat;
 	struct _spmat *g2_mat;
 	struct spmat_node **g_rows, **g1_rows, **g2_rows;
@@ -229,25 +225,20 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	/* edit rows and sum_of_rows, remove irrelevant nodes*/
 	update_mat_rows(vectorS, g1_size, 1, g1_rows, g1_sum_of_rows);
 	update_mat_rows(vectorS, g2_size, -1, g2_rows, g2_sum_of_rows);
-
 	/* update group_members*/
 	update_group_members(vectorS, g_group_members, g1_group_members, 1, n);
 	update_group_members(vectorS, g_group_members, g2_group_members, -1, n);
-
 	/* update index value=s of the nodes*/
 	update_mat_rows_index(g1_group_members, g1_size, g1_rows);
 	update_mat_rows_index(g2_group_members, g2_size, g2_rows);
-
 	/* create divisionGroups*/
 	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
 	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
-
 	/* update spmats*/
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
-
 	/* free memory*/
-	/*free_div_group(g);*/
+	free_div_group(g);
 }
 
 struct division* new_division() {
