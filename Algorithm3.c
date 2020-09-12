@@ -216,8 +216,8 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	}
 
 	/* edit rows and sum_of_rows, remove irrelevant nodes*/
-	update_mat_rows(vectorS, g_group_members, g1_size, 1, g1_rows, g1_sum_of_rows);
-	update_mat_rows(vectorS, g_group_members, g2_size, -1, g2_rows, g2_sum_of_rows);
+	update_mat_rows(vectorS, g1_size, 1, g1_rows, g1_sum_of_rows);
+	update_mat_rows(vectorS, g2_size, -1, g2_rows, g2_sum_of_rows);
 
 	/* update spmats*/
 	set_private(g1_mat, g1_rows);
