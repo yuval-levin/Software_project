@@ -66,21 +66,18 @@ int calc_size (double* vectorS, int n) {
 /* splitByS helper, updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
 void update_mat_rows(double* vectorS, int* g_group_members, int num_members, int group_indicator, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
-	int i_row, i_group_members;
+	int i_row;
 	struct spmat_node *cur, *prev, *next;
 	prev = NULL;
 
 	/* delete irrelevant nodes*/
 	for (i_row = 0; i_row < num_members; i_row++) {
 		cur = gt_rows[i_row];
-		i_group_members = 0;
 		while (cur != NULL) {
 			next = cur->next;
-			/* search for the index in vectorS/groupMembers that fits cur*/
-			while (i_group_members < num_members && g_group_members[i_group_members] != cur->node_name)
-				i_group_members++;
+
 			/* remove cur, prev remains the same*/
-			if (vectorS[i_group_members] != group_indicator) {
+			if (vectorS[cur->index] != group_indicator) {
 				gt_sum_of_rows[i_row]--;
 				if (prev == NULL) {
 					gt_rows[i_row] = cur->next;
