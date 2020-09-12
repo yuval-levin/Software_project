@@ -32,12 +32,12 @@ struct divisionGroup* removeFirstGroup(struct division* D) {
 	struct node* nextGroup;
 
 	group= D->divisions;
-	printf("%s", "removeFirstGroupA  3\n");
 	nextGroup= group->next;
 	printf("%s", "removeFirstGroup B 3\n");
 	group->next = NULL;
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
+	printf("%s", "removeFirstGroup END algo 3\n");
 	return group->data.group;
 }
 
@@ -112,6 +112,9 @@ void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_n
 	for (i_row = 0; i_row < num_members; i_row++) {
 		cur = g_rows[i_row];
 		while (cur != NULL) {
+			printf("%d \n",i_row);
+			printf("%d \n",cur->index);
+			printf("%d \n",cur->node_name);
 			cur->index = map_name_to_col_index[cur->node_name];
 			cur = cur->next;
 		}
@@ -288,12 +291,17 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	while (P->len > 0) {
-		printf("%s", "startLoop algo 3\n");
+		printf("%s", "startLoop algo 3 \n");
 		g = removeFirstGroup(P);
-		printf("%s", "removed FirstGroup algo 3\n");
+		printf("%s", "removed FirstGroup algo 3 \n");
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL)
+		{
+			printf("%s", "vectorS malloc failed algo3 \n");
 			exit(1); /*TODO: print error before exit.*/
+		}
+
+		printf("%s", "callALgo2 \n");
 		Algorithm2(vectorS, g,inputGraph);
 		printf("%s", "return algo2 algo 3\n");
 		modularityMaximization(inputGraph,vectorS, g);

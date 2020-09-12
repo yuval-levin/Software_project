@@ -65,6 +65,8 @@ int main(int args, char** argv) {
 	input = fopen(argv[1], "r");
 	assert(input!=NULL);			/* TODO: error module*/
 	create_graph(input, inputGraph);
+	setvbuf (stdout, NULL, _IONBF, 0);
+	printf("%s  \n", "call Algo 3");
 	Algorithm3(inputGraph);
 
 	printf("%s", "done main\n");

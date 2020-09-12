@@ -270,9 +270,10 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		printf("%s","x");*/
 
 	} while (modularityChange > epsilon);
-	printf("%s \n","done");
+	printf("%s \n","done modularity maximization - pre free");
 	free(improvedVector);
 	free(indiceVector);
+	printf("%s \n","done modularity maximization - post free");
 	/*free(unmoved);* this was freeing 0x0 so removed. but unmoved is still unfreed ! TODO*/
 }
 
