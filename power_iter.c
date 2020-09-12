@@ -102,7 +102,7 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	rowResult -= ((KjBjDividedByM) * ki);
 	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
 	rowResult += (g->norm * bi);
-	printf("%s", " spmatProductWithVectorb END 3\n");
+	/*printf("%s", " spmatProductWithVectorb END 3\n");*/
 	return rowResult;
 
 }
@@ -139,7 +139,6 @@ void createAbkVec( int rowLength, double* currentB, double* newB,struct shiftedD
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
-		printf("%d \n",i);
 		newB += 1;
 	}
 	printf("%s","loop abkvec ended \n");
