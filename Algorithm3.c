@@ -33,11 +33,9 @@ struct divisionGroup* removeFirstGroup(struct division* D) {
 
 	group= D->divisions;
 	nextGroup= group->next;
-	printf("%s", "removeFirstGroup B 3\n");
 	group->next = NULL;
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
-	printf("%s", "removeFirstGroup END algo 3\n");
 	return group->data.group;
 }
 
@@ -169,11 +167,11 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	g_rows = get_private((struct _spmat*)g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
 	g_group_members = g->groupMembers;
-	printf("%s", "splitbyS A\n");
+
 	/* if there's a group of size 0, g1 = g, g2 = NULL
 	 * in this case, no need to free g*/
 	g1_size = calc_size(vectorS, n);
-	printf("%s", "splitbyS B\n");
+
 	g2_size = n - g1_size;
 	if (g1_size == 0 || g2_size == 0) {
 		g1 = g;
@@ -184,7 +182,6 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	/* allocate spmats*/
 	g1_mat = spmat_allocate_list(g1_size);
 	g2_mat = spmat_allocate_list(g2_size);
-	printf("%s", "splitbyS C\n");
 	/* allocate sumOfRows*/
 	g1_sum_of_rows = (int*)malloc(g1_size * sizeof(int));
 	assert(g1_sum_of_rows != NULL);							/* TODO: error module*/
@@ -196,12 +193,11 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	g2_group_members = (int*)malloc(g2_size * sizeof(int));
 	assert(g2_group_members != NULL);						/* TODO: error module*/
 	/* allocate rows*/
-	printf("%s", "splitbyS C1\n");
 	g1_rows = (struct spmat_node**)malloc(g1_size * sizeof(struct spmat_node*));
 	assert(g1_group_members != NULL);						/* TODO: error module*/
 	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
 	assert(g2_group_members != NULL);						/* TODO: error module*/
-	printf("%s", "splitbyS C2\n");
+
 	/* move rows from g to g1, g2*/
 	i1 = 0;
 	i2 = 0;
@@ -211,17 +207,16 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 			/* printf("%d \n", g_rows[i][0].index);
 			printf("%d \n", g_rows[i][0].node_name);*/
 			g1_rows[i1] = g_rows[i];
-			printf("%s", "splitbyS C3 B\n");
 			g1_sum_of_rows[i1] = g_sum_of_rows[i];
 			i1++;
 		} else {
-			printf("%s", "splitbyS C4\n");
+
 			g2_rows[i2] = g_rows[i];
 			g2_sum_of_rows[i2] = g_sum_of_rows[i];
 			i2++;
 		}
 	}
-	printf("%s", "splitbyS D\n");
+
 	/* edit rows and sum_of_rows, remove irrelevant nodes*/
 	update_mat_rows(vectorS, g1_size, 1, g1_rows, g1_sum_of_rows);
 	update_mat_rows(vectorS, g2_size, -1, g2_rows, g2_sum_of_rows);
@@ -282,39 +277,52 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
 	double* vectorS;
+	int cnt;
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision( inputGraph));
 	/* TODO: calc sum of rows*/
 
-	g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+	cnt = 0;
 	while (P->len > 0) {
-		printf("%s", "startLoop algo 3 \n");
+
+		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+		g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+		printf("%d \n", cnt);
 		g = removeFirstGroup(P);
-		printf("%s", "removed FirstGroup algo 3 \n");
+		printf("%s", "POST remove \n");
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
+		printf("%s", "POST malloc \n");
 		if (vectorS == NULL)
 		{
 			printf("%s", "vectorS malloc failed algo3 \n");
 			exit(1); /*TODO: print error before exit.*/
 		}
 
-		printf("%s", "callALgo2 \n");
+		cnt++;
 		Algorithm2(vectorS, g,inputGraph);
-		printf("%s", "return algo2 algo 3\n");
+		printf("%s", "POST algo2 \n");
 		modularityMaximization(inputGraph,vectorS, g);
-		printf("%s", "pre splitbyS algo3\n");
+		printf("%s", "POST modMax \n");
 		splitByS(vectorS, g, g1, g2);
-		printf("%s", "post splitbyS algo3\n");
+
 		if (g2 == NULL)
+		{
+			printf("%s", "PRE g2=null \n");
 			add_groupDivision(O, g1);
+			printf("%s", "POST g2=null \n");
+		}
+
 
 		else {
+			printf("%s", "PRE update division \n");
 			updateDivisionPostSplit(g1, P, O);
 			updateDivisionPostSplit(g2, P, O);
+			printf("%s", "POST update division \n");
 		}
+
 		free(vectorS);
+
 	}
 	printf("%s", "return algo 3\n");
 	return O;
