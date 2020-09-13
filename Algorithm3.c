@@ -148,9 +148,75 @@ void free_div_group(struct divisionGroup* g) {
 	free(g->groupMembers);
 
 	/*free submatrix, don't use free_ll, since we don't want to free rows*/
-	free(get_private((struct _spmat*)g->groupSubmatrix));
-	free(g->groupSubmatrix);
-	free(g);
+	/*free(get_private((struct _spmat*)g->groupSubmatrix));*/
+	/*free(g->groupSubmatrix);*/
+	/*free(g);*/
+}
+
+/* splitByS helper, copies list_s to list_t*/
+void int_list_copy(int size, int *list_t, int *list_s) {
+	int i;
+	for (i = 0; i < size; i++) {
+		list_t[i] = list_s[i];
+	}
+}
+
+/* splitByS helper, copies node_s to node_t*/
+void spmat_node_copy(struct spmat_node* node_t, struct spmat_node* node_s) {
+	node_t->data = node_s->data;
+	node_t->index = node_s->index;
+	node_t->node_name = node_s->node_name;
+	node_t->next = node_s->next;
+}
+
+/* splitByS helper, copies list_s to list_t*/
+void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_node** list_s) {
+	int i;
+	for (i = 0; i < size; i++) {
+		if (list_s[i] != NULL) {
+			spmat_node_copy(list_t[i], list_s[i]);
+		}
+	}
+}
+
+/* splitByS helper, deep copies spmat_s to spmat_t*/
+void spmat_deep_copy(int size, struct _spmat *spmat_t, struct _spmat *spmat_s) {
+	struct spmat_node **gt_rows, **gs_rows;
+	/* allocate rows*/
+	gt_rows = (struct spmat_node**)malloc(size * sizeof(struct spmat_node*));
+	assert(gt_rows != NULL);
+
+	gs_rows = get_private(spmat_s);
+
+	spmat_node_list_copy(size, gt_rows, gs_rows);
+
+	/* copy*/
+	spmat_t->n = spmat_s->n;
+	spmat_t->add_row = spmat_s->add_row;
+	spmat_t->mult = spmat_s->mult;
+	spmat_t->free = spmat_s->free;
+	spmat_t->private = gt_rows;
+}
+
+/* splitByS helper, deep copies gs to gt*/
+void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divisionGroup* gs){
+	struct _spmat *gt_mat;
+	int *gt_sum_of_rows, *gt_group_members;
+
+	/* allocate spmat*/
+	gt_mat = spmat_allocate_list(gt_size);
+	/* allocate sumOfRows*/
+	gt_sum_of_rows = (int*)malloc(gt_size * sizeof(int));
+	assert(gt_sum_of_rows != NULL);							/* TODO: error module*/
+	/* allocate groupMembers*/
+	gt_group_members = (int*)malloc(gt_size * sizeof(int));
+	assert(gt_group_members != NULL);						/* TODO: error module*/
+
+	/* copy*/
+	gt->groupSize = gs->groupSize;
+	spmat_deep_copy(gt_size, gt_mat, gs->groupSubmatrix);
+	int_list_copy(gt_size, gt_sum_of_rows, gs->sumOfRows);
+	int_list_copy(gt_size, gt_sum_of_rows, gs->groupMembers);
 }
 
 /* splits g to groups, populates g1 and g2
@@ -173,8 +239,9 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	g1_size = calc_size(vectorS, n);
 
 	g2_size = n - g1_size;
-	if (g1_size == 0 || g2_size == 0) {
-		g1 = g;
+	if (g1_size == n || g2_size == n) {
+		divisionGroup_deep_copy(n, g1, g);
+		/*TODO: free g pointer, g2 pointer?*/
 		g2 = NULL;
 		return;
 	}
@@ -233,7 +300,7 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
 	/* free memory*/
-	/*free_div_group(g);*/
+	free_div_group(g);
 }
 
 struct division* new_division() {
