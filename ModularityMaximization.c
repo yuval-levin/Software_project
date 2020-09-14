@@ -196,6 +196,22 @@ double dotProductInt(int* a, double* b, int col) {
 	return dot;
 }
 
+double calcModularity(struct graph* graph, double* vectorS,
+		struct divisionGroup* g,double sumKiSi)
+{
+	double SBS;
+	double SAS;
+	double* modularity_temp;
+	double* AtimesS;
+
+	AtimesS = (double*) malloc(g->groupSize * sizeof(double));
+
+	mult_ll(g->groupSubmatrix,vectorS,AtimesS); /*A times S*/
+	SAS = dotProduct(vectorS,AtimesS,g->groupSize); /*SAS*/
+	modularity_temp = modularityTimesS(graph, vectorS, g, sumKiSi); /*B^ times S */
+	SBS = dotProduct(vectorS, modularity_temp,g->groupSize); /* Stimes B^  S*/
+	return SAS - SBS;
+}
 
 /*ODO: is DeltaModularity double int long?*/
 void modularityMaximization(struct graph* graph, double* vectorS,
@@ -214,18 +230,17 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	printf("%s","hi");
 	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	 indiceVector = (int*) malloc(g->groupSize * sizeof(int));
-	printf("%d",whileCnt++);
+	printf("%d \n",whileCnt++);
 	do {
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
-		printf("%d",whileCnt);
-		whileCnt++;
+		/*printf("%d \n",whileCnt++);*/
+
 		for (i = 0; i < g->groupSize; i++) {
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-			if (i == 0)
-				Q0 = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi),g->groupSize);
+			if (i == 0) Q0 =calcModularity(graph,vectorS,g,sumKiSi);
 			else
 				Q0 = Q0
 
@@ -269,8 +284,8 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		}
 		modularityChange = maxImproveScore;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
-		printf("%f",modularityChange)
-		printf("%s","x");
+		printf("%f \n",modularityChange);
+
 
 	} while (modularityChange > epsilon);
 	free(improvedVector);
