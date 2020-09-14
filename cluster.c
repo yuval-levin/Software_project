@@ -5,7 +5,6 @@
 #include "spmat.h"
 #include "Algorithm3.h"
 
-/* remove assert todo*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;

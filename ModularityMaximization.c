@@ -205,6 +205,33 @@ void print_array(double *vec, int dim){
     }
     printf("\n");
 }
+/* remove assert todo*/
+void printG(struct divisionGroup* g)
+{
+	int n =g->groupSize;
+	int i;
+	struct spmat_node** rows = get_private(g->groupSubmatrix);
+	struct spmat_node* cur;
+	printf("\n %s","group size: ");
+	printf("%d",n);
+	for(i = 0 ;i< n; i++)
+	{
+		cur = rows[i];
+		if(cur == NULL) printf("\n row %d is NULL",i);
+		else
+		{
+			printf("\n row %d :",i);
+			while (cur != NULL)
+			{
+				printf("\n data %d ",cur->data);
+				printf("name %d ",cur->node_name);
+				cur= cur->next;
+			}
+		}
+	}
+
+
+}
 
 double calcModularity(struct graph* graph, double* vectorS,
 		struct divisionGroup* g,double sumKiSi)
@@ -217,10 +244,16 @@ double calcModularity(struct graph* graph, double* vectorS,
 	AtimesS = (double*) malloc(g->groupSize * sizeof(double));
 
 	mult_ll(g->groupSubmatrix,vectorS,AtimesS); /*A times S*/
-	print_array(vectorS,g->groupSize);
-	print_array(AtimesS,g->groupSize);
+/*	print_array(vectorS,g->groupSize);
+	print_array(AtimesS,g->groupSize);*/
 	SAS = dotProduct(vectorS,AtimesS,g->groupSize); /*SAS*/
+	printf("%f \n",SAS);
 	modularity_temp = modularityTimesS(graph, vectorS, g, sumKiSi); /*B^ times S */
+	printf("\n %s \n","here is cS");
+
+	printG(g);
+	print_array(modularity_temp,g->groupSize);
+	printf("\n %s \n","done");
 	SBS = dotProduct(vectorS, modularity_temp,g->groupSize); /* Stimes B^  S*/
 	return SAS - SBS;
 }
