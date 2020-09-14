@@ -321,7 +321,7 @@ struct division* new_division() {
 
 double sumOfRow(int row,struct spmat_node** gt_rows)
 {
-	double sum;
+	double sum = 0;
 	struct spmat_node* cur;
 	cur = gt_rows[row];
 
