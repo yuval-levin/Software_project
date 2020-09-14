@@ -182,11 +182,9 @@ void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_nod
 /* splitByS helper, deep copies spmat_s to spmat_t*/
 void spmat_deep_copy(int size, struct _spmat *spmat_t, struct _spmat *spmat_s) {
 	struct spmat_node **gt_rows, **gs_rows;
-	/* allocate rows*/
-	gt_rows = (struct spmat_node**)malloc(size * sizeof(struct spmat_node*));
-	assert(gt_rows != NULL);
 
 	gs_rows = get_private(spmat_s);
+	gt_rows = get_private(spmat_t);
 
 	spmat_node_list_copy(size, gt_rows, gs_rows);
 
@@ -200,8 +198,8 @@ void spmat_deep_copy(int size, struct _spmat *spmat_t, struct _spmat *spmat_s) {
 
 /* splitByS helper, deep copies gs to gt*/
 void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divisionGroup* gs){
-	struct _spmat *gt_mat;
-	int *gt_sum_of_rows, *gt_group_members;
+	struct _spmat *gt_mat, *gs_mat;
+	int *gt_sum_of_rows, *gt_group_members, *gs_sum_of_rows, *gs_group_members;
 
 	/* allocate spmat*/
 	gt_mat = spmat_allocate_list(gt_size);
@@ -212,22 +210,33 @@ void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divis
 	gt_group_members = (int*)malloc(gt_size * sizeof(int));
 	assert(gt_group_members != NULL);						/* TODO: error module*/
 
-	/* copy*/
+	gs_mat = (struct _spmat*)gs->groupSubmatrix;
+	gs_sum_of_rows = (int*)gs->sumOfRows;
+	gs_group_members = (int*)gs->groupMembers;
+
+	spmat_deep_copy(gt_size, gt_mat, gs_mat);
+	int_list_copy(gt_size, gt_sum_of_rows, gs_sum_of_rows);
+	int_list_copy(gt_size, gt_group_members, gs_group_members);
+
 	gt->groupSize = gs->groupSize;
-	spmat_deep_copy(gt_size, gt_mat, gs->groupSubmatrix);
-	int_list_copy(gt_size, gt_sum_of_rows, gs->sumOfRows);
-	int_list_copy(gt_size, gt_sum_of_rows, gs->groupMembers);
+	gt->groupMembers = gt_group_members;
+	gt->groupSubmatrix = gt_mat;
+	gt->sumOfRows = gt_sum_of_rows;
 }
 
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
-void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1, struct divisionGroup* g2) {
+struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1) {
 	int i, n, g1_size, g2_size, i1, i2;
 	struct _spmat *g1_mat;
 	struct _spmat *g2_mat;
 	struct spmat_node **g_rows, **g1_rows, **g2_rows;
+	struct divisionGroup* g2;
 	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
 	int *g1_group_members, *g2_group_members, *g_group_members;
+
+	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+	assert(g2 != NULL);										/* TODO: error module*/
 
 	n = g->groupSize;
 	g_rows = get_private((struct _spmat*)g->groupSubmatrix);
@@ -243,7 +252,7 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 		divisionGroup_deep_copy(n, g1, g);
 		/*TODO: free g pointer, g2 pointer?*/
 		g2 = NULL;
-		return;
+		return g2;
 	}
 
 	/* allocate spmats*/
@@ -270,14 +279,10 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	i2 = 0;
 	for (i = 0; i < n; i++) {
 		if (vectorS[i] == 1) {
-
-			/* printf("%d \n", g_rows[i][0].index);
-			printf("%d \n", g_rows[i][0].node_name);*/
 			g1_rows[i1] = g_rows[i];
 			g1_sum_of_rows[i1] = g_sum_of_rows[i];
 			i1++;
 		} else {
-
 			g2_rows[i2] = g_rows[i];
 			g2_sum_of_rows[i2] = g_sum_of_rows[i];
 			i2++;
@@ -293,14 +298,15 @@ void splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1
 	/* update index value=s of the nodes*/
 	update_mat_rows_index(g1_group_members, g1_size, g1_rows);
 	update_mat_rows_index(g2_group_members, g2_size, g2_rows);
-	/* create divisionGroups*/
-	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
-	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 	/* update spmats*/
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
+	/* create divisionGroups*/
+	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
+	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 	/* free memory*/
-	free_div_group(g);
+	/*free_div_group(g);*/
+	return g2;
 }
 
 struct division* new_division() {
@@ -354,7 +360,6 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	while (P->len > 0) {
 
 		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-		g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 		printf("%d \n", cnt);
 		g = removeFirstGroup(P);
 		printf("%s", "POST remove \n");
@@ -371,7 +376,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		printf("%s", "POST algo2 \n");
 		modularityMaximization(inputGraph,vectorS, g);
 		printf("%s", "POST modMax \n");
-		splitByS(vectorS, g, g1, g2);
+		g2 = splitByS(vectorS, g, g1);
 
 		if (g2 == NULL)
 		{
@@ -379,7 +384,6 @@ struct division* Algorithm3(struct graph* inputGraph) {
 			add_groupDivision(O, g1);
 			printf("%s", "POST g2=null \n");
 		}
-
 
 		else {
 			printf("%s", "PRE update division \n");
