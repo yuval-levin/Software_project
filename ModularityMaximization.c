@@ -196,6 +196,16 @@ double dotProductInt(int* a, double* b, int col) {
 	return dot;
 }
 
+/*todo: delete this*/
+void print_array(double *vec, int dim){
+    int i;
+    for (i = 0; i < dim; i++) {
+        setbuf(stdout, 0);
+        printf("%f ", vec[i]);
+    }
+    printf("\n");
+}
+
 double calcModularity(struct graph* graph, double* vectorS,
 		struct divisionGroup* g,double sumKiSi)
 {
@@ -207,6 +217,8 @@ double calcModularity(struct graph* graph, double* vectorS,
 	AtimesS = (double*) malloc(g->groupSize * sizeof(double));
 
 	mult_ll(g->groupSubmatrix,vectorS,AtimesS); /*A times S*/
+	print_array(vectorS,g->groupSize);
+	print_array(AtimesS,g->groupSize);
 	SAS = dotProduct(vectorS,AtimesS,g->groupSize); /*SAS*/
 	modularity_temp = modularityTimesS(graph, vectorS, g, sumKiSi); /*B^ times S */
 	SBS = dotProduct(vectorS, modularity_temp,g->groupSize); /* Stimes B^  S*/

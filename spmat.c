@@ -18,7 +18,7 @@ void free_ll(struct _spmat *A);
 
 double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v)
 {
-	int index;
+	int index = 0;
 	double sum = 0;
 	struct spmat_node* cur ;
 	cur = cur_node;
