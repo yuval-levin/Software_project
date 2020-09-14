@@ -92,7 +92,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 
 	vectorSChangedIndex = vectorS[changedIndex];
 	result = prevModularity
-			+ 4 * vectorSChangedIndex * (degree / graph->M)
+			 - 4 * vectorSChangedIndex * (degree / graph->M)
 					* (sumKiSi - (degree * vectorSChangedIndex));
 	result = result + (currentSAS-previousSAS);
 	return result;
@@ -208,14 +208,18 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	struct node* currentNode;
 	struct node* prev;
 	struct node* prevOfBiggest;
-
-	double* improvedVector = (double*) malloc(g->groupSize * sizeof(double));
-	int* indiceVector = (int*) malloc(g->groupSize * sizeof(int));
-
+	double* improvedVector;
+	int* indiceVector;
+	int whileCnt = 0;
+	printf("%s","hi");
+	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
+	 indiceVector = (int*) malloc(g->groupSize * sizeof(int));
+	printf("%d",whileCnt++);
 	do {
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
-
+		printf("%d",whileCnt);
+		whileCnt++;
 		for (i = 0; i < g->groupSize; i++) {
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
@@ -265,8 +269,8 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		}
 		modularityChange = maxImproveScore;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
-		/*printf("%f",modularityChange);
-		printf("%s","x");*/
+		printf("%f",modularityChange)
+		printf("%s","x");
 
 	} while (modularityChange > epsilon);
 	free(improvedVector);

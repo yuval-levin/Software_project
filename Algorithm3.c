@@ -319,6 +319,22 @@ struct division* new_division() {
 }
 
 
+double sumOfRow(int row,struct spmat_node** gt_rows)
+{
+	double sum;
+	struct spmat_node* cur;
+	cur = gt_rows[row];
+
+	if(cur == NULL) return 0;
+	else while(cur != NULL)
+	{
+		sum+=cur->data;
+		cur = cur->next;
+	}
+	return sum;
+}
+
+
 /* PARAMS : n is number of nodes in graph
  * DESC : Returns a divisonGroup with all nodes in graph
  */
@@ -336,13 +352,14 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	group_members = (int*)malloc(n * sizeof(int));
 	assert(group_members != NULL);						/* TODO: error module*/
 	for (i = 0; i < n; i++) {
-		group->sumOfRows[i] = 0;
+		group->sumOfRows[i] = sumOfRow(i,get_private(group->groupSubmatrix));
 		group_members[i] = i;
 	}
 	group->groupMembers = group_members;
 
 	return group;
 }
+
 
 
 struct division* Algorithm3(struct graph* inputGraph) {
