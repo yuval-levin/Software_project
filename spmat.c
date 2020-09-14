@@ -74,38 +74,28 @@ void mult_ll(const struct _spmat *A, const double *v, double *result){
 /*
  * helper for add_row_ll
  */
-void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is_adjacency_mat){
+void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
 	int first, j;
 	struct spmat_node *cur, *prev;
 	first = 0;
 
 	for (j = 0; j < n; j++){
-		if (row[j] != 0){
-			cur = (struct spmat_node*)malloc(sizeof(struct spmat_node));
-			assert(cur != NULL);
-			if (is_adjacency_mat == 1)
-			{
-				cur->data = 1;
-				cur->index = row[j];
-				cur->node_name = row[j];
-			}
-			else {
-				cur->data = row[j];
-				cur->index = j;		/*column index*/
-				cur->node_name = j;
-			}
-			cur->next = NULL;
+		cur = (struct spmat_node*)malloc(sizeof(struct spmat_node));
+		assert(cur != NULL);		/*TODO*/
+		cur->data = 1;
+		cur->index = row[j];
+		cur->node_name = row[j];
+		cur->next = NULL;
 
-			/*first struct spmat_node*/
-			if (first == 0){
-				((struct spmat_node**)A->private)[i] = cur;	/*inserted as the 1st node of the ith row*/
-				first = 1;							/*no updating prev.next*/
-			}
-			else {
-				prev->next = (struct spmat_node*)cur;		/*cur is not the 1st, update prev.next*/
-			}
-			prev = cur;
+		/*first struct spmat_node*/
+		if (first == 0){
+			((struct spmat_node**)A->private)[i] = cur;	/*inserted as the 1st node of the ith row*/
+			first = 1;							/*no updating prev.next*/
 		}
+		else {
+			prev->next = (struct spmat_node*)cur;		/*cur is not the 1st, update prev.next*/
+		}
+		prev = cur;
 	}
 }
 
@@ -113,7 +103,7 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n, int is
  * add_row implementation for linked list
  */
 void add_row_ll(struct _spmat *A, const double *row, int i){
-	add_row_of_size_n(A, row, i, A->n, 0);
+	add_row_of_size_n(A, row, i, A->n);
 }
 
 struct spmat_node** get_private(struct _spmat* mat)
