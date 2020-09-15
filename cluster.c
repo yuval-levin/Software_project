@@ -105,6 +105,7 @@ void print_result (struct division* div) {
 		printf("%d \n", group_size);
 		printf("%s", "group members: ");
 		group_members = cur_group->groupMembers;
+
 		for (j = 0 ; j<group_size; j++){
 		printf("%s", "  ");
 		printf("%d", group_members[j]);
