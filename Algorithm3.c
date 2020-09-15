@@ -352,7 +352,7 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	group_members = (int*)malloc(n * sizeof(int));
 	assert(group_members != NULL);						/* TODO: error module*/
 	for (i = 0; i < n; i++) {
-		group->sumOfRows[i] = sumOfRow(i,get_private(group->groupSubmatrix));
+		group->sumOfRows[i] = 0;
 		group_members[i] = i;
 	}
 	group->groupMembers = group_members;
