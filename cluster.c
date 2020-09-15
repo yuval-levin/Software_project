@@ -81,6 +81,40 @@ void write_output_file(struct division* div, FILE* output) {
 	}
 }
 
+void print_result (struct division* div) {
+	int n, group_size, i, j;
+	int* group_members;
+	struct node* cur_node;
+	struct divisionGroup* cur_group;
+
+	i = 1;
+
+	n = div->len;
+	printf("%s", "num of groups:  ");
+	printf("%d \n", n);
+
+	cur_node = div->divisions;
+
+	/*write groups*/
+	while (cur_node != NULL) {
+		printf("%s", "group number ");
+		printf("%d", i);
+		cur_group = cur_node->data.group;
+		group_size = cur_group->groupSize;
+		printf("%s", " of size ");
+		printf("%d \n", group_size);
+		printf("%s", "group members: ");
+		group_members = cur_group->groupMembers;
+		for (j = 0 ; j<group_size; j++){
+		printf("%s", "  ");
+		printf("%d", group_members[j]);
+		}
+		cur_node = cur_node->next;
+		i++;
+		printf("%s", "\n");
+	}
+}
+
 int main(int args, char** argv) {
 	struct graph* inputGraph;
 	FILE* input;
@@ -99,6 +133,7 @@ int main(int args, char** argv) {
 	output = fopen(argv[2], "wb");
 	assert(output != NULL);
 	write_output_file(final_division, output);
+	print_result(final_division);
 
 	/*TODO: free*/
 
