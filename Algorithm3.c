@@ -174,6 +174,7 @@ void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_nod
 	int i;
 	for (i = 0; i < size; i++) {
 		if (list_s[i] != NULL) {
+			list_t[i] = (struct spmat_node*)malloc(sizeof(struct spmat_node));
 			spmat_node_copy(list_t[i], list_s[i]);
 		}
 	}
@@ -238,22 +239,28 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 	assert(g2 != NULL);										/* TODO: error module*/
 
+	printf("%s", "SplitByS 1\n");
 	n = g->groupSize;
 	g_rows = get_private((struct _spmat*)g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
 	g_group_members = g->groupMembers;
+	printf("%s", "SplitByS 2\n");
 
 	/* if there's a group of size 0, g1 = g, g2 = NULL
 	 * in this case, no need to free g*/
 	g1_size = calc_size(vectorS, n);
+	printf("%s", "SplitByS 3\n");
 
 	g2_size = n - g1_size;
 	if (g1_size == n || g2_size == n) {
+		printf("%s", "SplitByS 3a\n");
 		divisionGroup_deep_copy(n, g1, g);
 		/*TODO: free g pointer, g2 pointer?*/
+		printf("%s", "SplitByS 3b\n");
 		g2 = NULL;
 		return g2;
 	}
+	printf("%s", "SplitByS 4\n");
 
 	/* allocate spmats*/
 	g1_mat = spmat_allocate_list(g1_size);
@@ -274,6 +281,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
 	assert(g2_group_members != NULL);						/* TODO: error module*/
 
+	printf("%s", "SplitByS 5\n");
+
 	/* move rows from g to g1, g2*/
 	i1 = 0;
 	i2 = 0;
@@ -288,6 +297,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 			i2++;
 		}
 	}
+
+	printf("%s", "SplitByS 6\n");
 
 	/* edit rows and sum_of_rows, remove irrelevant nodes*/
 	update_mat_rows(vectorS, g1_size, 1, g1_rows, g1_sum_of_rows);
@@ -306,6 +317,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 	/* free memory*/
 	/*free_div_group(g);*/
+	printf("%s", "SplitByS 7\n");
+
 	return g2;
 }
 
@@ -391,9 +404,10 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		cnt++;
 		Algorithm2(vectorS, g,inputGraph);
 		printf("%s", "POST algo2 \n");
-		modularityMaximization(inputGraph,vectorS, g);
-		printf("%s", "POST modMax \n");
+		/*modularityMaximization(inputGraph,vectorS, g);
+		printf("%s", "POST modMax \n");*/
 		g2 = splitByS(vectorS, g, g1);
+		printf("%s", "POST splitByS \n");
 
 		if (g2 == NULL)
 		{
