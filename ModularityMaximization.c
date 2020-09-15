@@ -56,7 +56,7 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
 	if (prevOfBiggest == NULL)
 	{
 		removedNode = unmoved;
-		unmoved = unmoved->next; /*todo: does this actually change unmoved? */
+		unmoved = unmoved->next;
 		free(removedNode);
 		return unmoved;
 	}
@@ -252,6 +252,9 @@ double calcModularity(struct graph* graph, double* vectorS,
 	modularity_temp = modularityTimesS(graph, vectorS, g, sumKiSi); /*B^ times S */
 
 	SBS = dotProduct(vectorS, modularity_temp,g->groupSize); /* Stimes B^  S*/
+
+	free(modularity_temp); /*free temp calc*/
+	free(AtimesS); /*free temp calc*/
 	return SAS - SBS;
 }
 
@@ -340,6 +343,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	free(improvedVector);
 	free(indiceVector);
 	printf("%s \n","done modularity maximization - post free");
-	/*free(unmoved);* this was freeing 0x0 so removed. but unmoved is still unfreed ! TODO*/
+	/*free(unmoved);*/
 }
 
