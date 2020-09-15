@@ -84,6 +84,7 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 			fillVectorWithOnes(vectorS, g->groupSize);
 		}
 	}
+	free(eigenvector);
 	free(shiftedG);
 }
 
