@@ -138,7 +138,7 @@ int main(int args, char** argv) {
 	print_result(final_division);
 
 	/*TODO: free final_division and input_graph*/
-
+	free(final_division); /*free O*/
 	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
 }
