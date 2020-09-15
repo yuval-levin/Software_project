@@ -58,7 +58,7 @@ void write_output_file(struct division* div, FILE* output) {
 	int k, n, group_size;
 	int* group_members;
 	struct node* cur_node;
-	struct division_group* cur_group;
+	struct divisionGroup* cur_group;
 
 	n = div->len;
 	k = fwrite(&n, sizeof(int), 1, output);
@@ -68,7 +68,7 @@ void write_output_file(struct division* div, FILE* output) {
 
 	/*write groups*/
 	while (cur_node != NULL) {
-		cur_group = (struct divisionGroup*)cur_node->data;
+		cur_group = cur_node->data.group;
 		group_size = cur_group->groupSize;
 		k = fwrite(&group_size, sizeof(int), 1, output);
 		assert(k==1);			/*TODO: error module*/
@@ -89,14 +89,14 @@ int main(int args, char** argv) {
 	if(args != 2) exit(1); /* todo error module*/
 	inputGraph = (struct graph*)malloc(sizeof(struct graph));
 	assert(inputGraph!=NULL);		/* TODO: error module*/
-	input = fopen(argv[1], "r");
+	input = fopen(argv[1], "rb");
 	assert(input!=NULL);			/* TODO: error module*/
 	create_graph(input, inputGraph);
 	setvbuf (stdout, NULL, _IONBF, 0);
 	printf("%s  \n", "call Algo 3");
 	final_division = Algorithm3(inputGraph);
 
-	output = fopen(argv[2], "w");
+	output = fopen(argv[2], "wb");
 	write_output_file(final_division, output);
 
 	/*TODO: free*/
