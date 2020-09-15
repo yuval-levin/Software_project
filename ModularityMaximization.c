@@ -296,6 +296,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			while (currentNode != NULL) {
 
 				flipVectorEntry(vectorS,  currentNode->data.num);
+
 				modChange = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
 
