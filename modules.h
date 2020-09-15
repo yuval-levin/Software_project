@@ -8,7 +8,7 @@ struct graph
 {
   struct _spmat* A;
   long* vectorDegrees;
-  long M;
+  double M;
   int numOfNodes;
 };
 
