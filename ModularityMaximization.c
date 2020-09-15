@@ -247,8 +247,7 @@ double calcModularity(struct graph* graph, double* vectorS,
 	AtimesS = (double*) malloc(g->groupSize * sizeof(double));
 
 	mult_ll(g->groupSubmatrix,vectorS,AtimesS); /*A times S*/
-/*	print_array(vectorS,g->groupSize);
-	print_array(AtimesS,g->groupSize);*/
+
 	SAS = dotProduct(vectorS,AtimesS,g->groupSize); /*SAS*/
 	modularity_temp = modularityTimesS(graph, vectorS, g, sumKiSi); /*B^ times S */
 
@@ -321,6 +320,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			updateImprovedVector(improvedVector, i, maxModularityChange); /*incrementing scores*/
 
 		}
+		/*row 21: find max*/
 		curMax = improvedVector[0];
 		for(i = 1;i<g->groupSize;i++)
 		{
