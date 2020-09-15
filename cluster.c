@@ -86,7 +86,7 @@ int main(int args, char** argv) {
 	FILE* input;
 	FILE *output;
 	struct division* final_division;
-	if(args != 2) exit(1); /* todo error module*/
+	if(args != 3) exit(1); /* todo error module*/
 	inputGraph = (struct graph*)malloc(sizeof(struct graph));
 	assert(inputGraph!=NULL);		/* TODO: error module*/
 	input = fopen(argv[1], "rb");
@@ -97,6 +97,7 @@ int main(int args, char** argv) {
 	final_division = Algorithm3(inputGraph);
 
 	output = fopen(argv[2], "wb");
+	assert(output != NULL);
 	write_output_file(final_division, output);
 
 	/*TODO: free*/
