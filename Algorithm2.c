@@ -56,6 +56,7 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	double eigenvalue = 0, sumKiSi,rightArgument,leftArgument;
 	double* eigenvector;
 	double* AtimesS;
+	double* rightArguTemp;
 	struct shiftedDivisionGroup* shiftedG;
 
 	AtimesS = (double*) malloc(g->groupSize*(sizeof(double)));
@@ -73,7 +74,8 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
 		printf("%s", "POST algo2 sumkisi \n");
-		rightArgument = dotProduct(vectorS, modularityTimesS(graph, vectorS, g, sumKiSi), g->groupSize);
+		rightArguTemp = modularityTimesS(graph, vectorS, g, sumKiSi);
+		rightArgument = dotProduct(vectorS,rightArguTemp, g->groupSize);
 		printf("%s", "POST algo2 rightargu \n");
 		mult_ll(g->groupSubmatrix,vectorS, AtimesS);
 		printf("%s", "POST algo2 mult_ll \n");
@@ -83,7 +85,10 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 			/*g is undivisble so S stays the same - everyone are '1';*/
 			fillVectorWithOnes(vectorS, g->groupSize);
 		}
+		free(rightArguTemp);
 	}
+
+	free(AtimesS);
 	free(eigenvector);
 	free(shiftedG);
 }
