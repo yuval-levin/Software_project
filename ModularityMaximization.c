@@ -52,18 +52,18 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score) 
 }
 
 struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
-	/*struct node* removedNode;*/
+	struct node* removedNode;
 	if (prevOfBiggest == NULL)
 	{
-		/*removedNode = unmoved;*/
+		removedNode = unmoved;
 		unmoved = unmoved->next; /*todo: does this actually change unmoved? */
-		/*free(removedNode);  FREE CAUSED MAJOR Bug, handle free of list todo*/
+		free(removedNode);
 		return unmoved;
 	}
 	/*else*/
-	/*removedNode = prevOfBiggest->next ;*/
+	    removedNode = prevOfBiggest->next ;
 		prevOfBiggest->next= prevOfBiggest->next->next;
-		/*free(removedNode); FREE CAUSED MAJOR Bug, handle free of list todo*/
+		free(removedNode);
 		return unmoved;
 
 
