@@ -404,8 +404,8 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		cnt++;
 		Algorithm2(vectorS, g,inputGraph);
 		printf("%s", "POST algo2 \n");
-		/*modularityMaximization(inputGraph,vectorS, g);
-		printf("%s", "POST modMax \n");*/
+		modularityMaximization(inputGraph,vectorS, g);
+		printf("%s", "POST modMax \n");
 		g2 = splitByS(vectorS, g, g1);
 		printf("%s", "POST splitByS \n");
 

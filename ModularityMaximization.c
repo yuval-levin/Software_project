@@ -261,7 +261,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
 	double modularityChange, Q0, modChange, maxModularityChange, maxImprovedIndex = 0,
-			maxImproveScore, sumKiSi;
+			 sumKiSi,curMax;
 	int i, indexOfBiggestIncrease, switchFirstUnmovedIteration = 1;
 	struct node* unmoved;
 	struct node* currentNode;
@@ -269,21 +269,19 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	struct node* prevOfBiggest;
 	double* improvedVector;
 	int* indiceVector;
-	int whileCnt = 0;
 
 	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	 indiceVector = (int*) malloc(g->groupSize * sizeof(int));
-	printf("%d \n",whileCnt++);
+
 	do {
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
-		printf(" loop number %d \n",whileCnt++);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* first KiSI */
 
 		for (i = 0; i < g->groupSize; i++) {
 			currentNode = unmoved;
-			prev = NULL, prevOfBiggest = NULL;
-
+			prev = NULL;
+			prevOfBiggest = NULL;
 			if (i == 0) Q0 =calcModularity(graph,vectorS,g,sumKiSi);
 			else
 				Q0 = Q0
@@ -300,13 +298,11 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 
 				modChange = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
-				printf("mod change: %f index is: %d \n",modChange,currentNode->data.num);
-
 				if (switchFirstUnmovedIteration == 1
 						|| modChange > maxModularityChange) {
 					maxModularityChange = modChange;
 					indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
-					maxImproveScore = maxModularityChange;
+					/*maxImproveScore = maxModularityChange;*/
 					prevOfBiggest = prev;
 					switchFirstUnmovedIteration = 0;
 				}
@@ -323,19 +319,24 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			indiceVector[i] = indexOfBiggestIncrease;
 			/*updating the current 'state score'*/
 			updateImprovedVector(improvedVector, i, maxModularityChange); /*incrementing scores*/
-			if (improvedVector[i] > maxImproveScore)
-			{
-				maxImproveScore = improvedVector[i];
-				maxImprovedIndex = i;
-			}
 
 		}
-		modularityChange = maxImproveScore;
+		curMax = improvedVector[0];
+		for(i = 1;i<g->groupSize;i++)
+		{
+			if(improvedVector[i] > curMax)
+			{
+				curMax = improvedVector[i];
+				maxImprovedIndex = i;
+			}
+		}
+
+		modularityChange = curMax;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
 		printf("%f \n",modularityChange);
 
 
-	} while (modularityChange > epsilon);
+	} while (modularityChange > epsilon || maxImprovedIndex != (g->groupSize)-1);
 	free(improvedVector);
 	free(indiceVector);
 	printf("%s \n","done modularity maximization - post free");
