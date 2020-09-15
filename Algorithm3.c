@@ -417,6 +417,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 
 	}
 	printf("%s", "return algo 3\n");
+	free(P);
 	return O;
 
 }
