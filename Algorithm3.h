@@ -9,5 +9,5 @@
 #define ALGORITHM3_H_
 
 struct division* Algorithm3(struct graph* inputGraph);
-
+void freeDivisionGroup(struct division* O);
 #endif /* ALGORITHM3_H_ */

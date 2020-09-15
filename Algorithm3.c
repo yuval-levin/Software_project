@@ -8,6 +8,27 @@
 
 /*TODO: is include file.c ok? or should we do headers?*/
 /*TODO: add checks for all mallocs.*/
+
+
+/*helper function to free the  divisions given to us by Algorithm 3
+ * Which are inside of O */
+void freeDivisionGroup(struct division* O)
+{
+	int i, n;
+	struct node* currDiv;
+	struct node* nextDiv;
+	n = O->len;
+
+	currDiv = O->divisions;
+	for(i = 0 ;i < n ;i++)
+	{
+		nextDiv = currDiv->next;
+		free(currDiv->data.group);
+		free(currDiv);
+		currDiv = nextDiv;
+	}
+	free(O);
+}
 /*adds in start*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));
@@ -417,7 +438,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 
 	}
 	printf("%s", "return algo 3\n");
-	free(P);
+	freeDivisionGroup(P);
 	return O;
 
 }

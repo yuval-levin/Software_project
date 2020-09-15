@@ -115,24 +115,7 @@ void print_result (struct division* div) {
 		printf("%s", "\n");
 	}
 }
-/*helper function to free the  divisions given to us by Algorithm 3
- * Which are inside of O */
-void freeOutputDivisionGroup(struct division* O)
-{
-	int i, n;
-	struct node* currDiv;
-	struct node* nextDiv;
-	n = O->len;
 
-	currDiv = O->divisions;
-	for(i = 0 ;i < n ;i++)
-	{
-		nextDiv = currDiv->next;
-		free(currDiv->data.group);
-		free(currDiv);
-		currDiv = nextDiv;
-	}
-}
 int main(int args, char** argv) {
 	struct graph* input_graph;
 	FILE* input;
@@ -154,8 +137,7 @@ int main(int args, char** argv) {
 	print_result(final_division);
 
 	/*TODO: free final_division and input_graph*/
-	freeOutputDivisionGroup(final_division);
-	free(final_division); /*free O*/
+	freeDivisionGroup(final_division); /*free O and inside*/
 	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
 }
