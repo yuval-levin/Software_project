@@ -54,10 +54,38 @@ void create_graph(FILE* input, struct graph* new_graph) {
 	new_graph->numOfNodes = n;
 }
 
+void write_output_file(struct division* div, FILE* output) {
+	int k, n, group_size;
+	int* group_members;
+	struct node* cur_node;
+	struct division_group* cur_group;
+
+	n = div->len;
+	k = fwrite(&n, sizeof(int), 1, output);
+	assert(k==1);			/*TODO: error module*/
+
+	cur_node = div->divisions;
+
+	/*write groups*/
+	while (cur_node != NULL) {
+		cur_group = (struct divisionGroup*)cur_node->data;
+		group_size = cur_group->groupSize;
+		k = fwrite(&group_size, sizeof(int), 1, output);
+		assert(k==1);			/*TODO: error module*/
+
+		group_members = cur_group->groupMembers;
+		k = fwrite(&group_members, sizeof(int), group_size, output);
+		assert(k==group_size);			/*TODO: error module*/
+
+		cur_node = cur_node->next;
+	}
+}
 
 int main(int args, char** argv) {
 	struct graph* inputGraph;
 	FILE* input;
+	FILE *output;
+	struct division* final_division;
 	if(args != 2) exit(1); /* todo error module*/
 	inputGraph = (struct graph*)malloc(sizeof(struct graph));
 	assert(inputGraph!=NULL);		/* TODO: error module*/
@@ -66,7 +94,12 @@ int main(int args, char** argv) {
 	create_graph(input, inputGraph);
 	setvbuf (stdout, NULL, _IONBF, 0);
 	printf("%s  \n", "call Algo 3");
-	Algorithm3(inputGraph);
+	final_division = Algorithm3(inputGraph);
+
+	output = fopen(argv[2], "w");
+	write_output_file(final_division, output);
+
+	/*TODO: free*/
 
 	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
