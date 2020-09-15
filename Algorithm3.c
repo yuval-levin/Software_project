@@ -139,14 +139,18 @@ void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat
 }
 
 /*splitByS helper, free old div group*/
-void free_div_group(struct divisionGroup* g) {
+void free_div_group(struct divisionGroup* g, int should_use_free_ll) {
 
 	free(g->sumOfRows);
 	free(g->groupMembers);
 
-	/*free submatrix, don't use free_ll, since we don't want to free rows*/
-	free(get_private((struct _spmat*)g->groupSubmatrix));
-	free(g->groupSubmatrix);
+	if (should_use_free_ll == 1) {
+		free_ll((struct _spmat*)g->groupSubmatrix);
+	} else {
+		/*free submatrix, don't use free_ll, since we don't want to free rows*/
+		free(get_private((struct _spmat*)g->groupSubmatrix));
+		free(g->groupSubmatrix);
+	}
 	free(g);
 }
 
@@ -247,7 +251,7 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 		divisionGroup_deep_copy(n, g1, g);
 		g2 = NULL;
 		/* free memory*/
-		free_div_group(g);
+		free_div_group(g, 1);
 		return g2;
 	}
 
@@ -304,7 +308,7 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
 	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
 	/* free memory*/
-	free_div_group(g);
+	free_div_group(g, 0);
 
 	return g2;
 }

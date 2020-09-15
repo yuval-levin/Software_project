@@ -116,27 +116,28 @@ void print_result (struct division* div) {
 	}
 }
 
+
 int main(int args, char** argv) {
-	struct graph* inputGraph;
+	struct graph* input_graph;
 	FILE* input;
 	FILE *output;
 	struct division* final_division;
 	if(args != 3) exit(1); /* todo error module*/
-	inputGraph = (struct graph*)malloc(sizeof(struct graph));
-	assert(inputGraph!=NULL);		/* TODO: error module*/
+	input_graph = (struct graph*)malloc(sizeof(struct graph));
+	assert(input_graph!=NULL);		/* TODO: error module*/
 	input = fopen(argv[1], "rb");
 	assert(input!=NULL);			/* TODO: error module*/
-	create_graph(input, inputGraph);
+	create_graph(input, input_graph);
 	setvbuf (stdout, NULL, _IONBF, 0);
 	printf("%s  \n", "call Algo 3");
-	final_division = Algorithm3(inputGraph);
+	final_division = Algorithm3(input_graph);
 
 	output = fopen(argv[2], "wb");
 	assert(output != NULL);
 	write_output_file(final_division, output);
 	print_result(final_division);
 
-	/*TODO: free*/
+	/*TODO: free final_division and input_graph*/
 
 	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
