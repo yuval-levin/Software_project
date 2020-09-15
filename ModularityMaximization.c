@@ -3,7 +3,15 @@
 #include "modules.h"
 #include "spmat.h"
 
-
+/*todo: delete this*/
+void print_array(double *vec, int dim){
+    int i;
+    for (i = 0; i < dim; i++) {
+        setbuf(stdout, 0);
+        printf("%f ", vec[i]);
+    }
+    printf("\n");
+}
 /*TODO: remove duplicate and add to module of matrix functions*/
 double dotProduct(double* a, double* b, int col) {
 	/*dot product of vectors a and b*/
@@ -74,10 +82,9 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	int nodeNum, degree, vectorSChangedIndex;
 	/* vectorS arrives FLIPPED */
 	size = g->groupSize;
-
 	prevAS = (double*)malloc(size*sizeof(double));
 	currentAS = (double*)malloc(size*sizeof(double));
-
+	/*print_array(vectorS,size);*/
 	flipVectorEntry(vectorS, changedIndex);
 	mult_ll(g->groupSubmatrix,vectorS,prevAS);
 	previousSAS = dotProduct(vectorS,prevAS,size); /*calc SAS prev*/
@@ -93,7 +100,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 
 	newModularityY = prevModularity
 			 - 4 * vectorSChangedIndex * (degree / graph->M)
-					* (sumKiSi - (degree * vectorSChangedIndex));
+					* (sumKiSi + (degree * vectorSChangedIndex));
 	newModularityY = newModularityY+(currentSAS-previousSAS);
 
 	free(prevAS);
@@ -200,15 +207,7 @@ double dotProductInt(int* a, double* b, int col) {
 	return dot;
 }
 
-/*todo: delete this*/
-void print_array(double *vec, int dim){
-    int i;
-    for (i = 0; i < dim; i++) {
-        setbuf(stdout, 0);
-        printf("%f ", vec[i]);
-    }
-    printf("\n");
-}
+
 /* remove assert todo*/
 void printG(struct divisionGroup* g)
 {
@@ -279,11 +278,12 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
 		printf(" loop number %d \n",whileCnt++);
+		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* first KiSI */
 
 		for (i = 0; i < g->groupSize; i++) {
 			currentNode = unmoved;
 			prev = NULL, prevOfBiggest = NULL;
-			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
+
 			if (i == 0) Q0 =calcModularity(graph,vectorS,g,sumKiSi);
 			else
 				Q0 = Q0
@@ -293,12 +293,14 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			switchFirstUnmovedIteration = 1; /*indicator we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
+			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* only AFTER CALC MOD we change KiSi */
 			while (currentNode != NULL) {
 
 				flipVectorEntry(vectorS,  currentNode->data.num);
 
 				modChange = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
 						currentNode->data.num);
+				printf("mod change: %f index is: %d \n",modChange,currentNode->data.num);
 
 				if (switchFirstUnmovedIteration == 1
 						|| modChange > maxModularityChange) {
