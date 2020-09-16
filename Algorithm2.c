@@ -6,7 +6,7 @@
 #include "power_iter.h"
 #include "spmat.h"
 #include "Algorithm3.h"
-
+#include "error_codes.h"
 
 void computeS(double* u1, double* s, int n)
 {
@@ -22,6 +22,7 @@ void computeS(double* u1, double* s, int n)
 struct shiftedDivisionGroup* newShiftedDivsionGroup(struct divisionGroup* g,struct graph* graph)
 {
 	struct shiftedDivisionGroup* shiftedG = (struct shiftedDivisionGroup*) malloc(sizeof(struct shiftedDivisionGroup));
+	if(shiftedG == NULL) panic(ERROR_MALLOC_FAILED);
 	shiftedG->group = g;
 	shiftedG->norm = one_norm(graph,g);
 	return shiftedG;
@@ -35,6 +36,8 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,double* ei
 	rowLength =g->groupSize;
 
 	BShiftedTimesEigenvector = (double*)malloc(rowLength*sizeof(double));
+	if(BShiftedTimesEigenvector == NULL) panic(ERROR_MALLOC_FAILED);
+
 	createAbkVec(rowLength, eigenvector, BShiftedTimesEigenvector,
 			shiftedG,graph);
 	numerator = dotProduct(BShiftedTimesEigenvector, eigenvector, rowLength);
@@ -60,7 +63,8 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	struct shiftedDivisionGroup* shiftedG;
 
 	AtimesS = (double*) malloc(g->groupSize*(sizeof(double)));
-	printf("%s", "POST algo2 malloc \n");
+	if(AtimesS == NULL) panic(ERROR_MALLOC_FAILED);
+
 	shiftedG = newShiftedDivsionGroup(g,graph);
 	printf("%s", "POST algo2 shifted \n");
 	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);

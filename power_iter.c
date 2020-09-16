@@ -4,6 +4,7 @@
 #include "modules.h"
 #include "spmat.h"
 #include "ModularityMaximization.h"
+#include "error_codes.h"
 
 void createB(double* b, int col) {
 	/*creates a random vector */
@@ -154,12 +155,15 @@ double* createEigenvalue( int rowLength, struct shiftedDivisionGroup* g,struct g
 	int dif;
 
 	b = (double*) malloc(rowLength * sizeof(double));
-	/*TODO: add exit*/
+	if (b == NULL) panic(ERROR_MALLOC_FAILED);
+
 	createB(b, rowLength);
 	covRow = (double*) malloc(rowLength * sizeof(double));
-	/*TODO: add exit*/
+	if (covRow == NULL) panic(ERROR_MALLOC_FAILED);
+
 	nextb = (double*) malloc(rowLength * sizeof(double));
-	/*TODO: add exit*/
+	if (nextb == NULL) panic(ERROR_MALLOC_FAILED);
+
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {

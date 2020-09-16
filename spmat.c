@@ -10,8 +10,8 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
-#include <assert.h>
 #include "spmat.h"
+#include "error_codes.h"
 
 void add_row_ll(struct _spmat *A, const double *row, int i);
 void free_ll(struct _spmat *A);
@@ -40,11 +40,12 @@ void create_matrix(struct _spmat *A, FILE* input){
 	n = A->n;
 	fseek(input, 8, SEEK_SET); 	/*skipping dimensions*/
 	row = (double*)malloc(n*sizeof(double));
-	assert(row != NULL);
-	/*add each row*/
+	if (row == NULL) panic(ERROR_MALLOC_FAILED);
+
 	for (i = 0; i < n; i++){
 		k = fread(row, sizeof(double),n, input);
-		assert (k == n);
+		if (k != n) panic(ERROR_READ_FAILED);
+
 		A->add_row(A, row, i);
 	}
 
@@ -81,7 +82,8 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
 
 	for (j = 0; j < n; j++){
 		cur = (struct spmat_node*)malloc(sizeof(struct spmat_node));
-		assert(cur != NULL);		/*TODO*/
+		if (cur == NULL) panic(ERROR_MALLOC_FAILED);
+
 		cur->data = 1;
 		cur->index = row[j];
 		cur->node_name = row[j];
@@ -151,9 +153,10 @@ spmat* spmat_allocate_list(int n){
 
 	/*allocating memory*/
 	mat = (spmat*)malloc(sizeof(spmat));
-	assert(mat!= NULL);
+	if (mat == NULL) panic(ERROR_MALLOC_FAILED);
+
 	rows = (struct spmat_node**)malloc(n * sizeof(struct spmat_node*));
-	assert(rows!= NULL);
+	if (rows == NULL) panic(ERROR_MALLOC_FAILED);
 
 	/*initializing*/
 	mat->n = n;

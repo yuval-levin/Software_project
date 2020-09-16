@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "modules.h"
 #include "spmat.h"
+#include "error_codes.h"
 
 /*todo: delete this*/
 void print_array(double *vec, int dim){
@@ -65,11 +66,8 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
 		prevOfBiggest->next= prevOfBiggest->next->next;
 		free(removedNode);
 		return unmoved;
-
-
-
-
 }
+
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, double* vectorS,
 	 double sumKiSi, double prevModularity,
 		int changedIndex) {
@@ -83,7 +81,10 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, d
 	/* vectorS arrives FLIPPED */
 	size = g->groupSize;
 	prevAS = (double*)malloc(size*sizeof(double));
+	if (prevAS == NULL) panic(ERROR_MALLOC_FAILED);
 	currentAS = (double*)malloc(size*sizeof(double));
+	if (currentAS == NULL) panic(ERROR_MALLOC_FAILED);
+
 	/*print_array(vectorS,size);*/
 	flipVectorEntry(vectorS, changedIndex);
 	mult_ll(g->groupSubmatrix,vectorS,prevAS);
@@ -119,9 +120,7 @@ double* secondArgumentInCalc(struct graph* graph,
 	KiDividedByMPlusSum = (double*) malloc(
 			g->groupSize * sizeof(double));
 
-	if (KiDividedByMPlusSum == NULL)
-		exit(1); /*TODO: print error before exit.*/
-
+	if (KiDividedByMPlusSum == NULL) panic(ERROR_MALLOC_FAILED);
 	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
 		KiDividedByMPlusSum[i] = (graph->vectorDegrees[g->groupMembers[i]] / M)
@@ -136,8 +135,8 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 	int i;
 	double* KiDividedByMPlusSum;
 	double* resVec = (double*) malloc(g->groupSize * sizeof(double));
-	if (resVec == NULL)
-		exit(1); /*TODO: print error before exit.*/
+	if (resVec == NULL) panic(ERROR_MALLOC_FAILED);
+
 	KiDividedByMPlusSum= secondArgumentInCalc(graph, g,
 			sumKiSi);
 
@@ -146,6 +145,7 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 	}
 
 	free(KiDividedByMPlusSum);
+
 	return resVec;
 }
 
@@ -166,8 +166,8 @@ struct node* appendToList(struct node* prev, int index) {
 	struct node* current;
 
 	current = (struct node*) malloc(sizeof(struct node));
-	if (current == NULL)
-		exit(1); /*TODO: print error before exit.*/
+	if (current == NULL) panic(ERROR_MALLOC_FAILED);
+
 	current->data.num = index;
 	current->next = NULL;
 	if (prev != NULL)
@@ -245,6 +245,7 @@ double calcModularity(struct graph* graph, double* vectorS,
 	double* AtimesS;
 
 	AtimesS = (double*) malloc(g->groupSize * sizeof(double));
+	if (AtimesS == NULL) panic(ERROR_MALLOC_FAILED);
 
 	mult_ll(g->groupSubmatrix,vectorS,AtimesS); /*A times S*/
 

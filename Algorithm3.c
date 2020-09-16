@@ -4,7 +4,8 @@
 #include "spmat.h"
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
-#include <assert.h>
+#include "error_codes.h"
+
 
 /*TODO: is include file.c ok? or should we do headers?*/
 /*TODO: add checks for all mallocs.*/
@@ -32,8 +33,8 @@ void freeDivisionGroup(struct division* O)
 /*adds in start*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));
-	if (add == NULL)
-		exit(1); /*TODO: print error before exit.*/
+	if (add == NULL) panic(ERROR_MALLOC_FAILED);
+
 	add->data.group = g;
 	add->next = NULL;
 	if (D->len == 0)
@@ -122,6 +123,8 @@ void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_n
 	/* create a map, will be used to update index field to fit the new column index in the new spmat*/
 	count = 0;
 	map_name_to_col_index = (int*) malloc((g_group_members[num_members-1]+1) * sizeof(int));
+	if (map_name_to_col_index == NULL) panic(ERROR_MALLOC_FAILED);
+
 	for (i = 0; i < num_members; i++) {
 		map_name_to_col_index[g_group_members[i]] = count;
 		count++;
@@ -197,6 +200,7 @@ void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_nod
 	for (i = 0; i < size; i++) {
 		if (list_s[i] != NULL) {
 			list_t[i] = (struct spmat_node*)malloc(sizeof(struct spmat_node));
+			if (list_t[i] == NULL) panic(ERROR_MALLOC_FAILED);
 			spmat_node_copy(list_t[i], list_s[i]);
 		}
 	}
@@ -228,10 +232,10 @@ void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divis
 	gt_mat = spmat_allocate_list(gt_size);
 	/* allocate sumOfRows*/
 	gt_sum_of_rows = (int*)malloc(gt_size * sizeof(int));
-	assert(gt_sum_of_rows != NULL);							/* TODO: error module*/
+	if (gt_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
 	/* allocate groupMembers*/
 	gt_group_members = (int*)malloc(gt_size * sizeof(int));
-	assert(gt_group_members != NULL);						/* TODO: error module*/
+	if (gt_group_members == NULL) panic(ERROR_MALLOC_FAILED);
 
 	gs_mat = (struct _spmat*)gs->groupSubmatrix;
 	gs_sum_of_rows = (int*)gs->sumOfRows;
@@ -277,26 +281,26 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	}
 
 	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-	assert(g2 != NULL);										/* TODO: error module*/
+	if (g2 == NULL) panic(ERROR_MALLOC_FAILED);
 
 	/* allocate spmats*/
 	g1_mat = spmat_allocate_list(g1_size);
 	g2_mat = spmat_allocate_list(g2_size);
 	/* allocate sumOfRows*/
 	g1_sum_of_rows = (int*)malloc(g1_size * sizeof(int));
-	assert(g1_sum_of_rows != NULL);							/* TODO: error module*/
+	if (g1_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
 	g2_sum_of_rows = (int*)malloc(g2_size * sizeof(int));
-	assert(g2_sum_of_rows != NULL);							/* TODO: error module*/
+	if (g2_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
 	/* allocate groupMembers*/
 	g1_group_members = (int*)malloc(g1_size * sizeof(int));
-	assert(g1_group_members != NULL);						/* TODO: error module*/
+	if (g1_group_members == NULL) panic(ERROR_MALLOC_FAILED);
 	g2_group_members = (int*)malloc(g2_size * sizeof(int));
-	assert(g2_group_members != NULL);						/* TODO: error module*/
+	if (g2_group_members == NULL) panic(ERROR_MALLOC_FAILED);
 	/* allocate rows*/
 	g1_rows = (struct spmat_node**)malloc(g1_size * sizeof(struct spmat_node*));
-	assert(g1_group_members != NULL);						/* TODO: error module*/
+	if (g1_rows == NULL) panic(ERROR_MALLOC_FAILED);
 	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
-	assert(g2_group_members != NULL);						/* TODO: error module*/
+	if (g2_rows == NULL) panic(ERROR_MALLOC_FAILED);
 
 	/* move rows from g to g1, g2*/
 	i1 = 0;
@@ -336,8 +340,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));
-	if (D == NULL)
-		exit(1);  /*TODO: print error before exit.*/
+	if (D == NULL) panic(ERROR_MALLOC_FAILED);
+
 	D->len = 0;
 	D->divisions = NULL;
 	return D;
@@ -368,14 +372,15 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	int n;
 	int* group_members;
 	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-	if (group == NULL)
-		exit(1); /* TODO: error module*/
+	if (group == NULL) panic(ERROR_MALLOC_FAILED);
+
 	n = inputGraph -> numOfNodes;
 	group->groupSize = n;
 	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
 	group_members = (int*)malloc(n * sizeof(int));
-	assert(group_members != NULL);						/* TODO: error module*/
+	if (group_members == NULL) panic(ERROR_MALLOC_FAILED);
+
 	for (i = 0; i < n; i++) {
 		group->sumOfRows[i] = 0;
 		group_members[i] = i;
@@ -394,7 +399,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	int cnt;
 	struct division* P = new_division();
 	struct division* O = new_division();
-	add_groupDivision(P, createTrivialDivision( inputGraph));
+	add_groupDivision(P, createTrivialDivision(inputGraph));
 	/* TODO: calc sum of rows*/
 
 	cnt = 0;
@@ -406,11 +411,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		printf("%s", "POST remove \n");
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		printf("%s", "POST malloc \n");
-		if (vectorS == NULL)
-		{
-			printf("%s", "vectorS malloc failed algo3 \n");
-			exit(1); /*TODO: print error before exit.*/
-		}
+		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
 
 		cnt++;
 		Algorithm2(vectorS, g,inputGraph);
