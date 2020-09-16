@@ -3,7 +3,7 @@
 #include "error_codes.h"
 
 static void print_and_exit(int code, const char * str) {
-    fprintf(stderr, str);
+    fprintf(stderr, "%s\n",str);
     exit(code);
 }
 
