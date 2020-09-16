@@ -138,6 +138,8 @@ int main(int args, char** argv) {
 
 	/*TODO: free final_division and input_graph*/
 	freeDivisionGroup(final_division); /*free O and inside*/
+	free(input_graph->vectorDegrees);
+	free(input_graph);
 	printf("%s", "done main\n");
 	return 1; /*todo: check ok */
 }

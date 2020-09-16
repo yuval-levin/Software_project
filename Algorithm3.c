@@ -213,7 +213,7 @@ void int_list_copy(int size, int *list_t, int *list_s) {
 	}
 }
 
-/* splitByS helper, copies node_s to node_t*/
+/* TODO: maybe delete splitByS helper, copies node_s to node_t*/
 void spmat_node_copy(struct spmat_node* node_t, struct spmat_node* node_s) {
 	node_t->data = node_s->data;
 	node_t->index = node_s->index;
@@ -221,7 +221,7 @@ void spmat_node_copy(struct spmat_node* node_t, struct spmat_node* node_s) {
 	node_t->next = node_s->next;
 }
 
-/* splitByS helper, copies list_s to list_t*/
+/* TODO: maybe delete splitByS helper, copies list_s to list_t*/
 void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_node** list_s) {
 	int i;
 	for (i = 0; i < size; i++) {
@@ -234,13 +234,14 @@ void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_nod
 }
 
 /* splitByS helper, deep copies spmat_s to spmat_t*/
-void spmat_deep_copy(int size, struct _spmat *spmat_t, struct _spmat *spmat_s) {
+void spmat_deep_copy(struct _spmat *spmat_t, struct _spmat *spmat_s) {
 	struct spmat_node **gt_rows, **gs_rows;
 
 	gs_rows = get_private(spmat_s);
 	gt_rows = get_private(spmat_t);
 
-	spmat_node_list_copy(size, gt_rows, gs_rows);
+	gt_rows = gs_rows;
+	set_private(spmat_s, NULL);
 
 	/* copy*/
 	spmat_t->n = spmat_s->n;
@@ -268,7 +269,7 @@ void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divis
 	gs_sum_of_rows = (int*)gs->sumOfRows;
 	gs_group_members = (int*)gs->groupMembers;
 
-	spmat_deep_copy(gt_size, gt_mat, gs_mat);
+	spmat_deep_copy(gt_mat, gs_mat);
 	int_list_copy(gt_size, gt_sum_of_rows, gs_sum_of_rows);
 	int_list_copy(gt_size, gt_group_members, gs_group_members);
 
@@ -324,10 +325,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	g2_group_members = (int*)malloc(g2_size * sizeof(int));
 	if (g2_group_members == NULL) panic(ERROR_MALLOC_FAILED);
 	/* allocate rows*/
-	g1_rows = (struct spmat_node**)malloc(g1_size * sizeof(struct spmat_node*));
-	if (g1_rows == NULL) panic(ERROR_MALLOC_FAILED);
-	g2_rows = (struct spmat_node**)malloc(g2_size * sizeof(struct spmat_node*));
-	if (g2_rows == NULL) panic(ERROR_MALLOC_FAILED);
+	g1_rows = g1_mat->private;
+	g2_rows = g2_mat->private;
 
 	/* move rows from g to g1, g2*/
 	i1 = 0;
