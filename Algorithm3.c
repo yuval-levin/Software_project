@@ -10,6 +10,33 @@
 /*TODO: is include file.c ok? or should we do headers?*/
 /*TODO: add checks for all mallocs.*/
 
+/*helper function to free a linked list*/
+void freeList(struct spmat_node* cur){
+	struct spmat_node* next;
+	while(cur != NULL){
+		next = cur->next;
+		free(cur);
+		cur = next;
+	}
+}
+
+/*helper function to free the division groups*/
+void freeGroup(struct divisionGroup* group){
+	int i, n;
+	struct spmat_node** rows;
+
+	rows = group->groupSubmatrix->private;
+	n = group->groupSubmatrix->n;
+
+	for (i = 0; i < n; i++){
+		freeList(rows[i]);
+	}
+
+	free(group->sumOfRows);
+	free(group->groupMembers);
+	free(group->groupSubmatrix);
+	free(group); /*TODO: delete?*/
+}
 
 /*helper function to free the  divisions given to us by Algorithm 3
  * Which are inside of O */
@@ -24,7 +51,7 @@ void freeDivisionGroup(struct division* O)
 	for(i = 0 ;i < n ;i++)
 	{
 		nextDiv = currDiv->next;
-		free(currDiv->data.group);
+		freeGroup(currDiv->data.group);
 		free(currDiv);
 		currDiv = nextDiv;
 	}
