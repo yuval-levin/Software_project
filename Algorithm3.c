@@ -438,13 +438,10 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
 
 		cnt++;
-		printf("%s", "call ALGO2 \n");
 		Algorithm2(vectorS, g,inputGraph);
-		printf("%s", "POST algo2 \n");
 		modularityMaximization(inputGraph,vectorS, g);
-		printf("%s", "POST modMax \n");
 		g2 = splitByS(vectorS, g, g1);
-		printf("%s", "POST splitByS \n");
+
 
 		if (g2 == NULL)
 		{

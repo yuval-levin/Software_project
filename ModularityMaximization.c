@@ -337,13 +337,13 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 
 		modularityChange = curMax;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
-		printf("%f \n",modularityChange);
+		/*printf("%f \n",modularityChange);*/
 		if (maxImprovedIndex == (g->groupSize)-1) modularityChange = 0;
 
 	} while (modularityChange > epsilon);
 	free(improvedVector);
 	free(indiceVector);
-	printf("%s \n","done modularity maximization - post free");
+
 	/*free(unmoved);*/
 }
 

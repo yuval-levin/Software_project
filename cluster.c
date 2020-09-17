@@ -145,5 +145,5 @@ int main(int args, char** argv) {
 	free(input_graph->vectorDegrees);
 	free(input_graph);
 	printf("%s", "done main\n");
-	return 1; /*todo: check ok */
+	return 0; /*todo: check ok */
 }
