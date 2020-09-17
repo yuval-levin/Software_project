@@ -6,11 +6,10 @@
 #include "ModularityMaximization.h"
 #include "error_codes.h"
 
-
 /*helper function to free a linked list*/
-void freeList(struct spmat_node* cur){
+void freeList(struct spmat_node* cur) {
 	struct spmat_node* next;
-	while(cur != NULL){
+	while (cur != NULL) {
 		next = cur->next;
 		free(cur);
 		cur = next;
@@ -18,14 +17,14 @@ void freeList(struct spmat_node* cur){
 }
 
 /*helper function to free the division groups*/
-void freeGroup(struct divisionGroup* group){
+void freeGroup(struct divisionGroup* group) {
 	int i, n;
 	struct spmat_node** rows;
 
 	rows = group->groupSubmatrix->private;
 	n = group->groupSubmatrix->n;
 
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		freeList(rows[i]);
 	}
 
@@ -37,16 +36,14 @@ void freeGroup(struct divisionGroup* group){
 
 /*helper function to free the  divisions given to us by Algorithm 3
  * Which are inside of O */
-void freeDivisionGroup(struct division* O)
-{
+void freeDivisionGroup(struct division* O) {
 	int i, n;
 	struct node* currDiv;
 	struct node* nextDiv;
 	n = O->len;
 
 	currDiv = O->divisions;
-	for(i = 0 ;i < n ;i++)
-	{
+	for (i = 0; i < n; i++) {
 		nextDiv = currDiv->next;
 		freeGroup(currDiv->data.group);
 		free(currDiv);
@@ -57,16 +54,16 @@ void freeDivisionGroup(struct division* O)
 /*adds in start*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));
-	if (add == NULL) panic(ERROR_MALLOC_FAILED);
+	if (add == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
 	add->data.group = g;
 	add->next = NULL;
 	if (D->len == 0)
 		D->divisions = add;
-	else
-	{
+	else {
 		add->next = D->divisions;
-		 D->divisions = add; /*todo make sure no cycle*/
+		D->divisions = add; /*todo make sure no cycle*/
 	}
 
 	D->len = (D->len) + 1;
@@ -77,8 +74,8 @@ struct divisionGroup* removeFirstGroup(struct division* D) {
 	struct node* group;
 	struct node* nextGroup;
 
-	group= D->divisions;
-	nextGroup= group->next;
+	group = D->divisions;
+	nextGroup = group->next;
 	group->next = NULL;
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
@@ -98,7 +95,7 @@ void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 }
 
 /* splitByS helper, returns the size of g1*/
-int calc_size (double* vectorS, int n) {
+int calc_size(double* vectorS, int n) {
 	int i, size;
 	size = 0;
 
@@ -112,7 +109,8 @@ int calc_size (double* vectorS, int n) {
 
 /* splitByS helper, updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
-void update_mat_rows(double* vectorS, int num_members, int group_indicator, struct spmat_node** gt_rows, int* gt_sum_of_rows) {
+void update_mat_rows(double* vectorS, int num_members, int group_indicator,
+		struct spmat_node** gt_rows, int* gt_sum_of_rows) {
 	int i_row;
 	struct spmat_node *cur, *prev, *next;
 
@@ -132,7 +130,7 @@ void update_mat_rows(double* vectorS, int num_members, int group_indicator, stru
 					prev->next = cur->next;
 				}
 				free(cur);
-			/* don't remove cur, prev should advance*/
+				/* don't remove cur, prev should advance*/
 			} else {
 				prev = cur;
 			}
@@ -142,15 +140,18 @@ void update_mat_rows(double* vectorS, int num_members, int group_indicator, stru
 }
 
 /* splitByS helper, updates nodes index according to the new mat */
-void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_node** g_rows) {
+void update_mat_rows_index(int* g_group_members, int num_members,
+		struct spmat_node** g_rows) {
 	int i_row, count, i;
 	int* map_name_to_col_index;
 	struct spmat_node *cur;
 
 	/* create a map, will be used to update index field to fit the new column index in the new spmat*/
 	count = 0;
-	map_name_to_col_index = (int*) malloc((g_group_members[num_members-1]+1) * sizeof(int));
-	if (map_name_to_col_index == NULL) panic(ERROR_MALLOC_FAILED);
+	map_name_to_col_index = (int*) malloc(
+			(g_group_members[num_members - 1] + 1) * sizeof(int));
+	if (map_name_to_col_index == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
 	for (i = 0; i < num_members; i++) {
 		map_name_to_col_index[g_group_members[i]] = count;
@@ -169,7 +170,8 @@ void update_mat_rows_index(int* g_group_members, int num_members, struct spmat_n
 }
 
 /* splitByS helper, updates group members of target, according to group indicator (+-1)*/
-void update_group_members(double* vectorS, int* source_group_members, int* target_group_members, int group_indicator, int n) {
+void update_group_members(double* vectorS, int* source_group_members,
+		int* target_group_members, int group_indicator, int n) {
 	int i, i_target;
 	i_target = 0;
 
@@ -182,7 +184,8 @@ void update_group_members(double* vectorS, int* source_group_members, int* targe
 }
 
 /* splitByS helper, updates the group fields*/
-void create_division_group(struct divisionGroup* g, int size, struct _spmat* mat, int* sum_of_rows, int* group_members) {
+void create_division_group(struct divisionGroup* g, int size,
+		struct _spmat* mat, int* sum_of_rows, int* group_members) {
 	g->groupSize = size;
 	g->groupSubmatrix = mat;
 	g->sumOfRows = sum_of_rows;
@@ -196,10 +199,10 @@ void free_div_group(struct divisionGroup* g, int should_use_free_ll) {
 	free(g->groupMembers);
 
 	if (should_use_free_ll == 1) {
-		free_ll((struct _spmat*)g->groupSubmatrix);
+		free_ll((struct _spmat*) g->groupSubmatrix);
 	} else {
 		/*free submatrix, don't use free_ll, since we don't want to free rows*/
-		free(get_private((struct _spmat*)g->groupSubmatrix));
+		free(get_private((struct _spmat*) g->groupSubmatrix));
 		free(g->groupSubmatrix);
 	}
 	free(g);
@@ -222,12 +225,14 @@ void spmat_node_copy(struct spmat_node* node_t, struct spmat_node* node_s) {
 }
 
 /* TODO: maybe delete splitByS helper, copies list_s to list_t*/
-void spmat_node_list_copy(int size, struct spmat_node** list_t, struct spmat_node** list_s) {
+void spmat_node_list_copy(int size, struct spmat_node** list_t,
+		struct spmat_node** list_s) {
 	int i;
 	for (i = 0; i < size; i++) {
 		if (list_s[i] != NULL) {
-			list_t[i] = (struct spmat_node*)malloc(sizeof(struct spmat_node));
-			if (list_t[i] == NULL) panic(ERROR_MALLOC_FAILED);
+			list_t[i] = (struct spmat_node*) malloc(sizeof(struct spmat_node));
+			if (list_t[i] == NULL)
+				panic(ERROR_MALLOC_FAILED);
 			spmat_node_copy(list_t[i], list_s[i]);
 		}
 	}
@@ -252,22 +257,25 @@ void spmat_deep_copy(struct _spmat *spmat_t, struct _spmat *spmat_s) {
 }
 
 /* splitByS helper, deep copies gs to gt*/
-void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divisionGroup* gs){
+void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt,
+		struct divisionGroup* gs) {
 	struct _spmat *gt_mat, *gs_mat;
 	int *gt_sum_of_rows, *gt_group_members, *gs_sum_of_rows, *gs_group_members;
 
 	/* allocate spmat*/
 	gt_mat = spmat_allocate_list(gt_size);
 	/* allocate sumOfRows*/
-	gt_sum_of_rows = (int*)malloc(gt_size * sizeof(int));
-	if (gt_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
+	gt_sum_of_rows = (int*) malloc(gt_size * sizeof(int));
+	if (gt_sum_of_rows == NULL)
+		panic(ERROR_MALLOC_FAILED);
 	/* allocate groupMembers*/
-	gt_group_members = (int*)malloc(gt_size * sizeof(int));
-	if (gt_group_members == NULL) panic(ERROR_MALLOC_FAILED);
+	gt_group_members = (int*) malloc(gt_size * sizeof(int));
+	if (gt_group_members == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
-	gs_mat = (struct _spmat*)gs->groupSubmatrix;
-	gs_sum_of_rows = (int*)gs->sumOfRows;
-	gs_group_members = (int*)gs->groupMembers;
+	gs_mat = (struct _spmat*) gs->groupSubmatrix;
+	gs_sum_of_rows = (int*) gs->sumOfRows;
+	gs_group_members = (int*) gs->groupMembers;
 
 	spmat_deep_copy(gt_mat, gs_mat);
 	int_list_copy(gt_size, gt_sum_of_rows, gs_sum_of_rows);
@@ -281,7 +289,8 @@ void divisionGroup_deep_copy(int gt_size, struct divisionGroup* gt, struct divis
 
 /* splits g to groups, populates g1 and g2
  * if there's a group of size 0, g1 = g, g2 = NULL */
-struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct divisionGroup* g1) {
+struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g,
+		struct divisionGroup* g1) {
 	int i, n, g1_size, g2_size, i1, i2;
 	struct _spmat *g1_mat;
 	struct _spmat *g2_mat;
@@ -291,7 +300,7 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	int *g1_group_members, *g2_group_members, *g_group_members;
 
 	n = g->groupSize;
-	g_rows = get_private((struct _spmat*)g->groupSubmatrix);
+	g_rows = get_private((struct _spmat*) g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
 	g_group_members = g->groupMembers;
 
@@ -308,22 +317,27 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 		return g2;
 	}
 
-	g2 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-	if (g2 == NULL) panic(ERROR_MALLOC_FAILED);
+	g2 = (struct divisionGroup*) malloc(sizeof(struct divisionGroup));
+	if (g2 == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
 	/* allocate spmats*/
 	g1_mat = spmat_allocate_list(g1_size);
 	g2_mat = spmat_allocate_list(g2_size);
 	/* allocate sumOfRows*/
-	g1_sum_of_rows = (int*)malloc(g1_size * sizeof(int));
-	if (g1_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
-	g2_sum_of_rows = (int*)malloc(g2_size * sizeof(int));
-	if (g2_sum_of_rows == NULL) panic(ERROR_MALLOC_FAILED);
+	g1_sum_of_rows = (int*) malloc(g1_size * sizeof(int));
+	if (g1_sum_of_rows == NULL)
+		panic(ERROR_MALLOC_FAILED);
+	g2_sum_of_rows = (int*) malloc(g2_size * sizeof(int));
+	if (g2_sum_of_rows == NULL)
+		panic(ERROR_MALLOC_FAILED);
 	/* allocate groupMembers*/
-	g1_group_members = (int*)malloc(g1_size * sizeof(int));
-	if (g1_group_members == NULL) panic(ERROR_MALLOC_FAILED);
-	g2_group_members = (int*)malloc(g2_size * sizeof(int));
-	if (g2_group_members == NULL) panic(ERROR_MALLOC_FAILED);
+	g1_group_members = (int*) malloc(g1_size * sizeof(int));
+	if (g1_group_members == NULL)
+		panic(ERROR_MALLOC_FAILED);
+	g2_group_members = (int*) malloc(g2_size * sizeof(int));
+	if (g2_group_members == NULL)
+		panic(ERROR_MALLOC_FAILED);
 	/* allocate rows*/
 	g1_rows = g1_mat->private;
 	g2_rows = g2_mat->private;
@@ -356,8 +370,10 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 	set_private(g1_mat, g1_rows);
 	set_private(g2_mat, g2_rows);
 	/* create divisionGroups*/
-	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows, g1_group_members);
-	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows, g2_group_members);
+	create_division_group(g1, g1_size, g1_mat, g1_sum_of_rows,
+			g1_group_members);
+	create_division_group(g2, g2_size, g2_mat, g2_sum_of_rows,
+			g2_group_members);
 	/* free memory*/
 	free_div_group(g, 0);
 
@@ -366,7 +382,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g, struct 
 
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));
-	if (D == NULL) panic(ERROR_MALLOC_FAILED);
+	if (D == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
 	D->len = 0;
 	D->divisions = NULL;
@@ -380,15 +397,18 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	int i;
 	int n;
 	int* group_members;
-	struct divisionGroup* group = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-	if (group == NULL) panic(ERROR_MALLOC_FAILED);
+	struct divisionGroup* group = (struct divisionGroup*) malloc(
+			sizeof(struct divisionGroup));
+	if (group == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
-	n = inputGraph -> numOfNodes;
+	n = inputGraph->numOfNodes;
 	group->groupSize = n;
 	group->groupSubmatrix = (inputGraph->A);
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
-	group_members = (int*)malloc(n * sizeof(int));
-	if (group_members == NULL) panic(ERROR_MALLOC_FAILED);
+	group_members = (int*) malloc(n * sizeof(int));
+	if (group_members == NULL)
+		panic(ERROR_MALLOC_FAILED);
 
 	for (i = 0; i < n; i++) {
 		group->sumOfRows[i] = 0;
@@ -414,21 +434,21 @@ struct division* Algorithm3(struct graph* inputGraph) {
 
 	while (P->len > 0) {
 
-		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
+		g1 = (struct divisionGroup*) malloc(sizeof(struct divisionGroup));
 		g = removeFirstGroup(P);
-		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
-		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
 
-		Algorithm2(vectorS, g,inputGraph);
-		modularityMaximization(inputGraph,vectorS, g);
+		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
+		if (vectorS == NULL)
+			panic(ERROR_MALLOC_FAILED);
+
+		Algorithm2(vectorS, g, inputGraph);
+		modularityMaximization(inputGraph, vectorS, g);
+
 		g2 = splitByS(vectorS, g, g1);
 
-		if (g2 == NULL)
-		{
+		if (g2 == NULL) { /*meaning no split was done and group stayed the same*/
 			add_groupDivision(O, g1);
-		}
-		else
-		{
+		} else {
 			updateDivisionPostSplit(g1, P, O);
 			updateDivisionPostSplit(g2, P, O);
 		}
