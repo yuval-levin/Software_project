@@ -7,9 +7,6 @@
 #include "error_codes.h"
 
 
-/*TODO: is include file.c ok? or should we do headers?*/
-/*TODO: add checks for all mallocs.*/
-
 /*helper function to free a linked list*/
 void freeList(struct spmat_node* cur){
 	struct spmat_node* next;
@@ -88,6 +85,9 @@ struct divisionGroup* removeFirstGroup(struct division* D) {
 	return group->data.group;
 }
 
+/*helper function for Algorithm 2.
+ * After split,if group (here represented by g as input argument, but is  g1 or g2 in algo2) larger than 1 are put in P,
+ * Any groups of size 1 are put in O */
 void updateDivisionPostSplit(struct divisionGroup* g, struct division* P,
 		struct division* O) {
 	if (g->groupSize == 1)
@@ -373,23 +373,6 @@ struct division* new_division() {
 	return D;
 }
 
-
-double sumOfRow(int row,struct spmat_node** gt_rows)
-{
-	double sum = 0;
-	struct spmat_node* cur;
-	cur = gt_rows[row];
-
-	if(cur == NULL) return 0;
-	else while(cur != NULL)
-	{
-		sum+=cur->data;
-		cur = cur->next;
-	}
-	return sum;
-}
-
-
 /* PARAMS : n is number of nodes in graph
  * DESC : Returns a divisonGroup with all nodes in graph
  */
@@ -416,19 +399,19 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	return group;
 }
 
-
+/*Algorithm 3 as described in sp_project.pdf
+ * return O, final division to groups
+ * */
 struct division* Algorithm3(struct graph* inputGraph) {
 	struct divisionGroup* g;
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
 	double* vectorS;
-	int cnt;
+
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(inputGraph));
-	/* TODO: calc sum of rows*/
 
-	cnt = 0;
 	while (P->len > 0) {
 
 		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
@@ -436,18 +419,16 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
 
-		cnt++;
 		Algorithm2(vectorS, g,inputGraph);
 		modularityMaximization(inputGraph,vectorS, g);
 		g2 = splitByS(vectorS, g, g1);
-
 
 		if (g2 == NULL)
 		{
 			add_groupDivision(O, g1);
 		}
-
-		else {
+		else
+		{
 			updateDivisionPostSplit(g1, P, O);
 			updateDivisionPostSplit(g2, P, O);
 		}
@@ -455,7 +436,6 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		free(vectorS);
 
 	}
-	printf("%s", "return algo 3\n");
 	freeDivisionGroup(P);
 	return O;
 

@@ -5,6 +5,7 @@
 #include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
+#include <time.h> /*todo: remove time etc*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;
@@ -121,17 +122,19 @@ int main(int args, char** argv) {
 	FILE* input;
 	FILE *output;
 	struct division* final_division;
+    clock_t start, end;
+
+	 start = clock();
+	  srand(time(NULL));
+
 	if(args != 3) panic(ERROR_NUM_ARGS);
 	input_graph = (struct graph*)malloc(sizeof(struct graph));
 	if(input_graph==NULL) panic(ERROR_INPUT_NOT_FOUND);
 	input = fopen(argv[1], "rb");
-	printf("%s \n",argv[1]);
-	printf("%s \n",argv[2]);
 	if(input==NULL) panic(ERROR_OPEN_FAILED);
 	create_graph(input, input_graph);
 	fclose(input);
 	/*setvbuf (stdout, NULL, _IONBF, 0);*/
-	printf("%s  \n", "call Algo 3");
 	final_division = Algorithm3(input_graph);
 
 	output = fopen(argv[2], "wb");
@@ -144,6 +147,8 @@ int main(int args, char** argv) {
 	freeDivisionGroup(final_division); /*free O and inside*/
 	free(input_graph->vectorDegrees);
 	free(input_graph);
+	end = clock();
+	    printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	printf("%s", "done main\n");
 	return 0; /*todo: check ok */
 }
