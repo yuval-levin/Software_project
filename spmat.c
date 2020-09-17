@@ -80,6 +80,10 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n){
 	struct spmat_node *cur, *prev;
 	first = 0;
 
+	if (n == 0) {
+		((struct spmat_node**)A->private)[i] = NULL;
+	}
+
 	for (j = 0; j < n; j++){
 		cur = (struct spmat_node*)malloc(sizeof(struct spmat_node));
 		if (cur == NULL) panic(ERROR_MALLOC_FAILED);
