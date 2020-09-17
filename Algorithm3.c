@@ -434,12 +434,11 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
 		printf("%d \n", cnt);
 		g = removeFirstGroup(P);
-		printf("%s", "POST remove \n");
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
-		printf("%s", "POST malloc \n");
 		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
 
 		cnt++;
+		printf("%s", "call ALGO2 \n");
 		Algorithm2(vectorS, g,inputGraph);
 		printf("%s", "POST algo2 \n");
 		modularityMaximization(inputGraph,vectorS, g);
@@ -449,16 +448,12 @@ struct division* Algorithm3(struct graph* inputGraph) {
 
 		if (g2 == NULL)
 		{
-			printf("%s", "PRE g2=null \n");
 			add_groupDivision(O, g1);
-			printf("%s", "POST g2=null \n");
 		}
 
 		else {
-			printf("%s", "PRE update division \n");
 			updateDivisionPostSplit(g1, P, O);
 			updateDivisionPostSplit(g2, P, O);
-			printf("%s", "POST update division \n");
 		}
 
 		free(vectorS);

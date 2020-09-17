@@ -63,13 +63,12 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	struct shiftedDivisionGroup* shiftedG;
 
 	AtimesS = (double*) malloc(g->groupSize*(sizeof(double)));
-	if(AtimesS == NULL) panic(ERROR_MALLOC_FAILED);
-
+	if(AtimesS == NULL) panic(ERROR_MALLOC_FAILED);;
 	shiftedG = newShiftedDivsionGroup(g,graph);
-	printf("%s", "POST algo2 shifted \n");
+
 	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG,eigenvector,graph);
-	printf("%s", "POST algo2 eigenvalue \n");
+
 	if (eigenvalue <= epsilon) {
 		/*g is undivisble so S stays the same - everyone are '1';*/
 		fillVectorWithOnes(vectorS, g->groupSize);
@@ -77,12 +76,9 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	else {
 		computeS(eigenvector, vectorS, g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-		printf("%s", "POST algo2 sumkisi \n");
 		rightArguTemp = modularityTimesS(graph, vectorS, g, sumKiSi);
 		rightArgument = dotProduct(vectorS,rightArguTemp, g->groupSize);
-		printf("%s", "POST algo2 rightargu \n");
 		mult_ll(g->groupSubmatrix,vectorS, AtimesS);
-		printf("%s", "POST algo2 mult_ll \n");
 		leftArgument = dotProduct(vectorS,AtimesS,g->groupSize);;
 		if (leftArgument+rightArgument <= epsilon)
 		{

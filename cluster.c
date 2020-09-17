@@ -74,7 +74,7 @@ void write_output_file(struct division* div, FILE* output) {
 		if(k!=1) panic(ERROR_WRITE_FAILED);
 
 		group_members = cur_group->groupMembers;
-		k = fwrite(&group_members, sizeof(int), group_size, output);
+		k = fwrite(group_members, sizeof(int), group_size, output);
 		if(k!=group_size) panic(ERROR_WRITE_FAILED);
 
 		cur_node = cur_node->next;
@@ -125,15 +125,19 @@ int main(int args, char** argv) {
 	input_graph = (struct graph*)malloc(sizeof(struct graph));
 	if(input_graph==NULL) panic(ERROR_INPUT_NOT_FOUND);
 	input = fopen(argv[1], "rb");
+	printf("%s \n",argv[1]);
+	printf("%s \n",argv[2]);
 	if(input==NULL) panic(ERROR_OPEN_FAILED);
 	create_graph(input, input_graph);
-	setvbuf (stdout, NULL, _IONBF, 0);
+	fclose(input);
+	/*setvbuf (stdout, NULL, _IONBF, 0);*/
 	printf("%s  \n", "call Algo 3");
 	final_division = Algorithm3(input_graph);
 
 	output = fopen(argv[2], "wb");
 	if(output==NULL) panic(ERROR_OPEN_FAILED);
 	write_output_file(final_division, output);
+	fclose(output);
 	print_result(final_division);
 
 	/*TODO: free final_division and input_graph*/
