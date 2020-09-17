@@ -35,7 +35,8 @@ void flipVectorEntry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
 
-/* we wish for S be in the same state it was when we reached maxImproved Score.
+/* Helper function:
+ * We wish for S be in the same state it was when we reached maxImproved Score.
  * so we reverse everything that came after it*/
 void updateS(double* vectorS, int* indiceVector, int maxImprovedIndex, int length) {
 	int i;
@@ -44,14 +45,39 @@ void updateS(double* vectorS, int* indiceVector, int maxImprovedIndex, int lengt
 	}
 }
 
-
-void updateImprovedVector(double* improvedVector, int entryIndex, double score) {
+/* As seen in psuedo-code for Algo4 row 14,
+ * We update "improvedVector" by Aggregating previous improvements with current improvement.
+ * We also keep track of index of maximum improvement !
+ * */
+void updateImprovedVector(double* improvedVector, int entryIndex, double score,double* maxImprovedIndex,double* curMax) {
+/*first improvement is always maximal */
 	if (entryIndex == 0)
+	{
 		improvedVector[0] = score;
+		*curMax = score;
+		*maxImprovedIndex = 0;
+	}
 	else
+	{
 		improvedVector[entryIndex] = improvedVector[entryIndex - 1] + score;
+		/*if current improvement is bigger than maximal improvement, we update the max value and index.N*/
+		if( improvedVector[entryIndex] > *curMax)
+		{
+			*curMax = improvedVector[entryIndex];
+			*maxImprovedIndex = entryIndex;
+		}
+	}
+
 }
 
+/*
+ * Helper function to remove node from LinkedList representing "UNMOVED" nodes in algo4.
+ * (we remove nodes that had the biggest change in modularity)
+ * Since LinkedList is one-directional, removal of node is done by using the previous node to it,
+ * and setting its value to null.
+ * If previousNode = NULL, then we are removing head of LinkedList.
+ * We return the new LinkedList, sans the remove node.
+ * */
 struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
 	struct node* removedNode;
 	if (prevOfBiggest == NULL)
@@ -68,6 +94,10 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
 		return unmoved;
 }
 
+/*
+ * Helper function:
+ * calculates vectorS times A(Adjacency matrix) times vectorS
+ * */
 double calcSAS(struct divisionGroup* g,double* vectorS)
 {
 	int size;
@@ -78,7 +108,6 @@ double calcSAS(struct divisionGroup* g,double* vectorS)
 		prevAS = (double*)malloc(size*sizeof(double));
 
 		if (prevAS == NULL) panic(ERROR_MALLOC_FAILED);
-		/*print_array(vectorS,size);*/
 			/*	flipVectorEntry(vectorS, changedIndex);*/
 				mult_ll(g->groupSubmatrix,vectorS,prevAS);
 				previousSAS = dotProduct(vectorS,prevAS,size); /*calc SAS prev*/
@@ -87,7 +116,7 @@ double calcSAS(struct divisionGroup* g,double* vectorS)
 	return previousSAS;
 }
 
-
+/*Calculates Change in Modularity using previous SAS*/
 double calculateChangeModularityWithPrevSas(struct graph* graph, struct divisionGroup* g, double* vectorS,
 	 double sumKiSi, double prevModularity,
 		int changedIndex,double previousSAS)
@@ -210,26 +239,7 @@ struct node* createUnmovedList(int sizeOfg) {
 }
 
 
-
-double dotProductInt(int* a, double* b, int col) {
-	/*dot product of vectors a and b*/
-	int k;
-	int* vec1;
-	double* vec2;
-	double dot = 0;
-	vec1 = a;
-	vec2 = b;
-
-	for (k = 0; k < col; k++) {
-		dot += ((*vec1) * (*vec2));
-		vec1 += 1;
-		vec2 += 1;
-	}
-	return dot;
-}
-
-
-/* remove assert todo*/
+/* remove  todo*/
 void printG(struct divisionGroup* g)
 {
 	int n =g->groupSize;
@@ -280,16 +290,47 @@ double calcModularity(struct graph* graph, double* vectorS,
 	return SAS - SBS;
 }
 
+void unmovedLoop(struct graph* graph,struct divisionGroup* g,struct node* currentNode,double* vectorS,double prevSAS,
+		double sumKiSi,double Q0,
+		int *switchFirstUnmovedIteration,double *maxModularityChange,int *indexOfBiggestIncrease,struct node** prevOfBiggest)
+{
+	double modChange;
+	struct node* prev;
+	prev = NULL;
+
+	while (currentNode != NULL) {
+
+		flipVectorEntry(vectorS,  currentNode->data.num);
+
+		modChange = calculateChangeModularityWithPrevSas(graph,g, vectorS, sumKiSi, Q0,
+				currentNode->data.num,prevSAS);
+
+		if (*switchFirstUnmovedIteration == 1
+				|| modChange > *maxModularityChange) {
+			*maxModularityChange = modChange;
+			*indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
+			/*maxImproveScore = maxModularityChange;*/
+			*prevOfBiggest = prev;
+			*switchFirstUnmovedIteration = 0;
+		}
+		flipVectorEntry(vectorS, currentNode->data.num);
+
+		prev = currentNode;
+		currentNode = currentNode->next;
+	}
+
+}
+
+
 /*ODO: is DeltaModularity double int long?*/
 void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
-	double modularityChange, Q0, modChange, maxModularityChange, maxImprovedIndex = 0,
+	double modularityChange, Q0, maxModularityChange, maxImprovedIndex = 0,
 			 sumKiSi,curMax,prevSAS;
 	int i, indexOfBiggestIncrease, switchFirstUnmovedIteration = 1;
 	struct node* unmoved;
 	struct node* currentNode;
-	struct node* prev;
 	struct node* prevOfBiggest;
 	double* improvedVector;
 	int* indiceVector;
@@ -304,7 +345,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 
 		for (i = 0; i < g->groupSize; i++) {
 			currentNode = unmoved;
-			prev = NULL;
 			prevOfBiggest = NULL;
 			if (i == 0) Q0 =calcModularity(graph,vectorS,g,sumKiSi);
 			else
@@ -312,53 +352,24 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 
 						+ calculateChangeModularity(graph, g,vectorS, sumKiSi,
 								Q0, indexOfBiggestIncrease);
-			switchFirstUnmovedIteration = 1; /*indicator we need to set i = 0 as currentMax*/
+			switchFirstUnmovedIteration = 1; /*indicator that says: we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* only AFTER CALC MOD we change KiSi */
 
 			/*while going through all UNMVOED, they all have the same SAS. so we calculate it once here:*/
 			prevSAS = calcSAS(g,vectorS);
-			while (currentNode != NULL) {
-
-				flipVectorEntry(vectorS,  currentNode->data.num);
-
-				modChange = calculateChangeModularityWithPrevSas(graph,g, vectorS, sumKiSi, Q0,
-						currentNode->data.num,prevSAS);
-				if (switchFirstUnmovedIteration == 1
-						|| modChange > maxModularityChange) {
-					maxModularityChange = modChange;
-					indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
-					/*maxImproveScore = maxModularityChange;*/
-					prevOfBiggest = prev;
-					switchFirstUnmovedIteration = 0;
-				}
-				flipVectorEntry(vectorS, currentNode->data.num);
-
-				prev = currentNode;
-				currentNode = currentNode->next;
-			}
-
+			unmovedLoop(graph, g,currentNode,vectorS, prevSAS, sumKiSi, Q0,
+					 &switchFirstUnmovedIteration, &maxModularityChange, &indexOfBiggestIncrease, &prevOfBiggest);
 			/*moving vertex with maximal increase in modularity*/
 			flipVectorEntry(vectorS, indexOfBiggestIncrease);
 			unmoved = removeFromUnmoved(prevOfBiggest, unmoved);
 			/*updating vector of indice to save the index we now moved:*/
 			indiceVector[i] = indexOfBiggestIncrease;
 			/*updating the current 'state score'*/
-			updateImprovedVector(improvedVector, i, maxModularityChange); /*incrementing scores*/
+			updateImprovedVector(improvedVector, i, maxModularityChange,&maxImprovedIndex,&curMax); /*incrementing scores*/
 
 		}
-		/*row 21: find max*/
-		curMax = improvedVector[0];
-		for(i = 1;i<g->groupSize;i++)
-		{
-			if(improvedVector[i] > curMax)
-			{
-				curMax = improvedVector[i];
-				maxImprovedIndex = i;
-			}
-		}
-
 		modularityChange = curMax;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
 		/*printf("%f \n",modularityChange);*/
