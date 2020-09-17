@@ -5,7 +5,7 @@
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
 #include "error_codes.h"
-
+#include <time.h> /*todo: remove time etc*/
 /*helper function to free a linked list*/
 void freeList(struct spmat_node* cur) {
 	struct spmat_node* next;
@@ -299,6 +299,11 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g,
 	int *g_sum_of_rows, *g1_sum_of_rows, *g2_sum_of_rows;
 	int *g1_group_members, *g2_group_members, *g_group_members;
 
+	clock_t start, end;
+
+	start = clock();
+	srand(time(NULL));
+
 	n = g->groupSize;
 	g_rows = get_private((struct _spmat*) g->groupSubmatrix);
 	g_sum_of_rows = g->sumOfRows;
@@ -376,7 +381,8 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g,
 			g2_group_members);
 	/* free memory*/
 	free_div_group(g, 0);
-
+	end = clock();
+	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	return g2;
 }
 

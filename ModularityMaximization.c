@@ -3,6 +3,7 @@
 #include "modules.h"
 #include "spmat.h"
 #include "error_codes.h"
+#include <time.h> /*todo: remove time etc*/
 
 /*todo: delete this*/
 void print_array(double *vec, int dim) {
@@ -67,6 +68,16 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score,
 
 }
 
+struct node* addToList(struct node* list, struct node* node) {
+	if (list == NULL) {
+		list = node;
+		list->next = NULL;
+	} else {
+		node->next = list;
+		list = node;
+	}
+	return list;
+}
 /*
  * Helper function to remove node from LinkedList representing "UNMOVED" nodes in algo4.
  * (we remove nodes that had the biggest change in modularity)
@@ -75,26 +86,27 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score,
  * If previousNode = NULL, then we are removing head of LinkedList.
  * We return the new LinkedList, sans the remove node.
  * */
-struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved) {
-	struct node* removedNode;
+struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved,
+		struct node** removedNode) {
+
 	if (prevOfBiggest == NULL) {
-		removedNode = unmoved;
+		*removedNode = unmoved;
 		unmoved = unmoved->next;
-		free(removedNode);
-		return unmoved;
+	} else {
+		*removedNode = prevOfBiggest->next;
+		prevOfBiggest->next = prevOfBiggest->next->next;
 	}
-	/*else*/
-	removedNode = prevOfBiggest->next;
-	prevOfBiggest->next = prevOfBiggest->next->next;
-	free(removedNode);
+
 	return unmoved;
 }
+
 
 /*
  * Helper function:
  * calculates vectorS times A(Adjacency matrix) times vectorS
  * */
 double calcSAS(struct divisionGroup* g, double* vectorS) {
+
 	int size;
 	double* prevAS;
 	double previousSAS;
@@ -109,6 +121,9 @@ double calcSAS(struct divisionGroup* g, double* vectorS) {
 	previousSAS = dotProduct(vectorS, prevAS, size); /*calc SAS prev*/
 	/*flipVectorEntry(vectorS, changedIndex);*/
 	free(prevAS);
+
+	/*printf("calculate SAS took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
+
 	return previousSAS;
 }
 
@@ -149,10 +164,17 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 		double* vectorS, double sumKiSi, double prevModularity,
 		int changedIndex) {
+	clock_t start, end;
+
 	double previousSAS;
+	start = clock();
+	srand(time(NULL));
 	previousSAS = calcSAS(g, vectorS);
 	return calculateChangeModularityWithPrevSas(graph, g, vectorS, sumKiSi,
 			prevModularity, changedIndex, previousSAS);
+	end = clock();
+	printf("calculate change modularity took %f seconds\n",
+			((double) (end - start) / CLOCKS_PER_SEC));
 
 }
 
@@ -207,7 +229,7 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 	return sum;
 }
 
-struct node* appendToList(struct node* prev, int index) {
+struct node* appendToInitUnmoved(struct node* prev, int index) {
 	struct node* current;
 
 	current = (struct node*) malloc(sizeof(struct node));
@@ -227,7 +249,7 @@ struct node* createUnmovedList(int sizeOfg) {
 	struct node* head = NULL;
 	struct node* prev = NULL;
 	for (i = 0; i < sizeOfg; i++) {
-		prev = appendToList(prev, i);
+		prev = appendToInitUnmoved(prev, i);
 		if (i == 0)
 			head = prev;
 	}
@@ -282,15 +304,18 @@ double calcModularity(struct graph* graph, double* vectorS,
 }
 
 void unmovedLoop(struct graph* graph, struct divisionGroup* g,
-		struct node* currentNode, double* vectorS,
-		double sumKiSi, double Q0, int *switchFirstUnmovedIteration,
-		double *maxModularityChange, int *indexOfBiggestIncrease,
-		struct node** prevOfBiggest) {
+		struct node* currentNode, double* vectorS, double sumKiSi, double Q0,
+		int *switchFirstUnmovedIteration, double *maxModularityChange,
+		int *indexOfBiggestIncrease, struct node** prevOfBiggest) {
+
+	/*clock_t start, end;*/
+
 	double modChange;
 	double prevSAS;
 	struct node* prev;
 	prev = NULL;
-
+	/*start = clock();
+	 srand(time(NULL));*/
 	/*while going through all UNMVOED, they all have the same SAS. so we calculate it once here:*/
 	prevSAS = calcSAS(g, vectorS);
 
@@ -314,6 +339,8 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 		prev = currentNode;
 		currentNode = currentNode->next;
 	}
+	/*end = clock();*/
+	/*printf("unmoved LOOP took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
 
 }
 
@@ -325,17 +352,26 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			sumKiSi, curMax;
 	int i, indexOfBiggestIncrease, switchFirstUnmovedIteration = 1;
 	struct node* unmoved;
+	struct node* removedFromUnmoved;
 	struct node* currentNode;
+	struct node* removedNode;
 	struct node* prevOfBiggest;
 	double* improvedVector;
 	int* indiceVector;
+	clock_t start, end;
+
+	start = clock();
+	srand(time(NULL));
 
 	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	indiceVector = (int*) malloc(g->groupSize * sizeof(int));
 
+	removedFromUnmoved = NULL;
+	unmoved = createUnmovedList(g->groupSize);
+
 	do {
 		/*improving delta Q by moving ONE index*/
-		unmoved = createUnmovedList(g->groupSize);
+
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* first KiSI */
 
 		for (i = 0; i < g->groupSize; i++) {
@@ -360,7 +396,10 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			/*moving vertex with maximal increase in modularity*/
 			flipVectorEntry(vectorS, indexOfBiggestIncrease);
 
-			unmoved = removeFromUnmoved(prevOfBiggest, unmoved);
+			unmoved = removeFromUnmoved(prevOfBiggest, unmoved,
+					&removedNode);
+			/*add removed node from unmoved to removeFromUnmoved list*/
+			removedFromUnmoved = addToList(removedFromUnmoved,removedNode);
 			/*updating vector of indice to save the index we now moved:*/
 			indiceVector[i] = indexOfBiggestIncrease;
 			/*updating the current 'state score'*/
@@ -368,6 +407,10 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 					&maxImprovedIndex, &curMax); /*incrementing scores*/
 
 		}
+		/*switch between lists*/
+		unmoved = removedFromUnmoved;
+		removedFromUnmoved = NULL;
+
 		modularityChange = curMax;
 		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
 		/*printf("%f \n",modularityChange);*/
@@ -377,10 +420,11 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			modularityChange = 0;
 
 	} while (modularityChange > epsilon);
-
+	end = clock();
+	printf("ModMax took %f seconds\n",
+			((double) (end - start) / CLOCKS_PER_SEC));
 	free(improvedVector);
 	free(indiceVector);
-
-	/*free(unmoved);*/
+	free(unmoved);
 }
 

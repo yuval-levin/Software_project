@@ -5,6 +5,7 @@
 #include "spmat.h"
 #include "ModularityMaximization.h"
 #include "error_codes.h"
+#include <time.h>
 
 void createB(double* b, int col) {
 	/*creates a random vector */
@@ -151,6 +152,10 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 	double* covRow;
 	double* origNextB;
 	int dif;
+	clock_t start, end;
+	clock_t start_power,end_power;
+	start = clock();
+		srand(time(NULL));
 
 	b = (double*) malloc(rowLength * sizeof(double));
 	if (b == NULL)
@@ -166,8 +171,11 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 		panic(ERROR_MALLOC_FAILED);
 
 	/*saving its' original start pointer*/
+	printf("%s","starting power iteration");
 	origNextB = nextb;
 	do {
+		start_power = clock();
+				srand(time(NULL));
 
 		createAbkVec(rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
@@ -179,12 +187,16 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 		dif = difference(b, origNextB, rowLength);
 
 		/*updating b: */
-		printf("%s", "power iter");
 		updateB(b, origNextB, rowLength);
 
 	} while (dif == 1);
+
+	end_power = clock();
+	printf("power iter took %f seconds\n", ((double) (end_power - start_power) / CLOCKS_PER_SEC));
 	free(origNextB);
 	free(covRow);
+	end = clock();
+	printf("eigen value calc took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	return b;
 
 }
