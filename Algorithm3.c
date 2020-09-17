@@ -442,6 +442,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 			panic(ERROR_MALLOC_FAILED);
 
 		Algorithm2(vectorS, g, inputGraph);
+		printf("%s", "before mod max \n");
 		modularityMaximization(inputGraph, vectorS, g);
 
 		g2 = splitByS(vectorS, g, g1);

@@ -179,7 +179,6 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 		dif = difference(b, origNextB, rowLength);
 
 		/*updating b: */
-		printf("%s", "power iter");
 		updateB(b, origNextB, rowLength);
 
 	} while (dif == 1);
