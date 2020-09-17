@@ -376,6 +376,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		if (maxImprovedIndex == (g->groupSize)-1) modularityChange = 0;
 
 	} while (modularityChange > epsilon);
+
 	free(improvedVector);
 	free(indiceVector);
 
