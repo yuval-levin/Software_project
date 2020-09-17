@@ -68,46 +68,67 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved)
 		return unmoved;
 }
 
+double calcSAS(struct divisionGroup* g,double* vectorS)
+{
+	int size;
+	double* prevAS;
+	double previousSAS;
+
+	size = g->groupSize;
+		prevAS = (double*)malloc(size*sizeof(double));
+
+		if (prevAS == NULL) panic(ERROR_MALLOC_FAILED);
+		/*print_array(vectorS,size);*/
+			/*	flipVectorEntry(vectorS, changedIndex);*/
+				mult_ll(g->groupSubmatrix,vectorS,prevAS);
+				previousSAS = dotProduct(vectorS,prevAS,size); /*calc SAS prev*/
+				/*flipVectorEntry(vectorS, changedIndex);*/
+				free(prevAS);
+	return previousSAS;
+}
+
+
+double calculateChangeModularityWithPrevSas(struct graph* graph, struct divisionGroup* g, double* vectorS,
+	 double sumKiSi, double prevModularity,
+		int changedIndex,double previousSAS)
+{
+	double newModularityY;
+		double currentSAS;
+		double* currentAS ;
+		int size;
+		int nodeNum, degree, vectorSChangedIndex;
+		/* vectorS arrives FLIPPED */
+		size = g->groupSize;
+
+		currentAS = (double*)malloc(size*sizeof(double));
+		if (currentAS == NULL) panic(ERROR_MALLOC_FAILED);
+
+		mult_ll(g->groupSubmatrix,vectorS,currentAS);
+		currentSAS = dotProduct(vectorS,currentAS,size); /* calc SAS current */
+
+		nodeNum = g->groupMembers[changedIndex];
+		degree = graph->vectorDegrees[nodeNum];
+
+		vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
+
+		newModularityY = prevModularity
+				 - 4 * vectorSChangedIndex * (degree / graph->M)
+						* (sumKiSi + (degree * vectorSChangedIndex));
+		newModularityY = newModularityY+(currentSAS-previousSAS);
+
+		free(currentAS);
+
+		return newModularityY-prevModularity;
+}
+
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g, double* vectorS,
 	 double sumKiSi, double prevModularity,
-		int changedIndex) {
-	double newModularityY;
+		int changedIndex)
+{
 	double previousSAS;
-	double currentSAS;
-	double* prevAS;
-	double* currentAS ;
-	int size;
-	int nodeNum, degree, vectorSChangedIndex;
-	/* vectorS arrives FLIPPED */
-	size = g->groupSize;
-	prevAS = (double*)malloc(size*sizeof(double));
-	if (prevAS == NULL) panic(ERROR_MALLOC_FAILED);
-	currentAS = (double*)malloc(size*sizeof(double));
-	if (currentAS == NULL) panic(ERROR_MALLOC_FAILED);
+	previousSAS = calcSAS(g,vectorS);
+	return calculateChangeModularityWithPrevSas(graph, g,vectorS, sumKiSi, prevModularity,changedIndex, previousSAS);
 
-	/*print_array(vectorS,size);*/
-	flipVectorEntry(vectorS, changedIndex);
-	mult_ll(g->groupSubmatrix,vectorS,prevAS);
-	previousSAS = dotProduct(vectorS,prevAS,size); /*calc SAS prev*/
-	flipVectorEntry(vectorS, changedIndex);
-
-	mult_ll(g->groupSubmatrix,vectorS,currentAS);
-	currentSAS = dotProduct(vectorS,currentAS,size); /* calc SAS current */
-
-	nodeNum = g->groupMembers[changedIndex];
-	degree = graph->vectorDegrees[nodeNum];
-
-	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
-
-	newModularityY = prevModularity
-			 - 4 * vectorSChangedIndex * (degree / graph->M)
-					* (sumKiSi + (degree * vectorSChangedIndex));
-	newModularityY = newModularityY+(currentSAS-previousSAS);
-
-	free(prevAS);
-	free(currentAS);
-
-	return newModularityY-prevModularity;
 }
 
 /*TODO: add explanation.*/
@@ -264,7 +285,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
 	double modularityChange, Q0, modChange, maxModularityChange, maxImprovedIndex = 0,
-			 sumKiSi,curMax;
+			 sumKiSi,curMax,prevSAS;
 	int i, indexOfBiggestIncrease, switchFirstUnmovedIteration = 1;
 	struct node* unmoved;
 	struct node* currentNode;
@@ -295,12 +316,15 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			finding vertex with maximal increase in modularity*/
 			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* only AFTER CALC MOD we change KiSi */
+
+			/*while going through all UNMVOED, they all have the same SAS. so we calculate it once here:*/
+			prevSAS = calcSAS(g,vectorS);
 			while (currentNode != NULL) {
 
 				flipVectorEntry(vectorS,  currentNode->data.num);
 
-				modChange = calculateChangeModularity(graph,g, vectorS, sumKiSi, Q0,
-						currentNode->data.num);
+				modChange = calculateChangeModularityWithPrevSas(graph,g, vectorS, sumKiSi, Q0,
+						currentNode->data.num,prevSAS);
 				if (switchFirstUnmovedIteration == 1
 						|| modChange > maxModularityChange) {
 					maxModularityChange = modChange;

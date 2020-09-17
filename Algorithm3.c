@@ -432,7 +432,6 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	while (P->len > 0) {
 
 		g1 = (struct divisionGroup*)malloc(sizeof(struct divisionGroup));
-		printf("%d \n", cnt);
 		g = removeFirstGroup(P);
 		vectorS = (double*) malloc(g->groupSize * sizeof(double)); /*vectorS is size of group g.*/
 		if (vectorS == NULL) panic(ERROR_MALLOC_FAILED);
