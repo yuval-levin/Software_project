@@ -136,7 +136,7 @@ double calcSAS(struct divisionGroup* g, double* vectorS) {
 }
 
 /*Calculates Change in Modularity using previous SAS*/
-double calculateChangeModularityWithPrevSas(struct graph* graph,
+double calculateChangeModularityWithPrevSasUnused(struct graph* graph,
 		struct divisionGroup* g, double* vectorS, double sumKiSi,
 		double prevModularity, int changedIndex, double previousSAS) {
 	double newModularityY;
@@ -170,6 +170,31 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 	return newModularityY - prevModularity;
 }
 
+/*Calculates Change in Modularity using previous SAS*/
+double calculateChangeModularityWithPrevSas(struct graph* graph,
+		struct divisionGroup* g, double* vectorS, double sumKiSi,
+		double prevModularity, int changedIndex, double previousSAS) {
+	double newModularityY;
+	double currentSAS, sumAiSi;
+	double* degreeDividedByM;
+	int nodeNum, degree, vectorSChangedIndex;
+
+	nodeNum = g->groupMembers[changedIndex];
+	degree = graph->vectorDegrees[nodeNum];
+	degreeDividedByM = graph->degreesDividedByM;
+	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
+
+	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
+	currentSAS = previousSAS + 4 * vectorSChangedIndex * sumAiSi;
+
+	newModularityY = prevModularity
+			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
+					* (sumKiSi + (degree * vectorSChangedIndex)) + 0*sumAiSi;
+	newModularityY = newModularityY + (currentSAS - previousSAS);
+
+	return newModularityY - prevModularity;
+}
+
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 		double* vectorS, double sumKiSi, double prevModularity,
 		int changedIndex, double* prevSAS) {
@@ -188,7 +213,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP*/
 
 	/* calc new SAS*/
-	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);			/*TODO: delete*/
+	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
 	currentSAS = previousSAS - 4 * vectorSChangedIndex * sumAiSi;
 
 	*prevSAS = currentSAS; /*update SAS*/
