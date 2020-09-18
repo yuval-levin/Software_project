@@ -8,6 +8,7 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum = 0;
 	int cnt;
 	struct spmat_node* currentNode;
+	double secondArgu = graph->degreesDividedByM[column];
 	currentNode = get_private(g->groupSubmatrix)[column];
 	/*iterate over all rows*/
 	cnt = 0;
@@ -15,9 +16,11 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	while (currentNode != NULL) { /*since matrix is sparse, we don't know how many rows there are */
 		sum = sum + (currentNode->data) - g->sumOfRows[column];
 		sum = sum
-				- ((graph->vectorDegrees[g->groupMembers[cnt++]]
-						* graph->vectorDegrees[column]) / graph->M);
+				- (graph->vectorDegrees[g->groupMembers[cnt++]]
+						*secondArgu);
 		currentNode = currentNode->next;
+
+
 
 	}
 	return sum;

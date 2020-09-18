@@ -114,12 +114,12 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 	int i;
 	struct divisionGroup* group = g->group;
 	for (i = 0; i < group->groupSize; i++) {
-		sumMultiply += (vector[i] * graph->vectorDegrees[i]);
-		sum += graph->vectorDegrees[i];
+		sumMultiply += (vector[i] * graph->degreesDividedByM[i]);
+		sum += graph->degreesDividedByM[i];
 	}
 
-	*KjBjMultiply = sumMultiply / (graph->M);
-	*KjBj = sum / (graph->M);
+	*KjBjMultiply = sumMultiply ;
+	*KjBj = sum ;
 
 }
 

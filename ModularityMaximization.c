@@ -152,7 +152,7 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
 
 	newModularityY = prevModularity
-			- 4 * vectorSChangedIndex * (degree / graph->M)
+			- 4 * vectorSChangedIndex * (graph->degreesDividedByM[nodeNum])
 					* (sumKiSi + (degree * vectorSChangedIndex));
 	newModularityY = newModularityY + (currentSAS - previousSAS);
 
@@ -182,7 +182,6 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 double* secondArgumentInCalc(struct graph* graph, struct divisionGroup* g,
 		double sumKiSi) {
 	int i;
-	double M = graph->M;
 	double* KiDividedByMPlusSum;
 
 	KiDividedByMPlusSum = (double*) malloc(g->groupSize * sizeof(double));
@@ -191,7 +190,7 @@ double* secondArgumentInCalc(struct graph* graph, struct divisionGroup* g,
 		panic(ERROR_MALLOC_FAILED);
 	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
-		KiDividedByMPlusSum[i] = (graph->vectorDegrees[g->groupMembers[i]] / M)
+		KiDividedByMPlusSum[i] = (graph->degreesDividedByM[i])
 				* sumKiSi;
 	}
 	return KiDividedByMPlusSum;

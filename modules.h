@@ -7,8 +7,9 @@ static const double epsilon = 0.00001;
 struct graph
 {
   struct _spmat* A;
-  long* vectorDegrees;
+  double* vectorDegrees;
   double M;
+  double* degreesDividedByM; /* Ki/M is used many times, so we'll store*/
   int numOfNodes;
 };
 

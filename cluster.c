@@ -27,7 +27,8 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 
 void create_graph(FILE* input, struct graph* new_graph) {
 	struct _spmat* A;
-	long* vector_degrees;
+	double* vector_degrees;
+	double* degreesDividedByM;
 	int i;
 	int k;
 	int n;
@@ -38,10 +39,13 @@ void create_graph(FILE* input, struct graph* new_graph) {
 	if (k != 1)
 		panic(ERROR_READ_FAILED);
 	A = spmat_allocate_list(n);
-	vector_degrees = (long*) malloc(n * sizeof(long));
+	vector_degrees = (double*) malloc(n * sizeof(double));
 	if (vector_degrees == NULL)
 		panic(ERROR_MALLOC_FAILED);
 
+	degreesDividedByM = (double*) malloc(n * sizeof(double));
+	if (degreesDividedByM == NULL)
+			panic(ERROR_MALLOC_FAILED);
 	/*reading input to struct*/
 	deg_sum = 0;
 	for (i = 0; i < n; i++) {
@@ -52,12 +56,17 @@ void create_graph(FILE* input, struct graph* new_graph) {
 		vector_degrees[i] = cur_deg;
 		read_row(i, cur_deg, input, A);
 	}
+	/*loop again, to calc degreesDividedByM. it Needs M, which is only calculated after prior loop*/
+		for (i = 0; i < n; i++) {
+			if(deg_sum < epsilon) panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
+			degreesDividedByM[i] = vector_degrees[i] / deg_sum; }
 
-	/*initializing graph*/
-	new_graph->A = A;
-	new_graph->vectorDegrees = vector_degrees;
-	new_graph->M = deg_sum;
-	new_graph->numOfNodes = n;
+		/*initializing graph*/
+		new_graph->A = A;
+		new_graph->vectorDegrees = vector_degrees;
+		new_graph->M = deg_sum;
+		new_graph->degreesDividedByM = degreesDividedByM;
+		new_graph->numOfNodes = n;
 }
 
 void write_output_file(struct division* div, FILE* output) {
@@ -159,6 +168,7 @@ int main(int args, char** argv) {
 	/*TODO: free final_division and input_graph*/
 	freeDivisionGroup(final_division); /*free O and inside*/
 	free(input_graph->vectorDegrees);
+	free(input_graph->degreesDividedByM);
 	free(input_graph);
 	end = clock();
 	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
