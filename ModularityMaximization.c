@@ -112,9 +112,9 @@ double calcSAS(struct divisionGroup* g, double* vectorS) {
 	return previousSAS;
 }
 
-double calcAiSi(struct graph* graph,
+double calcAiSi(struct divisionGroup* g,
 		double* vectorS, int changedIndex) {
-	struct spmat_node* node = get_private(graph->A)[changedIndex];
+	struct spmat_node* node = get_private(g->groupSubmatrix)[changedIndex];
 
 	return sumTimesVectorHelper(node, vectorS);
 }
@@ -134,7 +134,7 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 	nodeNum = g->groupMembers[changedIndex];
 	degree = graph->vectorDegrees[nodeNum];
 
-	sumAiSi = calcAiSi(graph, vectorS, changedIndex);
+	sumAiSi = calcAiSi(g, vectorS, changedIndex);
 
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
 
