@@ -121,10 +121,7 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	double* eigenvector;
 	double changeInModularity;
 	struct shiftedDivisionGroup* shiftedG;
-	clock_t start, end;
 
-	start = clock();
-	srand(time(NULL));
 	shiftedG = newShiftedDivsionGroup(g, graph);
 
 	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
@@ -144,8 +141,6 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 		}
 
 	}
-	end = clock();
-	printf("algo2 took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	free(eigenvector);
 	free(shiftedG);
 }

@@ -415,10 +415,6 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	struct node* prevOfBiggest;
 	double* improvedVector;
 	int* indiceVector;
-	clock_t start, end;
-
-	start = clock();
-	srand(time(NULL));
 
 	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	indiceVector = (int*) malloc(g->groupSize * sizeof(int));
@@ -475,9 +471,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			modularityChange = 0;
 
 	} while (modularityChange > epsilon);
-	end = clock();
-	printf("ModMax took %f seconds\n",
-			((double) (end - start) / CLOCKS_PER_SEC));
+
 	free(improvedVector);
 	free(indiceVector);
 	free(unmoved);
