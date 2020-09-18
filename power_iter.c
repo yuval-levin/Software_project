@@ -88,14 +88,11 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	double rowSum;
 	double ki;
 	double bi;
-	/*struct divisionGroup* group;*/
-	/*struct spmat_node* cur_node;*/
+
 	rowSum = 0;
 	ki = graph->vectorDegrees[rowIndex];
 	bi = vector[rowIndex];
-	/*group = g->group;*/
 
-	/*cur_node = get_private(group->groupSubmatrix)[rowIndex];*/
 	rowResult += AtimesB[rowIndex]; /*A times b*/
 	rowResult -= ((KjBjDividedByM) * ki);
 	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
@@ -131,6 +128,7 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 			&KjDivdedByM); /*helper Sums for all rows*/
 	AtimesB=(double*)malloc(sizeof(double)*g->group->groupSize);
 	mult_ll(g->group->groupSubmatrix,currentB,AtimesB);
+
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */

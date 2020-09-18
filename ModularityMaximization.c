@@ -361,7 +361,7 @@ double calcModularity(struct graph* graph, double* vectorS,
 void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 		struct node* currentNode, double* vectorS, double sumKiSi, double Q0,
 		int *switchFirstUnmovedIteration, double *maxModularityChange,
-		int *indexOfBiggestIncrease, struct node** prevOfBiggest) {
+		int *indexOfBiggestIncrease, struct node** prevOfBiggest,double* curSAS) {
 
 	/*clock_t start, end;*/
 
@@ -372,8 +372,8 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 	/*start = clock();
 	 srand(time(NULL));*/
 	/*while going through all UNMVOED, they all have the same SAS. so we calculate it once here:*/
-	prevSAS = calcSAS(g, vectorS);
-
+	/*prevSAS = calcSAS(g, vectorS);*/
+	prevSAS = *curSAS;
 	while (currentNode != NULL) {
 
 		flipVectorEntry(vectorS, currentNode->data.num);
@@ -443,7 +443,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			/*loop 6-10 in psuedo-code is in unmovedLoop*/
 			unmovedLoop(graph, g, currentNode, vectorS, sumKiSi, Q0,
 					&switchFirstUnmovedIteration, &maxModularityChange,
-					&indexOfBiggestIncrease, &prevOfBiggest);
+					&indexOfBiggestIncrease, &prevOfBiggest,&curSAS);
 			/*moving vertex with maximal increase in modularity*/
 			flipVectorEntry(vectorS, indexOfBiggestIncrease);
 
