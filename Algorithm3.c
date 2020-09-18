@@ -397,6 +397,7 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 	int i;
 	int n;
 	int* group_members;
+	struct _spmat* mat;
 	struct divisionGroup* group = (struct divisionGroup*) malloc(
 			sizeof(struct divisionGroup));
 	if (group == NULL)
@@ -404,7 +405,9 @@ struct divisionGroup* createTrivialDivision(struct graph* inputGraph) {
 
 	n = inputGraph->numOfNodes;
 	group->groupSize = n;
-	spmat_deep_copy(group->groupSubmatrix, inputGraph->A);
+	mat = spmat_allocate_list(n);
+	spmat_deep_copy(mat, inputGraph->A);
+	group->groupSubmatrix = mat;
 	group->sumOfRows = (int*) malloc(n * sizeof(int));
 	group_members = (int*) malloc(n * sizeof(int));
 	if (group_members == NULL)
