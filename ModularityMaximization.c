@@ -142,6 +142,7 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 	double newModularityY;
 	double currentSAS;
 	double* currentAS;
+	double* degreeDividedByM;
 	int size;
 	int nodeNum, degree, vectorSChangedIndex;
 	/* vectorS arrives FLIPPED */
@@ -156,11 +157,11 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 
 	nodeNum = g->groupMembers[changedIndex];
 	degree = graph->vectorDegrees[nodeNum];
-
+	degreeDividedByM = graph->degreesDividedByM;
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
 
 	newModularityY = prevModularity
-			- 4 * vectorSChangedIndex * (graph->degreesDividedByM[nodeNum])
+			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
 					* (sumKiSi + (degree * vectorSChangedIndex));
 	newModularityY = newModularityY + (currentSAS - previousSAS);
 
@@ -210,15 +211,14 @@ double* secondArgumentInCalc(struct graph* graph, struct divisionGroup* g,
 		double sumKiSi) {
 	int i;
 	double* KiDividedByMPlusSum;
-
+	double* dividedyByM = graph->degreesDividedByM;
 	KiDividedByMPlusSum = (double*) malloc(g->groupSize * sizeof(double));
 
 	if (KiDividedByMPlusSum == NULL)
 		panic(ERROR_MALLOC_FAILED);
 	/*two iterations are a must, cause we need to find sum first..*/
 	for (i = 0; i < g->groupSize; i++) {
-		KiDividedByMPlusSum[i] = (graph->degreesDividedByM[i])
-				* sumKiSi;
+		KiDividedByMPlusSum[i] = (dividedyByM[i])* sumKiSi;
 	}
 	return KiDividedByMPlusSum;
 
@@ -228,6 +228,7 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double* KiDividedByMPlusSum;
+	int* sumOfRows = g->sumOfRows;
 	double* resVec = (double*) malloc(g->groupSize * sizeof(double));
 	if (resVec == NULL)
 		panic(ERROR_MALLOC_FAILED);
@@ -235,7 +236,7 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 	KiDividedByMPlusSum = secondArgumentInCalc(graph, g, sumKiSi);
 
 	for (i = 0; i < g->groupSize; i++) {
-		resVec[i] = (g->sumOfRows[i] * vectorS[i]) + KiDividedByMPlusSum[i];
+		resVec[i] = (sumOfRows[i] * vectorS[i]) + KiDividedByMPlusSum[i];
 	}
 
 	free(KiDividedByMPlusSum);
@@ -247,10 +248,12 @@ double* modularityTimesS(struct graph* graph, double* vectorS,
 double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 	double sum = 0;
+	double* vecDegrees = graph->vectorDegrees;
+	int* groupMembers = g->groupMembers;
 	int i;
 	for (i = 0; i < g->groupSize; i++) { /*we don't know how many are really in group, since it sparse. so we use while */
 		/*vectorDegrees is size Of number of nodes in the original A matrix*/
-		sum = sum + (vectorS[i] * graph->vectorDegrees[g->groupMembers[i]]); /*vectorS is size of g, we use i*/
+		sum = sum + (vectorS[i] * vecDegrees[groupMembers[i]]); /*vectorS is size of g, we use i*/
 	}
 	return sum;
 }
