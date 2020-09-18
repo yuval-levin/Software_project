@@ -29,12 +29,10 @@ int difference(double * a, double *b, int col) {
 	vec1 = a;
 	vec2 = b;
 	for (k = 0; k < col; k++) {
-		dif = fabs(((*vec1) - (*vec2)));
+		dif = fabs(((*vec1++) - (*vec2++)));
 		if (dif >= epsilon) {
 			return 1;
 		}
-		vec1 += 1;
-		vec2 += 1;
 	}
 
 	return 0;
@@ -85,20 +83,20 @@ double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
 
 double spmatProductWithVectorb(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double KjDivdedByM) {
+		double KjBjDividedByM, double KjDivdedByM,double* AtimesB) {
 	double rowResult = 0;
 	double rowSum;
 	double ki;
 	double bi;
-	struct divisionGroup* group;
-	struct spmat_node* cur_node;
+	/*struct divisionGroup* group;*/
+	/*struct spmat_node* cur_node;*/
 	rowSum = 0;
 	ki = graph->vectorDegrees[rowIndex];
 	bi = vector[rowIndex];
-	group = g->group;
+	/*group = g->group;*/
 
-	cur_node = get_private(group->groupSubmatrix)[rowIndex];
-	rowResult += sumHelper(cur_node, vector, &rowSum); /*A times b*/
+	/*cur_node = get_private(group->groupSubmatrix)[rowIndex];*/
+	rowResult += AtimesB[rowIndex]; /*A times b*/
 	rowResult -= ((KjBjDividedByM) * ki);
 	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
 	rowResult += (g->norm * bi);
@@ -128,14 +126,16 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
+	double* AtimesB;
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
 			&KjDivdedByM); /*helper Sums for all rows*/
-
+	AtimesB=(double*)malloc(sizeof(double)*g->group->groupSize);
+	mult_ll(g->group->groupSubmatrix,currentB,AtimesB);
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
 		Abk = spmatProductWithVectorb(i, currentB, g, graph, KjBjDividedByM,
-				KjDivdedByM);
+				KjDivdedByM,AtimesB);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
