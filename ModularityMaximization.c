@@ -114,18 +114,9 @@ double calcSAS(struct divisionGroup* g, double* vectorS) {
 
 double calcAiSi(struct graph* graph,
 		double* vectorS, int changedIndex) {
-	int index = 0;
-	double sum = 0;
-	struct spmat_node* cur = get_private(graph->A)[changedIndex];
+	struct spmat_node* node = get_private(graph->A)[changedIndex];
 
-	while (cur != NULL) {
-		index = cur->index;
-		if (index != changedIndex) {
-			sum += (cur->data) * (vectorS[index]);
-		}
-		cur = (struct spmat_node*) cur->next;
-	}
-	return sum;
+	return sumTimesVectorHelper(node, vectorS);
 }
 
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
@@ -337,11 +328,14 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 	struct node* prevOfBiggest;
 	double* improvedVector;
 	int* indiceVector;
+	int mod_iter = 0;
 
 	improvedVector = (double*) malloc(g->groupSize * sizeof(double));
 	indiceVector = (int*) malloc(g->groupSize * sizeof(int));
 
 	do {
+		printf("Mod iter: %d \n", mod_iter);
+
 		/*improving delta Q by moving ONE index*/
 		unmoved = createUnmovedList(g->groupSize);
 		sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* first KiSI */
@@ -352,10 +346,9 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			if (i == 0)
 				Q0 = calcModularity(graph, vectorS, g, sumKiSi, &curSAS);
 			else {
-			printf("%s", "before calc change\n");
+				printf("i: %d \n", i);
 				Q0 = Q0 + calculateChangeModularity(graph, g, vectorS, sumKiSi,
 								Q0, &curSAS, indexOfBiggestIncrease);
-			printf("%s", "after calc change\n");
 			}
 
 			switchFirstUnmovedIteration = 1; /*indicator that says: we need to set i = 0 as currentMax*/
@@ -385,6 +378,8 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		/*if all were flipped, we are the same - so loop must stop, row 26 in psuedo-code*/
 		if (maxImprovedIndex == (g->groupSize) - 1)
 			modularityChange = 0;
+
+		mod_iter +=1;
 
 	} while (modularityChange > epsilon);
 

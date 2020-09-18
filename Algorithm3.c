@@ -427,12 +427,17 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	struct divisionGroup* g1;
 	struct divisionGroup* g2;
 	double* vectorS;
+	int i;
 
 	struct division* P = new_division();
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(inputGraph));
 
+	i = 0;
+
 	while (P->len > 0) {
+
+		printf("Algo 3 iter: %d \n", i);
 
 		g1 = (struct divisionGroup*) malloc(sizeof(struct divisionGroup));
 		g = removeFirstGroup(P);
@@ -455,6 +460,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 		}
 
 		free(vectorS);
+		i++;
 
 	}
 	freeDivisionGroup(P);
