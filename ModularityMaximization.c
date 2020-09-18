@@ -282,6 +282,16 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 	}
 	return sum;
 }
+double sumOfDegreeByVectorSWithPrev(struct graph* graph,struct divisionGroup* g,int changedIndex,double* vectorS,double prevKiSi)
+{
+	double* vecDegrees = graph->vectorDegrees;
+	int* groupMembers = g->groupMembers;
+	double updatedKiSi = 0;
+
+	updatedKiSi = prevKiSi+2*vectorS[changedIndex]*vecDegrees[groupMembers[changedIndex]];
+
+	return updatedKiSi;
+}
 
 struct node* appendToInitUnmoved(struct node* prev, int index) {
 	struct node* current;
@@ -438,8 +448,10 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			switchFirstUnmovedIteration = 1; /*indicator that says: we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			 finding vertex with maximal increase in modularity*/
-			sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);/* only AFTER CALC MOD we change KiSi */
+		/*	sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g); only AFTER CALC MOD we change KiSi */
+/* if i = 0 there is no "index of biggestincrease,*/
 
+			if(i != 0) sumKiSi = sumOfDegreeByVectorSWithPrev(graph,g, indexOfBiggestIncrease,vectorS,sumKiSi);
 			/*loop 6-10 in psuedo-code is in unmovedLoop*/
 			unmovedLoop(graph, g, currentNode, vectorS, sumKiSi, Q0,
 					&switchFirstUnmovedIteration, &maxModularityChange,
