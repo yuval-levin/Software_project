@@ -136,41 +136,6 @@ double calcSAS(struct divisionGroup* g, double* vectorS) {
 }
 
 /*Calculates Change in Modularity using previous SAS*/
-double calculateChangeModularityWithPrevSasUnused(struct graph* graph,
-		struct divisionGroup* g, double* vectorS, double sumKiSi,
-		double prevModularity, int changedIndex, double previousSAS) {
-	double newModularityY;
-	double currentSAS;
-	double* currentAS;
-	double* degreeDividedByM;
-	int size;
-	int nodeNum, degree, vectorSChangedIndex;
-	/* vectorS arrives FLIPPED */
-	size = g->groupSize;
-
-	currentAS = (double*) malloc(size * sizeof(double));
-	if (currentAS == NULL)
-		panic(ERROR_MALLOC_FAILED);
-
-	mult_ll(g->groupSubmatrix, vectorS, currentAS);
-	currentSAS = dotProduct(vectorS, currentAS, size); /* calc SAS current */
-
-	nodeNum = g->groupMembers[changedIndex];
-	degree = graph->vectorDegrees[nodeNum];
-	degreeDividedByM = graph->degreesDividedByM;
-	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
-
-	newModularityY = prevModularity
-			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
-					* (sumKiSi + (degree * vectorSChangedIndex));
-	newModularityY = newModularityY + (currentSAS - previousSAS);
-
-	free(currentAS);
-
-	return newModularityY - prevModularity;
-}
-
-/*Calculates Change in Modularity using previous SAS*/
 double calculateChangeModularityWithPrevSas(struct graph* graph,
 		struct divisionGroup* g, double* vectorS, double sumKiSi,
 		double prevModularity, int changedIndex, double previousSAS) {
@@ -378,8 +343,6 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 
 		flipVectorEntry(vectorS, currentNode->data.num);
 
-		/*modChange = calculateChangeModularity(graph, g, vectorS,
-				sumKiSi, Q0, currentNode->data.num, &prevSAS);*/ /*TODO: fix or delete*/
 		modChange = calculateChangeModularityWithPrevSas(graph, g, vectorS,
 						sumKiSi, Q0, currentNode->data.num, prevSAS);
 

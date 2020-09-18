@@ -163,7 +163,7 @@ int main(int args, char** argv) {
 		panic(ERROR_OPEN_FAILED);
 	write_output_file(final_division, output);
 	fclose(output);
-	print_result(final_division);
+	/*print_result(final_division);*/
 
 	/*TODO: free final_division and input_graph*/
 	freeDivisionGroup(final_division); /*free O and inside*/
