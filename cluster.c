@@ -4,7 +4,6 @@
 #include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
-#include <time.h> /*todo: remove time etc*/
 
 void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;
@@ -93,7 +92,7 @@ void write_output_file(struct division* div, FILE* output) {
 		curNode = curNode->next;
 	}
 }
-
+/*
 void print_result(struct division* div) {
 	int n, groupSize, i, j;
 	int* groupMembers;
@@ -108,7 +107,7 @@ void print_result(struct division* div) {
 
 	curNode = div->divisions;
 
-	/*write groups*/
+	write groups
 	while (curNode != NULL) {
 		printf("%s", "group number ");
 		printf("%d", i);
@@ -127,17 +126,13 @@ void print_result(struct division* div) {
 		i++;
 		printf("%s", "\n");
 	}
-}
+}*/
 
 int main(int args, char** argv) {
 	struct graph* inputGraph;
 	FILE* input;
 	FILE *output;
 	struct division* finalDivision;
-	clock_t start, end;
-
-	start = clock();
-	srand(time(NULL));
 
 	if (args != 3)
 		panic(ERROR_NUM_ARGS);
@@ -158,7 +153,7 @@ int main(int args, char** argv) {
 		panic(ERROR_OPEN_FAILED);
 
 	write_output_file(finalDivision, output);
-	print_result(finalDivision);
+
 	fclose(output);
 
 	free_division_group(finalDivision); /*free O and inside*/
@@ -166,8 +161,5 @@ int main(int args, char** argv) {
 	free(inputGraph->degreesDividedByM);
 	free(inputGraph);
 
-	end = clock();
-	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
-	printf("%s", "done main\n");
 	return 0;
 }
