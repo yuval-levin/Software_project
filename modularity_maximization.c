@@ -51,8 +51,8 @@ static void update_s(double* vectorS, int* indiceVector, int maxImprovedIndex,
  * We update "improvedVector" by Aggregating previous improvements with current improvement.
  * We also keep track of index of maximum improvement !
  * */
-static void update_improved_vector(double* improvedVector, int entryIndex, double score,
-		double* maxImprovedIndex, double* curMax) {
+static void update_improved_vector(double* improvedVector, int entryIndex,
+		double score, double* maxImprovedIndex, double* curMax) {
 	/*first improvement is always maximal */
 	if (entryIndex == 0) {
 		improvedVector[0] = score;
@@ -94,8 +94,8 @@ static struct node* add_to_list(struct node* list, struct node* node) {
  * If previousNode = NULL, then we are removing head of LinkedList.
  * We return the new LinkedList, sans the remove node.
  * */
-static struct node* remove_from_unmoved(struct node* prevOfBiggest, struct node* unmoved,
-		struct node** removedNode) {
+static struct node* remove_from_unmoved(struct node* prevOfBiggest,
+		struct node* unmoved, struct node** removedNode) {
 
 	if (prevOfBiggest == NULL) {
 		*removedNode = unmoved;
@@ -139,8 +139,8 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 }
 
 /*TODO: add explanation.*/
-static double* second_argument_in_calc(struct graph* graph, struct divisionGroup* g,
-		double sumKiSi) {
+static double* second_argument_in_calc(struct graph* graph,
+		struct divisionGroup* g, double sumKiSi) {
 	int i;
 	double* KiDividedByMPlusSum;
 	double* dividedyByM = graph->degreesDividedByM;
@@ -311,7 +311,7 @@ void modularity_maximization(struct graph* graph, double* vectorS,
 
 	double modularityChange, Q0, maxModularityChange, maxImprovedIndex = 0,
 			sumKiSi, curMax, curSAS;
-	int i, indexOfBiggestIncrease,groupSize, switchFirstUnmovedIteration = 1;
+	int i, indexOfBiggestIncrease, groupSize, switchFirstUnmovedIteration = 1;
 	struct node* unmoved;
 	struct node* removedFromUnmoved;
 	struct node* currentNode;
@@ -383,6 +383,6 @@ void modularity_maximization(struct graph* graph, double* vectorS,
 
 	free(improvedVector);
 	free(indiceVector);
-	free_unmoved_list(unmoved,groupSize);
+	free_unmoved_list(unmoved, groupSize);
 }
 

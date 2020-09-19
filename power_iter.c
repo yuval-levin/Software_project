@@ -37,7 +37,6 @@ static double magnitude(double* vec, int length) {
 	return sqrt(dot_product(vec, vec, length));
 }
 
-
 static void divide_by_magnitude(double* vec, double magnitude, int length) {
 	int i;
 
@@ -57,7 +56,6 @@ static void update_vector_b(double* b, double* newB, int length) {
 		newB++;
 	}
 }
-
 
 /*helper function
  * Calculates row "rowIndex" of product between sparse matrix (Adjacency matrix A) and b
@@ -101,7 +99,7 @@ static void spmat_product_helper_KjBj_divided_by_M(double* vector,
 /*helper function to product Ab_k,
  * As specified in the power iterator algorithm
  * */
- void create_abk_vec(int rowLength, double* currentB, double* newB,
+void create_abk_vec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
 	double Abk, KjBjDividedByM, KjDivdedByM;
@@ -169,7 +167,8 @@ double* create_eigenvector(int rowLength, struct shiftedDivisionGroup* g,
 		/*updating b: */
 		update_vector_b(b, origNextB, rowLength);
 
-		if(loopCounter > loopLimiter) panic(ERROR_LOOP_LIMIT_REACHED);
+		if (loopCounter > loopLimiter)
+			panic(ERROR_LOOP_LIMIT_REACHED);
 	} while (dif == 1);
 
 	free(origNextB);

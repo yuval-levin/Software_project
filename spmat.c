@@ -5,7 +5,6 @@
 #include "error_codes.h"
 #include "spmat.h"
 
-
 double multiply_vector(struct spmat_node* curNode, const double *v) {
 	int index = 0;
 	double sum = 0;
@@ -109,9 +108,9 @@ void free_ll(struct _spmat *A) {
 	rows = A->private;
 
 	if (rows != NULL) {
-	for (i = 0; i < A->n; i++) {
-		free_row_ll(rows[i]);
-	}
+		for (i = 0; i < A->n; i++) {
+			free_row_ll(rows[i]);
+		}
 	}
 	free_A(A);
 }
