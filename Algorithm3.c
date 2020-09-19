@@ -34,7 +34,7 @@ static void free_group(struct divisionGroup* group) {
 	free(group);
 }
 
-/*free the  divisions given to us by Algorithm 3
+/*free the divisions given to us by Algorithm 3
  * Which are inside of O */
 void free_division_group(struct division* O) {
 	int i, length;
@@ -88,7 +88,7 @@ static struct divisionGroup* remove_first_group(struct division* D) {
 }
 
 /* for Algorithm 2.
- * After split,if group (here represented by g as input argument, but is  g1 or g2 in algo2) larger than 1 are put in P,
+ * After split, if group (here represented by g as input argument, but is  g1 or g2 in algo2) larger than 1 are put in P,
  * Any groups of size 1 are put in O */
 static void update_division_post_split(struct divisionGroup* g, struct division* P,
 		struct division* O) {
@@ -112,7 +112,7 @@ static int calc_size(double* vectorS, int length) {
 	return size;
 }
 
-/* splitByS helper, updates the mat rows,
+/* updates the mat rows,
  * removes irrelevant nodes and updates sum of rows accordingly*/
 static void update_mat_rows(double* vectorS, int numMembers, int groupIndicator,
 		struct spmat_node** gtRows, int* gtSumOfRows) {
@@ -144,7 +144,7 @@ static void update_mat_rows(double* vectorS, int numMembers, int groupIndicator,
 	}
 }
 
-/* splitByS helper, updates nodes index according to the new mat */
+/* updates nodes index according to the new mat */
 static void update_mat_rows_index(int* gGroupMembers, int nuMembers,
 		struct spmat_node** gRows) {
 	int i_row, count, i;
@@ -188,7 +188,7 @@ static void update_group_members(double* vectorS, int* sourceGroupMembers,
 	}
 }
 
-/* splitByS helper, updates the group fields*/
+/* updates the group fields*/
 static void create_division_group(struct divisionGroup* g, int length,
 		struct _spmat* mat, int* sumOfRows, int* groupMembers) {
 	g->groupSize = length;
@@ -212,7 +212,7 @@ static void free_div_group(struct divisionGroup* g, int shouldUseFreell) {
 	free(g);
 }
 
-/* splitByS helper, copies listS to listT*/
+/* copies listS to listT*/
 static void int_list_copy(int length, int *listT, int *listS) {
 	int i;
 	for (i = 0; i < length; i++) {
@@ -238,7 +238,8 @@ void spmat_deep_copy(struct _spmat *spmatT, struct _spmat *spmatS) {
 	spmatT->private = gt_rows;
 }
 
-/* splitByS helper, deep copies gs to gt*/
+
+/* deep copies gs to gt*/
 static void divisionGroup_deep_copy(int gtSize, struct divisionGroup* gt,
 		struct divisionGroup* gs) {
 	struct _spmat *gtMat, *gsMat;
@@ -404,7 +405,7 @@ static struct divisionGroup* create_trivial_division(struct graph* inputGraph) {
 	return group;
 }
 
-/*Algorithm 3 as described in sp_project.pdf
+/* Algorithm 3 as described in sp_project.pdf
  * return O, final division to groups
  * */
 struct division* Algorithm3(struct graph* inputGraph) {
