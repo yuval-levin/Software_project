@@ -129,7 +129,7 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 	}
 	newModularityY = prevModularity
 			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
-					* (sumKiSi + (degree * vectorSChangedIndex)) + 0 * sumAiSi;
+					* (sumKiSi + (degree * vectorSChangedIndex));
 	newModularityY = newModularityY + (currentSAS - *previousSAS);
 
 	return newModularityY - prevModularity;
