@@ -31,7 +31,7 @@ static void free_group(struct divisionGroup* group) {
 	free(group->sumOfRows);
 	free(group->groupMembers);
 	free_A(group->groupSubmatrix);
-	free(group); /*TODO: delete?*/
+	free(group);
 }
 
 /*free the  divisions given to us by Algorithm 3
@@ -217,28 +217,6 @@ static void int_list_copy(int length, int *listT, int *listS) {
 	int i;
 	for (i = 0; i < length; i++) {
 		listT[i] = listS[i];
-	}
-}
-
-/* TODO: maybe delete splitByS helper, copies nodeS to nodeT*/
-void spmat_node_copy(struct spmat_node* nodeT, struct spmat_node* nodeS) {
-	nodeT->data = nodeS->data;
-	nodeT->index = nodeS->index;
-	nodeT->node_name = nodeS->node_name;
-	nodeT->next = nodeS->next;
-}
-
-/* TODO: maybe delete splitByS helper, copies listS to listT*/
-void spmat_node_list_copy(int length, struct spmat_node** listT,
-		struct spmat_node** listS) {
-	int i;
-	for (i = 0; i < length; i++) {
-		if (listS[i] != NULL) {
-			listT[i] = (struct spmat_node*) malloc(sizeof(struct spmat_node));
-			if (listT[i] == NULL)
-				panic(ERROR_MALLOC_FAILED);
-			spmat_node_copy(listT[i], listS[i]);
-		}
 	}
 }
 
