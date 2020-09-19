@@ -7,13 +7,14 @@
 #include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
+#include <time.h> /*todo: remove time etc*/
 
 /*helper function:
  * given an vector u1 (which will be our eigenvector)
  * We calculate the S vector created by it,
  * when a positive value (entry of u1 > epsilon) means S's entry will be 1, -1 otheriwse.
  */
-static void compute_s(double* u1, double* s, int n) {
+void computeS(double* u1, double* s, int n) {
 	int i;
 	for (i = 0; i < n; i++) {
 		s[i] = u1[i] >= epsilon ? 1 : -1; /*bigger than 0 is bigger than epsilon*/
@@ -24,7 +25,7 @@ static void compute_s(double* u1, double* s, int n) {
  *given a divisionGroup g, we calculate the 1-norm of the Adjacency matrix and create a new divisionGroup,
  *Shifted by the 1-norm calculated - shiftedDivisionGroup
  * */
-static struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGroup* g,
+struct shiftedDivisionGroup* newShiftedDivsionGroup(struct divisionGroup* g,
 		struct graph* graph) {
 	struct shiftedDivisionGroup* shiftedG =
 			(struct shiftedDivisionGroup*) malloc(
@@ -39,7 +40,7 @@ static struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGro
 /*helper function for calculation eigenvalue
  * given the eigenvector and the shifted matrix
  * */
-static double eigen_value_calc_helper(struct shiftedDivisionGroup* shiftedG,
+double eigenValueCalcHelper(struct shiftedDivisionGroup* shiftedG,
 		double* eigenvector, int rowLength, double* BShiftedTimesEigenvector) {
 	double numerator, denominator, eigenvalue;
 
@@ -58,7 +59,7 @@ static double eigen_value_calc_helper(struct shiftedDivisionGroup* shiftedG,
 /*given a shiftedMatrix, calculates its eigenValue
  * using power iteration
  * */
-static double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,
+double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,
 		double* eigenvector, struct graph* graph) {
 	double eigenvalue, rowLength;
 	struct divisionGroup* g = shiftedG->group;
@@ -72,7 +73,7 @@ static double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,
 	create_abk_vec(rowLength, eigenvector, BShiftedTimesEigenvector, shiftedG,
 			graph);
 
-	eigenvalue = eigen_value_calc_helper(shiftedG, eigenvector, rowLength,
+	eigenvalue = eigenValueCalcHelper(shiftedG, eigenvector, rowLength,
 			BShiftedTimesEigenvector);
 	free(BShiftedTimesEigenvector);
 	return eigenvalue;
@@ -82,7 +83,7 @@ static double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,
  * This helps when in Algorithm2, group is undivisble - meaning
  * Vector S should be all "1"
  * */
-static void fill_vector_with_ones(double* vector, int length) {
+void fillVectorWithOnes(double* vector, int length) {
 	int i;
 	for (i = 0; i < length; i++)
 		vector[i] = 1;
@@ -92,7 +93,7 @@ static void fill_vector_with_ones(double* vector, int length) {
  * As specified in Algorithm2 row 4.
  *
  */
-static double calc_mod_change(double* vectorS, struct divisionGroup* g,
+double calcModChange(double* vectorS, struct divisionGroup* g,
 		struct graph* graph) {
 	double sumKiSi;
 	double rightArgument;
@@ -126,22 +127,22 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 	double changeInModularity;
 	struct shiftedDivisionGroup* shiftedG;
 
-	shiftedG = new_shifted_divsion_group(g, graph);
+	shiftedG = newShiftedDivsionGroup(g, graph);
 
 	eigenvector = create_eigenvector(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG, eigenvector, graph);
 
 	if (eigenvalue <= epsilon) {
 		/*g is undivisble so S stays the same - everyone are '1';*/
-		fill_vector_with_ones(vectorS, g->groupSize);
+		fillVectorWithOnes(vectorS, g->groupSize);
 	} else {
 
-		compute_s(eigenvector, vectorS, g->groupSize);
-		changeInModularity = calc_mod_change(vectorS, g, graph);
+		computeS(eigenvector, vectorS, g->groupSize);
+		changeInModularity = calcModChange(vectorS, g, graph);
 
 		if (changeInModularity <= epsilon) {
 			/*g is undivisble so S stays the same - everyone are '1';*/
-			fill_vector_with_ones(vectorS, g->groupSize);
+			fillVectorWithOnes(vectorS, g->groupSize);
 		}
 
 	}
