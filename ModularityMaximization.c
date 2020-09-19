@@ -124,7 +124,7 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved,
 /*Calculates Change in Modularity using previous SAS*/
 double calculateChangeModularityWithPrevSas(struct graph* graph,
 		struct divisionGroup* g, double* vectorS, double sumKiSi,
-		double prevModularity, int changedIndex, double previousSAS) {
+		double prevModularity, int changedIndex, double* previousSAS,int update) {
 	double newModularityY;
 	double currentSAS, sumAiSi;
 	double* degreeDividedByM;
@@ -136,52 +136,18 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
 
 	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
-	currentSAS = previousSAS + 4 * vectorSChangedIndex * sumAiSi;
+	currentSAS = *previousSAS + 4 * vectorSChangedIndex * sumAiSi;
 
+	if (update > 0)/* indicator: if positive, we update the SAS value*/
+	{
+		*previousSAS = currentSAS; /*update SAS*/
+	}
 	newModularityY = prevModularity
 			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
 					* (sumKiSi + (degree * vectorSChangedIndex)) + 0*sumAiSi;
-	newModularityY = newModularityY + (currentSAS - previousSAS);
+	newModularityY = newModularityY + (currentSAS - *previousSAS);
 
 	return newModularityY - prevModularity;
-}
-
-double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
-		double* vectorS, double sumKiSi, double prevModularity,
-		int changedIndex, double* prevSAS) {
-	clock_t start, end;
-
-	double previousSAS, sumAiSi, newModularityY, currentSAS;
-	int nodeNum, degree, vectorSChangedIndex;
-
-	start = clock();
-	srand(time(NULL));
-	previousSAS = *prevSAS;
-
-	nodeNum = g->groupMembers[changedIndex];
-	degree = graph->vectorDegrees[nodeNum];
-
-	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP*/
-
-	/* calc new sumAiSi*/
-
-
-	/* calc new SAS*/
-	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
-	currentSAS = previousSAS - 4 * vectorSChangedIndex * sumAiSi;
-	*prevSAS = currentSAS; /*update SAS*/
-
-	newModularityY = prevModularity
-			- 4 * vectorSChangedIndex * (degree / graph->M)
-					* (sumKiSi + (degree * vectorSChangedIndex));
-	newModularityY = newModularityY + (currentSAS - previousSAS);
-
-	return newModularityY - prevModularity;
-
-	end = clock();
-	printf("calculate change modularity took %f seconds\n",
-			((double) (end - start) / CLOCKS_PER_SEC));
-
 }
 
 /*TODO: add explanation.*/
@@ -342,7 +308,7 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 		flipVectorEntry(vectorS, currentNode->data.num);
 
 		modChange = calculateChangeModularityWithPrevSas(graph, g, vectorS,
-						sumKiSi, Q0, currentNode->data.num, prevSAS);
+						sumKiSi, Q0, currentNode->data.num, &prevSAS,0);
 
 		if (*switchFirstUnmovedIteration == 1
 				|| modChange > *maxModularityChange) {
@@ -393,8 +359,8 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 			if (i == 0)
 				Q0 = calcModularity(graph, vectorS, g, sumKiSi, &curSAS);
 			else
-				Q0 = Q0 + calculateChangeModularity(graph, g, vectorS, sumKiSi,
-								Q0, indexOfBiggestIncrease, &curSAS);
+				Q0 = Q0 + calculateChangeModularityWithPrevSas(graph, g, vectorS, sumKiSi,
+								Q0, indexOfBiggestIncrease, &curSAS,1);
 			switchFirstUnmovedIteration = 1; /*indicator that says: we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			 finding vertex with maximal increase in modularity*/
