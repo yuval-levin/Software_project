@@ -43,8 +43,8 @@ static double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
 		double* eigenvector, int rowLength, double* BShiftedTimesEigenvector) {
 	double numerator, denominator, eigenvalue;
 
-	numerator = dotProduct(BShiftedTimesEigenvector, eigenvector, rowLength);
-	denominator = dotProduct(eigenvector, eigenvector, rowLength);
+	numerator = dot_product(BShiftedTimesEigenvector, eigenvector, rowLength);
+	denominator = dot_product(eigenvector, eigenvector, rowLength);
 
 	if (denominator < epsilon)
 		panic(ERROR_DIVISION_BY_ZERO);
@@ -104,11 +104,11 @@ static double calc_mod_change(double* vectorS, struct divisionGroup* g,
 	if (AtimesS == NULL)
 		panic(ERROR_MALLOC_FAILED);
 
-	sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g);
-	rightArguTemp = modularityTimesS(graph, vectorS, g, sumKiSi);
-	rightArgument = dotProduct(vectorS, rightArguTemp, g->groupSize);
+	sumKiSi = sum_of_degree_by_vector_s(graph, vectorS, g);
+	rightArguTemp = modularity_times_s(graph, vectorS, g, sumKiSi);
+	rightArgument = dot_product(vectorS, rightArguTemp, g->groupSize);
 	mult_ll(g->groupSubmatrix, vectorS, AtimesS);
-	leftArgument = dotProduct(vectorS, AtimesS, g->groupSize);
+	leftArgument = dot_product(vectorS, AtimesS, g->groupSize);
 
 	free(rightArguTemp);
 	free(AtimesS);

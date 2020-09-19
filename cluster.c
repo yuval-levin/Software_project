@@ -5,7 +5,7 @@
 #include "Algorithm3.h"
 #include "error_codes.h"
 
-void read_row(int i, int n, FILE* input, struct _spmat* A) {
+static void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;
 	int k, j, cur;
 
@@ -23,7 +23,7 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	free(row);
 }
 
-void create_graph(FILE* input, struct graph* newGraph) {
+static void create_graph(FILE* input, struct graph* newGraph) {
 	struct _spmat* A;
 	double* vectorDegrees;
 	double* degreesDividedByM;
@@ -63,7 +63,7 @@ void create_graph(FILE* input, struct graph* newGraph) {
 		newGraph->numOfNodes = n;
 }
 
-void write_output_file(struct division* div, FILE* output) {
+static void write_output_file(struct division* div, FILE* output) {
 	int k, n, groupSize;
 	int* groupMembers;
 	struct node* curNode;
@@ -92,41 +92,6 @@ void write_output_file(struct division* div, FILE* output) {
 		curNode = curNode->next;
 	}
 }
-/*
-void print_result(struct division* div) {
-	int n, groupSize, i, j;
-	int* groupMembers;
-	struct node* curNode;
-	struct divisionGroup* curGroup;
-
-	i = 1;
-
-	n = div->len;
-	printf("%s", "num of groups:  ");
-	printf("%d \n", n);
-
-	curNode = div->divisions;
-
-	write groups
-	while (curNode != NULL) {
-		printf("%s", "group number ");
-		printf("%d", i);
-		curGroup = curNode->data.group;
-		groupSize = curGroup->groupSize;
-		printf("%s", " of size ");
-		printf("%d \n", groupSize);
-		printf("%s", "group members: ");
-		groupMembers = curGroup->groupMembers;
-
-		for (j = 0; j < groupSize; j++) {
-			printf("%s", "  ");
-			printf("%d", groupMembers[j]);
-		}
-		curNode = curNode->next;
-		i++;
-		printf("%s", "\n");
-	}
-}*/
 
 int main(int args, char** argv) {
 	struct graph* inputGraph;
