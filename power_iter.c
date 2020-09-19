@@ -83,37 +83,35 @@ double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
  * */
 double spmatProductWithVectorb(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double KjDivdedByM, double* AtimesB) {
+		double KjBjDividedByM, double* AtimesB) {
 	double rowResult = 0;
-	double rowSum;
+	int rowSum;
 	double ki;
 	double bi;
 
-	rowSum = 0;
-	ki = graph->vectorDegrees[rowIndex];
+	rowSum = g->group->sumOfRows[rowIndex];
+	ki = graph->vectorDegrees[g->group->groupMembers[rowIndex]];
 	bi = vector[rowIndex];
 
-	rowResult += AtimesB[rowIndex]; /*A times b*/
+	rowResult += AtimesB[rowIndex]; /*Adjacency times b*/
 	rowResult -= ((KjBjDividedByM) * ki);
-	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
-	rowResult += (g->norm * bi);
+	rowResult -= ((rowSum ) * bi);
+	rowResult += (g->norm * bi);/* norm imes b*/
 
 	return rowResult;
 }
 
 void spmatProductHelperKjBjDividedByM(double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double* KjBjMultiply, double* KjBj) {
-	double sum = 0, sumMultiply = 0;
+		double* KjBjMultiply) {
+	double  sumMultiply = 0;
 	double* degreesDividedByM = graph->degreesDividedByM;
 	int i;
 	struct divisionGroup* group = g->group;
 	for (i = 0; i < group->groupSize; i++) {
-		sumMultiply += (vector[i] * degreesDividedByM[i]);
-		sum += degreesDividedByM[i];
+		sumMultiply += (vector[i] * degreesDividedByM[g->group->groupMembers[i]]);
 	}
 	*KjBjMultiply = sumMultiply;
-	*KjBj = sum;
 }
 
 /*helper function to product Ab_k,
@@ -122,10 +120,9 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 void createAbkVec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
-	double Abk, KjBjDividedByM, KjDivdedByM;
+	double Abk, KjBjDividedByM;
 	double* AtimesB;
-	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
-			&KjDivdedByM); /*helper Sums for all rows*/
+	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM); /*helper Sums for all rows*/
 	AtimesB = (double*) malloc(sizeof(double) * g->group->groupSize);
 	mult_ll(g->group->groupSubmatrix, currentB, AtimesB);
 
@@ -133,7 +130,7 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
 		Abk = spmatProductWithVectorb(i, currentB, g, graph, KjBjDividedByM,
-				KjDivdedByM, AtimesB);
+				 AtimesB);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
