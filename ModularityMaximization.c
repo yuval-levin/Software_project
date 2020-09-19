@@ -163,9 +163,6 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP*/
 
-	/* calc new sumAiSi*/
-
-
 	/* calc new SAS*/
 	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
 	currentSAS = previousSAS - 4 * vectorSChangedIndex * sumAiSi;
