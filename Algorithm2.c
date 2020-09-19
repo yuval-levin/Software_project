@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "ModularityMaximization.h"
-#include "OneNorm.h"
 #include "power_iter.h"
 #include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
+#include "modularity_maximization.h"
+#include "one_norm.h"
 
 /*
  * given an vector u1 (which will be our eigenvector)

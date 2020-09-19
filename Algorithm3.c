@@ -3,8 +3,8 @@
 #include "modules.h"
 #include "spmat.h"
 #include "Algorithm2.h"
-#include "ModularityMaximization.h"
 #include "error_codes.h"
+#include "modularity_maximization.h"
 
 
 /* free a linked list of type spmat_node*/

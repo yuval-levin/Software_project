@@ -3,9 +3,8 @@
 #include <math.h>
 #include "modules.h"
 #include "spmat.h"
-#include "ModularityMaximization.h"
 #include "error_codes.h"
-#include <time.h>
+#include "modularity_maximization.h"
 
 /*creates a random vector */
 static void fill_vector_with_random(double* b, int length) {
