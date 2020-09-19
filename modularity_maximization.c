@@ -16,7 +16,6 @@ static double calc_ai_si(double* vectorS, int changedIndex, struct _spmat* mat) 
 double dot_product(double* vec1, double* vec2, int length) {
 	/*dot product of vectors a and b*/
 	int k;
-
 	double dot = 0;
 
 	for (k = 0; k < length; k++) {
@@ -138,7 +137,7 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 	return newModularityY - prevModularity;
 }
 
-/*TODO: add explanation.*/
+
 static double* second_argument_in_calc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
 	int i;
@@ -183,7 +182,7 @@ double sum_of_degree_by_vector_s(struct graph* graph, double* vectorS,
 	double* vecDegrees = graph->vectorDegrees;
 	int* groupMembers = g->groupMembers;
 	int i;
-	for (i = 0; i < g->groupSize; i++) { /*we don't know how many are really in group, since it sparse. so we use while */
+	for (i = 0; i < g->groupSize; i++) {
 		/*vectorDegrees is size Of number of nodes in the original A matrix*/
 		sum = sum + (vectorS[i] * vecDegrees[groupMembers[i]]); /*vectorS is size of g, we use i*/
 	}
@@ -272,17 +271,13 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 		int *indexOfBiggestIncrease, struct node** prevOfBiggest,
 		double* curSAS) {
 
-	/*clock_t start, end;*/
-
 	double modChange;
 	double prevSAS;
 	struct node* prev;
+
 	prev = NULL;
-	/*start = clock();
-	 srand(time(NULL));*/
-	/*while going through all UNMVOED, they all have the same SAS. so we calculate it once here:*/
-	/*prevSAS = calcSAS(g, vectorS);*/
 	prevSAS = *curSAS;
+
 	while (currentNode != NULL) {
 
 		flip_vector_entry(vectorS, currentNode->data.num);
@@ -294,7 +289,6 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 				|| modChange > *maxModularityChange) {
 			*maxModularityChange = modChange;
 			*indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
-			/*maxImproveScore = maxModularityChange;*/
 			*prevOfBiggest = prev;
 			*switchFirstUnmovedIteration = 0;
 		}
@@ -305,7 +299,7 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 	}
 }
 
-/*TODO: is DeltaModularity double int long?*/
+
 void modularity_maximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
@@ -345,9 +339,8 @@ void modularity_maximization(struct graph* graph, double* vectorS,
 			switchFirstUnmovedIteration = 1; /*indicator that says: we need to set i = 0 as currentMax*/
 			/*change in Modularity is Q1-Q0 (For Q1 with biggest modularity). we wish to find Q1 so it is Q1-Q0+Q0 ^
 			 finding vertex with maximal increase in modularity*/
-			/*	sumKiSi = sumOfDegreeByVectorS(graph, vectorS, g); only AFTER CALC MOD we change KiSi */
-			/* if i = 0 there is no "index of biggestincrease,*/
 
+			/* if i = 0 there is no "index of biggestincrease,*/
 			if (i != 0)
 				sumKiSi = sum_of_degree_by_vector_s_with_prev(graph, g,
 						indexOfBiggestIncrease, vectorS, sumKiSi);
