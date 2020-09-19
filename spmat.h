@@ -6,9 +6,9 @@
  * index contains the column index.
  */
 typedef struct spmat_node {
-	int data;
 	int index;
 	int node_name;
+	double data;
 	struct spmat_node *next;
 } spmat_node;
 

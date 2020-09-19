@@ -6,15 +6,11 @@
 #include "spmat.h"
 
 double multiply_vector(struct spmat_node* curNode, const double *v) {
-	int index = 0;
-	double sum = 0;
-	struct spmat_node* cur;
-	cur = curNode;
-	for (; cur != NULL; cur = cur->next) {
-		index = cur->index;
-		sum += (cur->data) * (v[index]);
-	}
-	return sum;
+    double sum = 0;
+    for (; curNode != NULL; curNode = curNode->next) {
+        sum += v[curNode->index];
+    }
+    return sum;
 }
 
 /*

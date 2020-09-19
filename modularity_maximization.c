@@ -30,7 +30,7 @@ double dot_product(double* vec1, double* vec2, int length) {
  * receives a vector and an entry index,
  * "flips" the value at entry index from negative to positive or vice versa.
  * */
-static void flip_vector_entry(double* vector, int entry) {
+static void inline flip_vector_entry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
 
@@ -111,9 +111,9 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 		double prevModularity, int changedIndex, double* previousSAS,
 		int update) {
 	double newModularityY;
-	double currentSAS, sumAiSi;
+	double currentSAS, sumAiSi, degree, vectorSChangedIndex;
 	double* degreeDividedByM;
-	int nodeNum, degree, vectorSChangedIndex;
+	int nodeNum;
 
 	nodeNum = g->groupMembers[changedIndex];
 	degree = graph->vectorDegrees[nodeNum];
@@ -270,29 +270,36 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 	double modChange;
 	double prevSAS;
 	struct node* prev;
+	int currentNodeNum;
+	double localMaxModularityChange = *maxModularityChange;
+	int localIndexOfBiggestIncrease = *indexOfBiggestIncrease;
+	struct node* localPrevOfBiggest = *prevOfBiggest;
+	int localSwitchFirstUnmovedIteration = *switchFirstUnmovedIteration;
 
 	prev = NULL;
 	prevSAS = *curSAS;
 
-	while (currentNode != NULL) {
-
-		flip_vector_entry(vectorS, currentNode->data.num);
+	for (; currentNode != NULL; prev = currentNode, currentNode = currentNode->next) {
+		currentNodeNum = currentNode->data.num;
+		flip_vector_entry(vectorS, currentNodeNum);
 
 		modChange = calculate_change_modularity_with_prev_sas(graph, g, vectorS,
-				sumKiSi, Q0, currentNode->data.num, &prevSAS, 0);
+				sumKiSi, Q0, currentNodeNum, &prevSAS, 0);
 
-		if (*switchFirstUnmovedIteration == 1
-				|| modChange > *maxModularityChange) {
-			*maxModularityChange = modChange;
-			*indexOfBiggestIncrease = currentNode->data.num; /*finding "k" of biggestIncrease;*/
-			*prevOfBiggest = prev;
-			*switchFirstUnmovedIteration = 0;
+		flip_vector_entry(vectorS, currentNodeNum);
+
+		if (localSwitchFirstUnmovedIteration == 1 || modChange > localMaxModularityChange) {
+			localMaxModularityChange = modChange;
+			localIndexOfBiggestIncrease = currentNodeNum; /*finding "k" of biggestIncrease;*/
+			localPrevOfBiggest = prev;
+			localSwitchFirstUnmovedIteration = 0;
 		}
-		flip_vector_entry(vectorS, currentNode->data.num);
-
-		prev = currentNode;
-		currentNode = currentNode->next;
 	}
+
+	*maxModularityChange = localMaxModularityChange;
+	*indexOfBiggestIncrease = localIndexOfBiggestIncrease;
+	*prevOfBiggest = localPrevOfBiggest;
+	*switchFirstUnmovedIteration = localSwitchFirstUnmovedIteration;
 }
 
 void modularity_maximization(struct graph* graph, double* vectorS,
