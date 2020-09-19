@@ -139,6 +139,7 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 		/*move nextb to next coordinate */
 		newB += 1;
 	}
+	free(AtimesB);
 }
 
 /*function to calculate eigenvalue for matrix of group g.
