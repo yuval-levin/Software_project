@@ -139,7 +139,7 @@ int main(int args, char** argv) {
 	free_graph(inputGraph);
 
 	t = clock() - t;
-	 time_taken = ((double)t) / CLOCKS_PER_SEC;
+	time_taken = ((double)t) / CLOCKS_PER_SEC;
 	printf("Program took %f\n", time_taken);
 	return 0;
 }
