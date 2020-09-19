@@ -5,9 +5,9 @@
  *      Author: 97254
  */
 
-#ifndef ONE_NORM_H_
-#define ONE_NORM_H_
+#ifndef ONENORM_H_
+#define ONENORM_H_
 double one_norm(struct graph* graph, struct divisionGroup* g);
 
 
-#endif /* ONE_NORM_H_ */
+#endif /* ONENORM_H_ */
