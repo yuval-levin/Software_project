@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
+#include "spmat.h"
 
 static void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;
@@ -39,7 +39,7 @@ static void create_graph(FILE* input, struct graph* newGraph) {
 
 	degreesDividedByM = (double*) malloc(n * sizeof(double));
 	if (degreesDividedByM == NULL)
-			panic(ERROR_MALLOC_FAILED);
+		panic(ERROR_MALLOC_FAILED);
 	/*reading input to struct*/
 	degSum = 0;
 	for (i = 0; i < n; i++) {
@@ -51,16 +51,18 @@ static void create_graph(FILE* input, struct graph* newGraph) {
 		read_row(i, curDeg, input, A);
 	}
 	/*loop again, to calc degreesDividedByM. it Needs M, which is only calculated after prior loop*/
-		for (i = 0; i < n; i++) {
-			if(degSum < epsilon) panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
-			degreesDividedByM[i] = vectorDegrees[i] / degSum; }
+	for (i = 0; i < n; i++) {
+		if (degSum < epsilon)
+			panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
+		degreesDividedByM[i] = vectorDegrees[i] / degSum;
+	}
 
-		/*initializing graph*/
-		newGraph->A = A;
-		newGraph->vectorDegrees = vectorDegrees;
-		newGraph->M = degSum;
-		newGraph->degreesDividedByM = degreesDividedByM;
-		newGraph->numOfNodes = n;
+	/*initializing graph*/
+	newGraph->A = A;
+	newGraph->vectorDegrees = vectorDegrees;
+	newGraph->M = degSum;
+	newGraph->degreesDividedByM = degreesDividedByM;
+	newGraph->numOfNodes = n;
 }
 
 static void write_output_file(struct division* div, FILE* output) {
@@ -110,7 +112,7 @@ int main(int args, char** argv) {
 		panic(ERROR_OPEN_FAILED);
 	create_graph(input, inputGraph);
 	fclose(input);
-	setvbuf (stdout, NULL, _IONBF, 0);
+	setvbuf(stdout, NULL, _IONBF, 0);
 	finalDivision = Algorithm3(inputGraph);
 
 	output = fopen(argv[2], "wb");

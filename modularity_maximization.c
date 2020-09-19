@@ -1,9 +1,8 @@
 #include<stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "spmat.h"
 #include "error_codes.h"
-#include <time.h> /*todo: remove time etc*/
+#include "spmat.h"
 
 /* calculates the result of multiplying the changedIndex-th row of
  * mat by vectorS */

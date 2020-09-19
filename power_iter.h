@@ -1,4 +1,3 @@
-
 #ifndef _POWER_ITER_H
 #define _POWER_ITER_H
 

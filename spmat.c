@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <math.h>
 #include <string.h>
-#include "spmat.h"
 #include "error_codes.h"
+#include "spmat.h"
+
 
 double multiply_vector(struct spmat_node* curNode, const double *v) {
 	int index = 0;
