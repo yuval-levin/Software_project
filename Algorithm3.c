@@ -32,7 +32,7 @@ void freeGroup(struct divisionGroup* group) {
 
 	free(group->sumOfRows);
 	free(group->groupMembers);
-	free(group->groupSubmatrix);
+	free_A(group->groupSubmatrix);
 	free(group); /*TODO: delete?*/
 }
 
@@ -207,8 +207,7 @@ void free_div_group(struct divisionGroup* g, int should_use_free_ll) {
 		free_ll((struct _spmat*) g->groupSubmatrix);
 	} else {
 		/*free submatrix, don't use free_ll, since we don't want to free rows*/
-		free(get_private((struct _spmat*) g->groupSubmatrix));
-		free(g->groupSubmatrix);
+		free_A(g->groupSubmatrix);
 	}
 	free(g);
 }
