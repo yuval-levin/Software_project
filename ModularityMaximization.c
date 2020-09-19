@@ -14,15 +14,7 @@ double calcAiSi (double* vectorS, int changedIndex, struct _spmat* mat){
 	return sumTimesVectorHelper(cur_node, vectorS);
 }
 
-/*todo: delete this*/
-void print_array(double *vec, int dim) {
-	int i;
-	for (i = 0; i < dim; i++) {
-		setbuf(stdout, 0);
-		printf("%f ", vec[i]);
-	}
-	printf("\n");
-}
+
 /*TODO: remove duplicate and add to module of matrix functions*/
 double dotProduct(double* a, double* b, int col) {
 	/*dot product of vectors a and b*/
