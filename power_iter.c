@@ -34,7 +34,7 @@ static int difference_between_vector(double * vec1, double *vec2, int length) {
 
 /*returns magnitude (norm) of vec with col columns*/
 static double magnitude(double* vec, int length) {
-	return sqrt(dotProduct(vec, vec, length));
+	return sqrt(dot_product(vec, vec, length));
 }
 
 

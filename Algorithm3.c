@@ -451,7 +451,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 			panic(ERROR_MALLOC_FAILED);
 
 		Algorithm2(vectorS, g, inputGraph);
-		modularityMaximization(inputGraph, vectorS, g);
+		modularity_maximization(inputGraph, vectorS, g);
 
 		g2 = split_by_S(vectorS, g, g1);
 
