@@ -161,10 +161,10 @@ int main(int args, char** argv) {
 	print_result(finalDivision);
 	fclose(output);
 
-	free_division_group(final_division); /*free O and inside*/
-	free(input_graph->vectorDegrees);
-	free(input_graph->degreesDividedByM);
-	free(input_graph);
+	free_division_group(finalDivision); /*free O and inside*/
+	free(inputGraph->vectorDegrees);
+	free(inputGraph->degreesDividedByM);
+	free(inputGraph);
 
 	end = clock();
 	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));

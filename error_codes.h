@@ -1,5 +1,5 @@
-#ifndef _ERROR_CODES_H_
-#define _ERROR_CODES_H_
+#ifndef _ERROR_CODES_H
+#define _ERROR_CODES_H
 
 enum error_code {
     ERROR_SUCCESS = 0, /* so that everything that follows will get a non 0 value. */
