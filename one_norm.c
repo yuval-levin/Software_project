@@ -6,7 +6,7 @@
 /*helper function
  * calculates column sum of Adjacency matrix in column "column"
  */
-double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
+double column_sum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum = 0;
 	int cnt;
 	struct spmat_node* currentNode;
@@ -35,7 +35,7 @@ double one_norm(struct graph* graph, struct divisionGroup* g) {
 	int i;
 	/* iterate through columns*/
 	for (i = 0; i < g->groupSize; i++) {
-		currentSum = columnSum(graph, g, i);
+		currentSum = column_sum(graph, g, i);
 		if (maxColumn < currentSum)
 			maxColumn = currentSum;
 	}
