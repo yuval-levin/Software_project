@@ -14,7 +14,7 @@ static double calc_ai_si(double* vectorS, int changedIndex, struct _spmat* mat) 
 	return multiply_vector(curNode, vectorS);
 }
 
-double dot_פroduct(double* vec1, double* vec2, int length) {
+double dot_product(double* vec1, double* vec2, int length) {
 	/*dot product of vectors a and b*/
 	int k;
 
