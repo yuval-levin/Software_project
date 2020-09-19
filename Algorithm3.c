@@ -32,7 +32,7 @@ static void free_group(struct divisionGroup* group) {
 	free(group->sumOfRows);
 	free(group->groupMembers);
 	free_A(group->groupSubmatrix);
-	free(group); /*TODO: delete?*/
+	free(group);
 }
 
 /*free the  divisions given to us by Algorithm 3
