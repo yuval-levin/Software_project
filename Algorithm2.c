@@ -21,8 +21,8 @@ static void compute_S(double* u1, double* s, int n) {
 }
 
 /* for power iteration process:
- *given a divisionGroup g, we calculate the 1-norm of the Adjacency matrix and create a new divisionGroup,
- *Shifted by the 1-norm calculated - shiftedDivisionGroup
+ * given a divisionGroup g, we calculate the 1-norm of the Adjacency matrix and create a new divisionGroup,
+ * Shifted by the 1-norm calculated - shiftedDivisionGroup
  * */
 static struct shiftedDivisionGroup* new_shifted_divsion_group(
 		struct divisionGroup* g, struct graph* graph) {
@@ -36,7 +36,7 @@ static struct shiftedDivisionGroup* new_shifted_divsion_group(
 	return shiftedG;
 }
 
-/*helper function for calculation eigenvalue
+/* helper function for calculation eigenvalue
  * given the eigenvector and the shifted matrix
  * */
 static double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
@@ -55,7 +55,7 @@ static double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
 	return eigenvalue;
 }
 
-/*given a shiftedMatrix, calculates its eigenValue
+/* given a shiftedMatrix, calculates its eigenValue
  * using power iteration
  * */
 static double compute_leading_eigenvalue(struct shiftedDivisionGroup* shiftedG,
