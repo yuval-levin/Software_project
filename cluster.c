@@ -165,7 +165,7 @@ int main(int args, char** argv) {
 	/*print_result(final_division);*/
 	fclose(output);
 
-	freeDivisionGroup(final_division); /*free O and inside*/
+	free_division_group(final_division); /*free O and inside*/
 	free(input_graph->vectorDegrees);
 	free(input_graph->degreesDividedByM);
 	free(input_graph);
