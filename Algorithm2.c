@@ -13,7 +13,7 @@
  * We calculate the S vector created by it,
  * when a positive value (entry of u1 > epsilon) means S's entry will be 1, -1 otheriwse.
  */
-void compute_S(double* u1, double* s, int n) {
+static void compute_S(double* u1, double* s, int n) {
 	int i;
 	for (i = 0; i < n; i++) {
 		s[i] = u1[i] >= epsilon ? 1 : -1; /*bigger than 0 is bigger than epsilon*/
@@ -24,7 +24,7 @@ void compute_S(double* u1, double* s, int n) {
  *given a divisionGroup g, we calculate the 1-norm of the Adjacency matrix and create a new divisionGroup,
  *Shifted by the 1-norm calculated - shiftedDivisionGroup
  * */
-struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGroup* g,
+static struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGroup* g,
 		struct graph* graph) {
 	struct shiftedDivisionGroup* shiftedG =
 			(struct shiftedDivisionGroup*) malloc(
@@ -39,7 +39,7 @@ struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGroup* g,
 /*helper function for calculation eigenvalue
  * given the eigenvector and the shifted matrix
  * */
-double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
+static double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
 		double* eigenvector, int rowLength, double* BShiftedTimesEigenvector) {
 	double numerator, denominator, eigenvalue;
 
@@ -58,7 +58,7 @@ double eigen_value_calc_celper(struct shiftedDivisionGroup* shiftedG,
 /*given a shiftedMatrix, calculates its eigenValue
  * using power iteration
  * */
-double compute_leading_eigenvalue(struct shiftedDivisionGroup* shiftedG,
+static double compute_leading_eigenvalue(struct shiftedDivisionGroup* shiftedG,
 		double* eigenvector, struct graph* graph) {
 	double eigenvalue, rowLength;
 	struct divisionGroup* g = shiftedG->group;
@@ -82,7 +82,7 @@ double compute_leading_eigenvalue(struct shiftedDivisionGroup* shiftedG,
  * This helps when in Algorithm2, group is undivisble - meaning
  * Vector S should be all "1"
  * */
-void fill_vector_with_ones(double* vector, int length) {
+static void fill_vector_with_ones(double* vector, int length) {
 	int i;
 	for (i = 0; i < length; i++)
 		vector[i] = 1;
@@ -92,7 +92,7 @@ void fill_vector_with_ones(double* vector, int length) {
  * As specified in Algorithm2 row 4.
  *
  */
-double calc_mod_change(double* vectorS, struct divisionGroup* g,
+static double calc_mod_change(double* vectorS, struct divisionGroup* g,
 		struct graph* graph) {
 	double sumKiSi;
 	double rightArgument;
