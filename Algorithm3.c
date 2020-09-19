@@ -51,6 +51,7 @@ void freeDivisionGroup(struct division* O) {
 	}
 	free(O);
 }
+
 /*adds in start*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));

@@ -18,7 +18,6 @@ void computeS(double* u1, double* s, int n) {
 	for (i = 0; i < n; i++) {
 		s[i] = u1[i] >= epsilon ? 1 : -1; /*bigger than 0 is bigger than epsilon*/
 	}
-
 }
 
 /*helper function for power iteration process:
@@ -36,6 +35,7 @@ struct shiftedDivisionGroup* newShiftedDivsionGroup(struct divisionGroup* g,
 	shiftedG->norm = one_norm(graph, g);
 	return shiftedG;
 }
+
 /*helper function for calculation eigenvalue
  * given the eigenvector and the shifted matrix
  * */
@@ -53,8 +53,8 @@ double eigenValueCalcHelper(struct shiftedDivisionGroup* shiftedG,
 	eigenvalue -= shiftedG->norm;
 
 	return eigenvalue;
-
 }
+
 /*given a shiftedMatrix, calculates its eigenValue
  * using power iteration
  * */
@@ -110,8 +110,8 @@ double calcModChange(double* vectorS, struct divisionGroup* g,
 	free(AtimesS);
 
 	return leftArgument + rightArgument;
-
 }
+
 /*
  * Algorithm2,
  * As described in sp_project.pdf

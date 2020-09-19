@@ -14,7 +14,6 @@ void createB(double* b, int col) {
 		*b = rand();
 		b = b + 1;
 	}
-
 }
 
 int difference(double * a, double *b, int col) {
@@ -34,9 +33,7 @@ int difference(double * a, double *b, int col) {
 			return 1;
 		}
 	}
-
 	return 0;
-
 }
 
 double magnitude(double* vec, int col) {
@@ -52,7 +49,6 @@ void divideByMagnitude(double* vec, double magnitude, int col) {
 		*vec = (*vec) / magnitude;
 		vec += 1;
 	}
-
 }
 
 void updateB(double* b, double* newB, double c) {
@@ -63,7 +59,6 @@ void updateB(double* b, double* newB, double c) {
 		b++;
 		newB++;
 	}
-
 }
 
 /*helper function calculates row (given by cur_node) sum , and row times vector v;
@@ -99,7 +94,6 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	rowResult += (g->norm * bi);
 
 	return rowResult;
-
 }
 
 void spmatProductHelperKjBjDividedByM(double* vector,
@@ -116,7 +110,6 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 
 	*KjBjMultiply = sumMultiply ;
 	*KjBj = sum ;
-
 }
 
 void createAbkVec(int rowLength, double* currentB, double* newB,
@@ -139,7 +132,6 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 		/*move nextb to next coordinate */
 		newB += 1;
 	}
-
 }
 
 double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
@@ -186,6 +178,5 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 	free(covRow);
 
 	return b;
-
 }
 
