@@ -6,11 +6,11 @@
 #include "spmat.h"
 #include "error_codes.h"
 
-double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v) {
+double multiply_vector(struct spmat_node* curNode, const double *v) {
 	int index = 0;
 	double sum = 0;
 	struct spmat_node* cur;
-	cur = cur_node;
+	cur = curNode;
 	for (; cur != NULL; cur = cur->next) {
 		index = cur->index;
 		sum += (cur->data) * (v[index]);
@@ -22,18 +22,18 @@ double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v) {
  * mult implementation for linked list
  */
 void mult_ll(const struct _spmat *A, const double *v, double *result) {
-	int row_ind;
+	int rowInd;
 	double sum;
 	struct spmat_node* cur_node;
 	struct spmat_node** rows = (struct spmat_node**) A->private;
 
 	/*calculate the result of each row*/
-	for (row_ind = 0; row_ind < A->n; row_ind++) {
-		cur_node = rows[row_ind];
+	for (rowInd = 0; rowInd < A->n; rowInd++) {
+		cur_node = rows[rowInd];
 
 		/*sum all the relevant multiplications*/
-		sum = sumTimesVectorHelper(cur_node, v);
-		result[row_ind] = sum;
+		sum = multiply_vector(cur_node, v);
+		result[rowInd] = sum;
 	}
 }
 
