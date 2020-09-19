@@ -13,9 +13,6 @@
 #include "spmat.h"
 #include "error_codes.h"
 
-void add_row_ll(struct _spmat *A, const double *row, int i);
-void free_ll(struct _spmat *A);
-
 double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v) {
 	int index = 0;
 	double sum = 0;

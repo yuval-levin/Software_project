@@ -5,7 +5,8 @@
 #include "error_codes.h"
 #include <time.h> /*todo: remove time etc*/
 
-
+/* calculates the result of multiplying the changedIndex-th row of
+ * mat by vectorS */
 double calcAiSi (double* vectorS, int changedIndex, struct _spmat* mat){
 	struct spmat_node* cur_node;
 	cur_node = get_private(mat)[changedIndex];
@@ -97,6 +98,7 @@ struct node* addToList(struct node* list, struct node* node) {
 	}
 	return list;
 }
+
 /*
  * Helper function to remove node from LinkedList representing "UNMOVED" nodes in algo4.
  * (we remove nodes that had the biggest change in modularity)
@@ -118,8 +120,6 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved,
 
 	return unmoved;
 }
-
-
 
 /*Calculates Change in Modularity using previous SAS*/
 double calculateChangeModularityWithPrevSas(struct graph* graph,
@@ -163,10 +163,12 @@ double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 
 	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP*/
 
+	/* calc new sumAiSi*/
+
+
 	/* calc new SAS*/
 	sumAiSi = calcAiSi(vectorS, changedIndex, g->groupSubmatrix);
 	currentSAS = previousSAS - 4 * vectorSChangedIndex * sumAiSi;
-
 	*prevSAS = currentSAS; /*update SAS*/
 
 	newModularityY = prevModularity
@@ -233,8 +235,9 @@ double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,
 	}
 	return sum;
 }
-double sumOfDegreeByVectorSWithPrev(struct graph* graph,struct divisionGroup* g,int changedIndex,double* vectorS,double prevKiSi)
-{
+
+double sumOfDegreeByVectorSWithPrev(struct graph* graph,struct divisionGroup* g,
+		int changedIndex,double* vectorS,double prevKiSi) {
 	double* vecDegrees = graph->vectorDegrees;
 	int* groupMembers = g->groupMembers;
 	double updatedKiSi = 0;
@@ -292,7 +295,6 @@ void printG(struct divisionGroup* g) {
 			}
 		}
 	}
-
 }
 
 double calcModularity(struct graph* graph, double* vectorS,
@@ -339,8 +341,6 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 
 		flipVectorEntry(vectorS, currentNode->data.num);
 
-		/*modChange = calculateChangeModularity(graph, g, vectorS,
-				sumKiSi, Q0, currentNode->data.num, &prevSAS);*/ /*TODO: fix or delete*/
 		modChange = calculateChangeModularityWithPrevSas(graph, g, vectorS,
 						sumKiSi, Q0, currentNode->data.num, prevSAS);
 
@@ -359,10 +359,9 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 	}
 	/*end = clock();*/
 	/*printf("unmoved LOOP took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
-
 }
 
-/*ODO: is DeltaModularity double int long?*/
+/*TODO: is DeltaModularity double int long?*/
 void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 

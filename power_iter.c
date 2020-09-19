@@ -15,7 +15,6 @@ void createB(double* b, int col) {
 		*b = rand();
 		b = b + 1;
 	}
-
 }
 
 /*returns 1 if: difference of some coordinate in a and b differ by more than epsilon,
@@ -35,9 +34,7 @@ int difference(double * a, double *b, int col) {
 			return 1;
 		}
 	}
-
 	return 0;
-
 }
 
 /*returns magnitude (norm) of vec with col columns*/
@@ -53,7 +50,6 @@ void divideByMagnitude(double* vec, double magnitude, int col) {
 		*vec = (*vec) / magnitude;
 		vec += 1;
 	}
-
 }
 
 /*given a  vector b, we update its value to be the values of newB */
@@ -65,7 +61,6 @@ void updateB(double* b, double* newB, double c) {
 		b++;
 		newB++;
 	}
-
 }
 
 /*helper function calculates row (given by cur_node) sum , and row times vector v;
@@ -104,7 +99,6 @@ double spmatProductWithVectorb(int rowIndex, double* vector,
 	rowResult += (g->norm * bi);
 
 	return rowResult;
-
 }
 
 void spmatProductHelperKjBjDividedByM(double* vector,
@@ -118,10 +112,8 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 		sumMultiply += (vector[i] * degreesDividedByM[i]);
 		sum += degreesDividedByM[i];
 	}
-
 	*KjBjMultiply = sumMultiply;
 	*KjBj = sum;
-
 }
 
 /*helper function to product Ab_k,
@@ -147,7 +139,6 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 		/*move nextb to next coordinate */
 		newB += 1;
 	}
-
 }
 
 /*function to calculate eigenvalue for matrix of group g.
@@ -196,6 +187,5 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 	free(covRow);
 
 	return b;
-
 }
 
