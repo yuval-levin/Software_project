@@ -131,6 +131,14 @@ void free_row_ll(struct spmat_node* row) {
 /*
  * free implementation for linked list
  */
+void free_A(struct _spmat *A) {
+	free(A->private);
+	free(A);
+}
+
+/*
+ * free implementation for linked list
+ */
 void free_ll(struct _spmat *A) {
 	int i;
 	struct spmat_node** rows;
@@ -142,8 +150,7 @@ void free_ll(struct _spmat *A) {
 	for (i = 0; i < A->n; i++) {
 		free_row_ll(rows[i]);
 	}
-	free(A->private);
-	free(A);
+	free_A(A);
 }
 
 /*
