@@ -1,16 +1,9 @@
-/*
- * Algorithm3.h
- *
- *  Created on: 5 Sep 2020
- *      Author: 97254
- */
-
-#ifndef MODULARITYMAXIMIZATION_H_
-#define MODULARITYMAXIMIZATION_H_
+#ifndef _MODULARITY_MAXIMIZATION_H
+#define _MODULARITY_MAXIMIZATION_H
 
 double* modularityTimesS(struct graph* graph, double* vectorS,struct divisionGroup* g, double sumKiSi);
-double dotProduct(double* a, double* b, int col);
+double dot_product(double* a, double* b, int col);
 void modularityMaximization(struct graph* graph, double* vectorS,struct divisionGroup* g);
 double sumOfDegreeByVectorS(struct graph* graph, double* vectorS,struct divisionGroup* g);
 
-#endif /* MODULARITYMAXIMIZATION_H_ */
+#endif
