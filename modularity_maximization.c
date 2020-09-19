@@ -27,7 +27,6 @@ double dot_product(double* vec1, double* vec2, int length) {
 }
 
 /*
- * helper function:
  * receives a vector and an entry index,
  * "flips" the value at entry index from negative to positive or vice versa.
  * */
@@ -35,8 +34,7 @@ static void flip_vector_entry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
 
-/* Helper function:
- * We wish for S be in the same state it was when we reached maxImproved Score.
+/* We wish for S be in the same state it was when we reached maxImproved Score.
  * so we reverse everything that came after it*/
 static void update_s(double* vectorS, int* indiceVector, int maxImprovedIndex,
 		int length) {
@@ -68,7 +66,7 @@ static void update_improved_vector(double* improvedVector, int entryIndex,
 
 }
 
-/*helper function for handling linkedlist:
+/* helper function for handling linkedlist:
  * adds to linkedlist "list" (represented by its first node)
  * the node "node" at the beginning of list.
  * now list's first node is given "node".
@@ -107,7 +105,7 @@ static struct node* remove_from_unmoved(struct node* prevOfBiggest,
 	return unmoved;
 }
 
-/*Calculates Change in Modularity using previous SAS*/
+/* calculates Change in Modularity using previous SAS*/
 static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 		struct divisionGroup* g, double* vectorS, double sumKiSi,
 		double prevModularity, int changedIndex, double* previousSAS,
@@ -136,7 +134,6 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 
 	return newModularityY - prevModularity;
 }
-
 
 static double* second_argument_in_calc(struct graph* graph,
 		struct divisionGroup* g, double sumKiSi) {
@@ -298,7 +295,6 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 		currentNode = currentNode->next;
 	}
 }
-
 
 void modularity_maximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {

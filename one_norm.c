@@ -3,9 +3,9 @@
 #include "modules.h"
 #include "spmat.h"
 
+
 /*
  * calculates column sum of Adjacency matrix in column "column"
- */
 double column_sum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum = 0;
 	int cnt;
