@@ -8,10 +8,10 @@
 #include <time.h>
 
 /*creates a random vector */
-void createB(double* b, int col) {
+static void fill_vector_with_random(double* b, int length) {
 
 	int i;
-	for (i = 0; i < col; i++) {
+	for (i = 0; i < length; i++) {
 		*b = rand();
 		b = b + 1;
 	}
@@ -20,15 +20,11 @@ void createB(double* b, int col) {
 /*returns 1 if: difference of some coordinate in a and b differ by more than epsilon,
  * 0 otherwise
  */
-int difference(double * a, double *b, int col) {
+static int difference_between_vector(double * vec1, double *vec2, int length) {
 	int k;
 	double dif = 0;
-	double* vec1;
-	double* vec2;
 
-	vec1 = a;
-	vec2 = b;
-	for (k = 0; k < col; k++) {
+	for (k = 0; k < length; k++) {
 		dif = fabs(((*vec1++) - (*vec2++)));
 		if (dif >= epsilon) {
 			return 1;
@@ -38,99 +34,89 @@ int difference(double * a, double *b, int col) {
 }
 
 /*returns magnitude (norm) of vec with col columns*/
-double magnitude(double* vec, int col) {
-	return sqrt(dotProduct(vec, vec, col));
+static double magnitude(double* vec, int length) {
+	return sqrt(dotProduct(vec, vec, length));
 }
 
-/*dividing a vector by its' magnitude */
-void divideByMagnitude(double* vec, double magnitude, int col) {
+
+static void divide_by_magnitude(double* vec, double magnitude, int length) {
 	int i;
 
-	for (i = 0; i < col; i++) {
+	for (i = 0; i < length; i++) {
 		*vec = (*vec) / magnitude;
 		vec += 1;
 	}
 }
 
 /*given a  vector b, we update its value to be the values of newB */
-void updateB(double* b, double* newB, double c) {
+static void update_vector_b(double* b, double* newB, int length) {
 
 	int i;
-	for (i = 0; i < c; i++) {
+	for (i = 0; i < length; i++) {
 		*b = (*newB);
 		b++;
 		newB++;
 	}
 }
 
-/*helper function calculates row (given by cur_node) sum , and row times vector v;
- / it does two things to prevent iterating the same row twice.*/
-double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
-	int index;
-	double sum = 0;
-	while (cur_node != NULL) {
-		index = cur_node->index;
-		*rowSum = (*rowSum) + cur_node->data;
-		sum += (cur_node->data) * (v[index]);
-		cur_node = (struct spmat_node*) cur_node->next;
-	}
-	return sum;
-}
 
 /*helper function
  * Calculates row "rowIndex" of product between sparse matrix (Adjacency matrix A) and b
  * when b is the vector from power_iteration that is constantly changed.
  * */
-double spmatProductWithVectorb(int rowIndex, double* vector,
+static double spmat_product_with_vector_b(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double* AtimesB) {
+		double KjBjDividedByM, double KjDivdedByM, double* AtimesB) {
 	double rowResult = 0;
-	int rowSum;
+	double rowSum;
 	double ki;
 	double bi;
 
-	rowSum = g->group->sumOfRows[rowIndex];
-	ki = graph->vectorDegrees[g->group->groupMembers[rowIndex]];
+	rowSum = 0;
+	ki = graph->vectorDegrees[rowIndex];
 	bi = vector[rowIndex];
 
-	rowResult += AtimesB[rowIndex]; /*Adjacency times b*/
+	rowResult += AtimesB[rowIndex]; /*A times b*/
 	rowResult -= ((KjBjDividedByM) * ki);
-	rowResult -= ((rowSum ) * bi);
-	rowResult += (g->norm * bi);/* norm imes b*/
+	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
+	rowResult += (g->norm * bi);
 
 	return rowResult;
 }
 
-void spmatProductHelperKjBjDividedByM(double* vector,
+static void spmat_product_helper_KjBj_divided_by_M(double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double* KjBjMultiply) {
-	double  sumMultiply = 0;
+		double* KjBjMultiply, double* KjBj) {
+	double sum = 0, sumMultiply = 0;
 	double* degreesDividedByM = graph->degreesDividedByM;
 	int i;
 	struct divisionGroup* group = g->group;
 	for (i = 0; i < group->groupSize; i++) {
-		sumMultiply += (vector[i] * degreesDividedByM[g->group->groupMembers[i]]);
+		sumMultiply += (vector[i] * degreesDividedByM[i]);
+		sum += degreesDividedByM[i];
 	}
 	*KjBjMultiply = sumMultiply;
+	*KjBj = sum;
 }
 
 /*helper function to product Ab_k,
  * As specified in the power iterator algorithm
  * */
-void createAbkVec(int rowLength, double* currentB, double* newB,
+ void create_abk_vec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
-	double Abk, KjBjDividedByM;
+	double Abk, KjBjDividedByM, KjDivdedByM;
 	double* AtimesB;
-	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM); /*helper Sums for all rows*/
+	spmat_product_helper_KjBj_divided_by_M(currentB, g, graph, &KjBjDividedByM,
+			&KjDivdedByM); /*helper Sums for all rows*/
 	AtimesB = (double*) malloc(sizeof(double) * g->group->groupSize);
 	mult_ll(g->group->groupSubmatrix, currentB, AtimesB);
 
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
-		Abk = spmatProductWithVectorb(i, currentB, g, graph, KjBjDividedByM,
-				 AtimesB);
+		Abk = spmat_product_with_vector_b(i, currentB, g, graph, KjBjDividedByM,
+				KjDivdedByM, AtimesB);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
@@ -142,7 +128,7 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 /*function to calculate eigenvalue for matrix of group g.
  * Calculates eigenvalue using power iteration.
  * */
-double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
+double* create_eigenvector(int rowLength, struct shiftedDivisionGroup* g,
 		struct graph* graph) {
 	/*since row=col in cov matrix, we use only row param*/
 	double* b;
@@ -155,7 +141,7 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 	if (b == NULL)
 		panic(ERROR_MALLOC_FAILED);
 
-	createB(b, rowLength);
+	fill_vector_with_random(b, rowLength);
 	covRow = (double*) malloc(rowLength * sizeof(double));
 	if (covRow == NULL)
 		panic(ERROR_MALLOC_FAILED);
@@ -167,17 +153,17 @@ double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
-		createAbkVec(rowLength, b, origNextB, g, graph);
+		create_abk_vec(rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
 
-		divideByMagnitude(origNextB, magnitude(origNextB, rowLength),
+		divide_by_magnitude(origNextB, magnitude(origNextB, rowLength),
 				rowLength);
 		/*checking difference between "old" b and "new" b  vectors:*/
 
-		dif = difference(b, origNextB, rowLength);
+		dif = difference_between_vector(b, origNextB, rowLength);
 
 		/*updating b: */
-		updateB(b, origNextB, rowLength);
+		update_vector_b(b, origNextB, rowLength);
 
 	} while (dif == 1);
 

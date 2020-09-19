@@ -70,7 +70,7 @@ double computeLeadingEigenvalue(struct shiftedDivisionGroup* shiftedG,
 	if (BShiftedTimesEigenvector == NULL)
 		panic(ERROR_MALLOC_FAILED);
 
-	createAbkVec(rowLength, eigenvector, BShiftedTimesEigenvector, shiftedG,
+	create_abk_vec(rowLength, eigenvector, BShiftedTimesEigenvector, shiftedG,
 			graph);
 
 	eigenvalue = eigenValueCalcHelper(shiftedG, eigenvector, rowLength,
@@ -129,7 +129,7 @@ void Algorithm2(double* vectorS, struct divisionGroup* g, struct graph* graph) {
 
 	shiftedG = newShiftedDivsionGroup(g, graph);
 
-	eigenvector = createEigenvalue(g->groupSize, shiftedG, graph);
+	eigenvector = create_eigenvector(g->groupSize, shiftedG, graph);
 	eigenvalue = computeLeadingEigenvalue(shiftedG, eigenvector, graph);
 
 	if (eigenvalue <= epsilon) {
