@@ -9,18 +9,18 @@ struct graph
   struct _spmat* A;
   double* vectorDegrees;
   double M;
-  double* degreesDividedByM; /* Ki/M is used many times, so we'll store*/
+  double* degreesDividedByM; /* Ki/M is used many times, so it is stored*/
   int numOfNodes;
 };
 
 /*Represents a group of divisions*/
 struct division
 {
-	int len;  /*number of divisions // @CR why not just call it numDivisions and remove the comment?*/
-	struct node* divisions; /*"P" in algorithm // @CR why not just call it P (if you called the graph A and M).*/
+	int len;  /*number of divisions
+	struct node* divisions; /*"P" in algorithm */
 };
 
-
+/*represents a division*/
 struct divisionGroup
 {
 	int groupSize;
