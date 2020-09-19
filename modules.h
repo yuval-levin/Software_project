@@ -16,7 +16,7 @@ struct graph
 /*Represents a group of divisions*/
 struct division
 {
-	int len;  /*number of divisions
+	int len;  /*number of divisions*/
 	struct node* divisions; /*"P" in algorithm */
 };
 

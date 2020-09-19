@@ -134,7 +134,11 @@ double* create_eigenvector(int rowLength, struct shiftedDivisionGroup* g,
 	double* nextb;
 	double* covRow;
 	double* origNextB;
+	long loopLimiter;/* to prevent infinite loops*/
+	long loopCounter;
 	int dif;
+	loopCounter = 0;
+	loopLimiter = g->group->groupSize * 10000;
 
 	b = (double*) malloc(rowLength * sizeof(double));
 	if (b == NULL)
@@ -152,6 +156,7 @@ double* create_eigenvector(int rowLength, struct shiftedDivisionGroup* g,
 	/*saving its' original start pointer*/
 	origNextB = nextb;
 	do {
+		loopCounter++;
 		create_abk_vec(rowLength, b, origNextB, g, graph);
 		/*normalizing nextb*/
 
@@ -164,6 +169,7 @@ double* create_eigenvector(int rowLength, struct shiftedDivisionGroup* g,
 		/*updating b: */
 		update_vector_b(b, origNextB, rowLength);
 
+		if(loopCounter > loopLimiter) panic(ERROR_LOOP_LIMIT_REACHED);
 	} while (dif == 1);
 
 	free(origNextB);
