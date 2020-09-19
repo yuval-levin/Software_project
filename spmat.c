@@ -46,7 +46,6 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n) {
 		if (cur == NULL)
 			panic(ERROR_MALLOC_FAILED);
 
-		cur->data = 1;
 		cur->index = row[j];
 		cur->node_name = row[j];
 		cur->next = NULL;

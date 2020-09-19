@@ -20,7 +20,7 @@ double column_sum(struct graph* graph, struct divisionGroup* g, int column) {
 	/*iterate over all rows*/
 	cnt = 0;
 	while (currentNode != NULL) { /*since matrix is sparse, we don't know how many rows there are */
-		sum += (currentNode->data) - sumOfRows[column];
+		sum += 1 - sumOfRows[column];
 		sum -= (vectorDegrees[groupMembers[cnt++]] * secondArgu);
 		currentNode = currentNode->next;
 	}

@@ -26,13 +26,6 @@ double dot_product(double* vec1, double* vec2, int length) {
 	return dot;
 }
 
-/*
- * receives a vector and an entry index,
- * "flips" the value at entry index from negative to positive or vice versa.
- * */
-static void inline flip_vector_entry(double* vector, int entry) {
-	vector[entry] = vector[entry] * (-1);
-}
 
 /* We wish for S be in the same state it was when we reached maxImproved Score.
  * so we reverse everything that came after it*/
@@ -40,7 +33,7 @@ static void update_s(double* vectorS, int* indiceVector, int maxImprovedIndex,
 		int length) {
 	int i;
 	for (i = maxImprovedIndex + 1; i < length; i++) {
-		flip_vector_entry(vectorS, indiceVector[i]);
+		vectorS[indiceVector[i]] *= -1;
 	}
 }
 
@@ -281,12 +274,13 @@ static void unmoved_loop(struct graph* graph, struct divisionGroup* g,
 
 	for (; currentNode != NULL; prev = currentNode, currentNode = currentNode->next) {
 		currentNodeNum = currentNode->data.num;
-		flip_vector_entry(vectorS, currentNodeNum);
+
+		vectorS[currentNodeNum] *= -1;
 
 		modChange = calculate_change_modularity_with_prev_sas(graph, g, vectorS,
 				sumKiSi, Q0, currentNodeNum, &prevSAS, 0);
 
-		flip_vector_entry(vectorS, currentNodeNum);
+		vectorS[currentNodeNum] *= -1;
 
 		if (localSwitchFirstUnmovedIteration == 1 || modChange > localMaxModularityChange) {
 			localMaxModularityChange = modChange;
@@ -351,7 +345,7 @@ void modularity_maximization(struct graph* graph, double* vectorS,
 					&switchFirstUnmovedIteration, &maxModularityChange,
 					&indexOfBiggestIncrease, &prevOfBiggest, &curSAS);
 			/*moving vertex with maximal increase in modularity*/
-			flip_vector_entry(vectorS, indexOfBiggestIncrease);
+			vectorS[indexOfBiggestIncrease] *= -1;
 
 			unmoved = remove_from_unmoved(prevOfBiggest, unmoved, &removedNode);
 			/*add removed node from unmoved to remove_from_unmoved list*/
