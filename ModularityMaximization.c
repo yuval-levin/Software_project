@@ -198,7 +198,7 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 
 double calculateChangeModularity(struct graph* graph, struct divisionGroup* g,
 		double* vectorS, double sumKiSi, double prevModularity,
-		int changedIndex, double* prevSAS, double* prevSumAiSi) {
+		int changedIndex, double* prevSAS) {
 	clock_t start, end;
 
 	double previousSAS, sumAiSi, newModularityY, currentSAS;

@@ -162,6 +162,7 @@ int main(int args, char** argv) {
 	if (output == NULL)
 		panic(ERROR_OPEN_FAILED);
 	write_output_file(final_division, output);
+	print_result(final_division);
 	fclose(output);
 
 	/*TODO: free final_division and input_graph*/
