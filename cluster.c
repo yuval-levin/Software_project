@@ -150,7 +150,7 @@ int main(int args, char** argv) {
 		panic(ERROR_OPEN_FAILED);
 	create_graph(input, inputGraph);
 	fclose(input);
-	/*setvbuf (stdout, NULL, _IONBF, 0);*/
+	setvbuf (stdout, NULL, _IONBF, 0);
 	finalDivision = Algorithm3(inputGraph);
 
 	output = fopen(argv[2], "wb");

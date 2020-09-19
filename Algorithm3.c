@@ -77,13 +77,15 @@ static void add_groupDivision(struct division* D, struct divisionGroup* g) {
 static struct divisionGroup* remove_first_group(struct division* D) {
 	struct node* group;
 	struct node* nextGroup;
-
+	struct divisionGroup* returnGroup;
 	group = D->divisions;
 	nextGroup = group->next;
 	group->next = NULL;
 	D->divisions = nextGroup;
 	D->len = (D->len) - 1;
-	return group->data.group;
+	returnGroup = group->data.group;
+	free(group);
+	return returnGroup;
 }
 
 /* for Algorithm 2.
