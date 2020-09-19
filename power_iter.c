@@ -1,10 +1,10 @@
-#include <stdio.h>
+#include<stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "error_codes.h"
 #include "modules.h"
-#include "modularity_maximization.h"
 #include "spmat.h"
+#include "error_codes.h"
+#include "modularity_maximization.h"
 
 /*creates a random vector */
 static void fill_vector_with_random(double* b, int length) {

@@ -3,9 +3,8 @@
 #include <time.h>
 #include <math.h>
 #include <string.h>
-#include "error_codes.h"
 #include "spmat.h"
-
+#include "error_codes.h"
 
 double multiply_vector(struct spmat_node* curNode, const double *v) {
 	int index = 0;
