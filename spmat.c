@@ -1,10 +1,3 @@
-/*
- * spmat.c
- * how to create a sparse matrix:
- * spmat* mat;
- * mat = spmat_allocate_list(n);
- * create_matrix(mat, input);
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -18,37 +11,11 @@ double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v) {
 	double sum = 0;
 	struct spmat_node* cur;
 	cur = cur_node;
-	while (cur != NULL) {
+	for (; cur != NULL; cur = cur->next) {
 		index = cur->index;
 		sum += (cur->data) * (v[index]);
-		cur = (struct spmat_node*) cur->next;
 	}
 	return sum;
-}
-
-/*
- * creating the matrix one row at a time
- */
-void create_matrix(struct _spmat *A, FILE* input) {
-	double *row;
-	int i, k, n;
-
-	n = A->n;
-	fseek(input, 8, SEEK_SET); /*skipping dimensions*/
-	row = (double*) malloc(n * sizeof(double));
-	if (row == NULL)
-		panic(ERROR_MALLOC_FAILED);
-
-	for (i = 0; i < n; i++) {
-		k = fread(row, sizeof(double), n, input);
-		if (k != n)
-			panic(ERROR_READ_FAILED);
-
-		A->add_row(A, row, i);
-	}
-
-	free(row);
-	rewind(input);
 }
 
 /*
@@ -70,13 +37,10 @@ void mult_ll(const struct _spmat *A, const double *v, double *result) {
 	}
 }
 
-/*
- * helper for add_row_ll
- */
 void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n) {
-	int first, j;
+	int j;
 	struct spmat_node *cur, *prev;
-	first = 0;
+	prev = NULL;
 
 	if (n == 0) {
 		((struct spmat_node**) A->private)[i] = NULL;
@@ -93,9 +57,9 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n) {
 		cur->next = NULL;
 
 		/*first struct spmat_node*/
-		if (first == 0) {
+		if (prev == NULL) {
 			((struct spmat_node**) A->private)[i] = cur; /*inserted as the 1st node of the ith row*/
-			first = 1; /*no updating prev.next*/
+			/*no updating prev.next*/
 		} else {
 			prev->next = (struct spmat_node*) cur; /*cur is not the 1st, update prev.next*/
 		}
