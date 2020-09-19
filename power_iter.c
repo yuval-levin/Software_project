@@ -7,8 +7,9 @@
 #include "error_codes.h"
 #include <time.h>
 
+/*creates a random vector */
 void createB(double* b, int col) {
-	/*creates a random vector */
+
 	int i;
 	for (i = 0; i < col; i++) {
 		*b = rand();
@@ -17,10 +18,10 @@ void createB(double* b, int col) {
 
 }
 
+/*returns 1 if: difference of some coordinate in a and b differ by more than epsilon,
+ * 0 otherwise
+ */
 int difference(double * a, double *b, int col) {
-	/*returns 1 if: difference of some coordinate in a and b differ by more than epsilon,
-	 * 0 otherwise
-	 */
 	int k;
 	double dif = 0;
 	double* vec1;
@@ -39,13 +40,13 @@ int difference(double * a, double *b, int col) {
 
 }
 
+/*returns magnitude (norm) of vec with col columns*/
 double magnitude(double* vec, int col) {
-	/*returns magnitude (norm) of vec with col columns*/
 	return sqrt(dotProduct(vec, vec, col));
 }
 
+/*dividing a vector by its' magnitude */
 void divideByMagnitude(double* vec, double magnitude, int col) {
-	/*dividing a vector by its' magnitude */
 	int i;
 
 	for (i = 0; i < col; i++) {
@@ -55,8 +56,9 @@ void divideByMagnitude(double* vec, double magnitude, int col) {
 
 }
 
+/*given a  vector b, we update its value to be the values of newB */
 void updateB(double* b, double* newB, double c) {
-	/*given a  vector b, we update its value to be the values of newB */
+
 	int i;
 	for (i = 0; i < c; i++) {
 		*b = (*newB);
@@ -72,7 +74,6 @@ double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
 	int index;
 	double sum = 0;
 	while (cur_node != NULL) {
-
 		index = cur_node->index;
 		*rowSum = (*rowSum) + cur_node->data;
 		sum += (cur_node->data) * (v[index]);
@@ -81,9 +82,13 @@ double sumHelper(struct spmat_node* cur_node, double *v, double* rowSum) {
 	return sum;
 }
 
+/*helper function
+ * Calculates row "rowIndex" of product between sparse matrix (Adjacency matrix A) and b
+ * when b is the vector from power_iteration that is constantly changed.
+ * */
 double spmatProductWithVectorb(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double KjDivdedByM,double* AtimesB) {
+		double KjBjDividedByM, double KjDivdedByM, double* AtimesB) {
 	double rowResult = 0;
 	double rowSum;
 	double ki;
@@ -114,11 +119,14 @@ void spmatProductHelperKjBjDividedByM(double* vector,
 		sum += degreesDividedByM[i];
 	}
 
-	*KjBjMultiply = sumMultiply ;
-	*KjBj = sum ;
+	*KjBjMultiply = sumMultiply;
+	*KjBj = sum;
 
 }
 
+/*helper function to product Ab_k,
+ * As specified in the power iterator algorithm
+ * */
 void createAbkVec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
@@ -126,14 +134,14 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 	double* AtimesB;
 	spmatProductHelperKjBjDividedByM(currentB, g, graph, &KjBjDividedByM,
 			&KjDivdedByM); /*helper Sums for all rows*/
-	AtimesB=(double*)malloc(sizeof(double)*g->group->groupSize);
-	mult_ll(g->group->groupSubmatrix,currentB,AtimesB);
+	AtimesB = (double*) malloc(sizeof(double) * g->group->groupSize);
+	mult_ll(g->group->groupSubmatrix, currentB, AtimesB);
 
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
 		Abk = spmatProductWithVectorb(i, currentB, g, graph, KjBjDividedByM,
-				KjDivdedByM,AtimesB);
+				KjDivdedByM, AtimesB);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */
@@ -142,9 +150,11 @@ void createAbkVec(int rowLength, double* currentB, double* newB,
 
 }
 
+/*function to calculate eigenvalue for matrix of group g.
+ * Calculates eigenvalue using power iteration.
+ * */
 double* createEigenvalue(int rowLength, struct shiftedDivisionGroup* g,
 		struct graph* graph) {
-	/*todo, include epsilon for differnece function*/
 	/*since row=col in cov matrix, we use only row param*/
 	double* b;
 	double* nextb;

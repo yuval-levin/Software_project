@@ -39,6 +39,11 @@ double dotProduct(double* a, double* b, int col) {
 	return dot;
 }
 
+/*
+ * helper function:
+ * receives a vector and an entry index,
+ * "flips" the value at entry index from negative to positive or vice versa.
+ * */
 void flipVectorEntry(double* vector, int entry) {
 	vector[entry] = vector[entry] * (-1);
 }
@@ -76,6 +81,12 @@ void updateImprovedVector(double* improvedVector, int entryIndex, double score,
 
 }
 
+/*helper function for handling linkedlist:
+ * adds to linkedlist "list" (represented by its first node)
+ * the node "node" at the beginning of list.
+ * now list's first node is given "node".
+ * returns start of new list.
+ */
 struct node* addToList(struct node* list, struct node* node) {
 	if (list == NULL) {
 		list = node;
@@ -109,66 +120,6 @@ struct node* removeFromUnmoved(struct node* prevOfBiggest, struct node* unmoved,
 }
 
 
-/*
- * Helper function:
- * calculates vectorS times A(Adjacency matrix) times vectorS
- * */
-double calcSAS(struct divisionGroup* g, double* vectorS) {
-
-	int size;
-	double* prevAS;
-	double previousSAS;
-
-	size = g->groupSize;
-	prevAS = (double*) malloc(size * sizeof(double));
-
-	if (prevAS == NULL)
-		panic(ERROR_MALLOC_FAILED);
-	/*	flipVectorEntry(vectorS, changedIndex);*/
-	mult_ll(g->groupSubmatrix, vectorS, prevAS);
-	previousSAS = dotProduct(vectorS, prevAS, size); /*calc SAS prev*/
-	/*flipVectorEntry(vectorS, changedIndex);*/
-	free(prevAS);
-
-	/*printf("calculate SAS took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
-
-	return previousSAS;
-}
-
-/*Calculates Change in Modularity using previous SAS*/
-double calculateChangeModularityWithPrevSasUnused(struct graph* graph,
-		struct divisionGroup* g, double* vectorS, double sumKiSi,
-		double prevModularity, int changedIndex, double previousSAS) {
-	double newModularityY;
-	double currentSAS;
-	double* currentAS;
-	double* degreeDividedByM;
-	int size;
-	int nodeNum, degree, vectorSChangedIndex;
-	/* vectorS arrives FLIPPED */
-	size = g->groupSize;
-
-	currentAS = (double*) malloc(size * sizeof(double));
-	if (currentAS == NULL)
-		panic(ERROR_MALLOC_FAILED);
-
-	mult_ll(g->groupSubmatrix, vectorS, currentAS);
-	currentSAS = dotProduct(vectorS, currentAS, size); /* calc SAS current */
-
-	nodeNum = g->groupMembers[changedIndex];
-	degree = graph->vectorDegrees[nodeNum];
-	degreeDividedByM = graph->degreesDividedByM;
-	vectorSChangedIndex = vectorS[changedIndex]; /* entry value AFTER FLIP */
-
-	newModularityY = prevModularity
-			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
-					* (sumKiSi + (degree * vectorSChangedIndex));
-	newModularityY = newModularityY + (currentSAS - previousSAS);
-
-	free(currentAS);
-
-	return newModularityY - prevModularity;
-}
 
 /*Calculates Change in Modularity using previous SAS*/
 double calculateChangeModularityWithPrevSas(struct graph* graph,
@@ -475,8 +426,7 @@ void modularityMaximization(struct graph* graph, double* vectorS,
 		removedFromUnmoved = NULL;
 
 		modularityChange = curMax;
-		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);
-		/*printf("%f \n",modularityChange);*/
+		updateS(vectorS, indiceVector, maxImprovedIndex, g->groupSize);/*psuedo code row 22-24*/
 
 		/*if all were flipped, we are the same - so loop must stop, row 26 in psuedo-code*/
 		if (maxImprovedIndex == (g->groupSize) - 1)

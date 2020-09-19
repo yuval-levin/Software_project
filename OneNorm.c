@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include "modules.h"
 #include "spmat.h"
-/*TODO make sure include c is fine*/
 
+/*helper function
+ * calculates column sum of Adjacency matrix in column "column"
+ */
 double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum = 0;
 	int cnt;
@@ -18,19 +20,15 @@ double columnSum(struct graph* graph, struct divisionGroup* g, int column) {
 
 	while (currentNode != NULL) { /*since matrix is sparse, we don't know how many rows there are */
 		sum = sum + (currentNode->data) - sumOfRows[column];
-		sum = sum
-				- (vectorDegrees[groupMembers[cnt++]]
-						*secondArgu);
+		sum = sum - (vectorDegrees[groupMembers[cnt++]] * secondArgu);
 		currentNode = currentNode->next;
-
-
-
 	}
+
 	return sum;
 }
 
 /* method to calculate the 1-norm of matrix mat.
- TODO: check if double is necessary */
+ */
 double one_norm(struct graph* graph, struct divisionGroup* g) {
 	double maxColumn = 0;
 	double currentSum = 0;

@@ -8,6 +8,7 @@
 #include "Algorithm3.h"
 #include "error_codes.h"
 #include <time.h> /*todo: remove time etc*/
+
 /*helper function:
  * given an vector u1 (which will be our eigenvector)
  * We calculate the S vector created by it,
@@ -88,6 +89,10 @@ void fillVectorWithOnes(double* vector, int length) {
 		vector[i] = 1;
 }
 
+/*helper function to calculate change in modularity,
+ * As specified in Algorithm2 row 4.
+ *
+ */
 double calcModChange(double* vectorS, struct divisionGroup* g,
 		struct graph* graph) {
 	double sumKiSi;

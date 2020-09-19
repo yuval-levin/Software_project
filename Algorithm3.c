@@ -5,7 +5,9 @@
 #include "Algorithm2.h"
 #include "ModularityMaximization.h"
 #include "error_codes.h"
-#include <time.h> /*todo: remove time etc*/
+#include <time.h>
+
+/*todo: remove time etc*/
 /*helper function to free a linked list*/
 void freeList(struct spmat_node* cur) {
 	struct spmat_node* next;
@@ -51,7 +53,9 @@ void freeDivisionGroup(struct division* O) {
 	}
 	free(O);
 }
-/*adds in start*/
+
+/*helper function for handling groups:
+ * adds a groupdivision g in in start of division D*/
 void add_groupDivision(struct division* D, struct divisionGroup* g) {
 	struct node* add = (struct node*) malloc(sizeof(struct node));
 	if (add == NULL)
@@ -63,13 +67,14 @@ void add_groupDivision(struct division* D, struct divisionGroup* g) {
 		D->divisions = add;
 	else {
 		add->next = D->divisions;
-		D->divisions = add; /*todo make sure no cycle*/
+		D->divisions = add;
 	}
 
 	D->len = (D->len) + 1;
 }
 
-/* removes  first group from D and returns it*/
+/* helper function for handling groups:
+ * removes  first divisiongroup from division D and returns it*/
 struct divisionGroup* removeFirstGroup(struct division* D) {
 	struct node* group;
 	struct node* nextGroup;
@@ -379,6 +384,9 @@ struct divisionGroup* splitByS(double* vectorS, struct divisionGroup* g,
 	return g2;
 }
 
+/*helper function:
+ * creates a new division
+ */
 struct division* new_division() {
 	struct division* D = (struct division*) malloc(sizeof(struct division));
 	if (D == NULL)
@@ -438,6 +446,7 @@ struct division* Algorithm3(struct graph* inputGraph) {
 	struct division* O = new_division();
 	add_groupDivision(P, createTrivialDivision(inputGraph));
 
+	/*until P is empty:*/
 	while (P->len > 0) {
 
 		g1 = (struct divisionGroup*) malloc(sizeof(struct divisionGroup));

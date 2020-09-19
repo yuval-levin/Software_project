@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 #include "modules.h"
 #include "spmat.h"
 #include "Algorithm3.h"
@@ -161,10 +160,10 @@ int main(int args, char** argv) {
 	output = fopen(argv[2], "wb");
 	if (output == NULL)
 		panic(ERROR_OPEN_FAILED);
+
 	write_output_file(final_division, output);
 	fclose(output);
 
-	/*TODO: free final_division and input_graph*/
 	freeDivisionGroup(final_division); /*free O and inside*/
 	free(input_graph->vectorDegrees);
 	free(input_graph->degreesDividedByM);
@@ -172,5 +171,5 @@ int main(int args, char** argv) {
 	end = clock();
 	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	printf("%s", "done main\n");
-	return 0; /*todo: check ok */
+	return 0;
 }
