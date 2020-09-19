@@ -108,11 +108,10 @@ void free_ll(struct _spmat *A) {
 	struct spmat_node** rows;
 	rows = A->private;
 
-	if (rows == NULL)
-		return;
-
+	if (rows != NULL) {
 	for (i = 0; i < A->n; i++) {
 		free_row_ll(rows[i]);
+	}
 	}
 	free_A(A);
 }
