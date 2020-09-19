@@ -1,4 +1,3 @@
-
 #ifndef _ALGORITHM3_H
 #define _ALGORITHM3_H
 

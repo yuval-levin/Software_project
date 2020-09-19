@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "spmat.h"
 #include "Algorithm2.h"
 #include "error_codes.h"
 #include "modularity_maximization.h"
-
+#include "spmat.h"
 
 /* free a linked list of type spmat_node*/
 static void free_list(struct spmat_node* cur) {

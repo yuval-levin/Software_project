@@ -1,12 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "modules.h"
-#include "power_iter.h"
-#include "spmat.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
 #include "modularity_maximization.h"
 #include "one_norm.h"
+#include "power_iter.h"
+#include "spmat.h"
 
 /*
  * given an vector u1 (which will be our eigenvector)
@@ -24,8 +24,8 @@ static void compute_S(double* u1, double* s, int n) {
  *given a divisionGroup g, we calculate the 1-norm of the Adjacency matrix and create a new divisionGroup,
  *Shifted by the 1-norm calculated - shiftedDivisionGroup
  * */
-static struct shiftedDivisionGroup* new_shifted_divsion_group(struct divisionGroup* g,
-		struct graph* graph) {
+static struct shiftedDivisionGroup* new_shifted_divsion_group(
+		struct divisionGroup* g, struct graph* graph) {
 	struct shiftedDivisionGroup* shiftedG =
 			(struct shiftedDivisionGroup*) malloc(
 					sizeof(struct shiftedDivisionGroup));
