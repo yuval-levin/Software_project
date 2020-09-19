@@ -142,3 +142,21 @@ spmat* spmat_allocate_list(int n) {
 
 	return mat;
 }
+
+spmat* spmat_allocate_list_without_rows(int n) {
+	spmat* mat;
+
+	/*allocating memory*/
+	mat = (spmat*) malloc(sizeof(spmat));
+	if (mat == NULL)
+		panic(ERROR_MALLOC_FAILED);
+
+	/*initializing*/
+	mat->n = n;
+	mat->add_row = &add_row_ll;
+	mat->free = &free_ll;
+	mat->mult = &mult_ll;
+
+	return mat;
+}
+

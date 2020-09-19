@@ -268,7 +268,7 @@ static void divisionGroup_deep_copy(int gtSize, struct divisionGroup* gt,
 	int *gtSumOfRows, *gtGroupMembers, *gsSumOfRows, *gsGroupMembers;
 
 	/* allocate spmat*/
-	gtMat = spmat_allocate_list(gtSize);
+	gtMat = spmat_allocate_list_without_rows(gtSize);
 	/* allocate sumOfRows*/
 	gtSumOfRows = (int*) malloc(gtSize * sizeof(int));
 	if (gtSumOfRows == NULL)

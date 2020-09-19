@@ -40,5 +40,6 @@ void set_private(struct _spmat* mat, struct spmat_node** rows);
 void free_ll(struct _spmat *A);
 double multiply_vector(struct spmat_node* cur_node, const double *v);
 void free_A(struct _spmat *A);
+spmat* spmat_allocate_list_without_rows(int n);
 
 #endif
