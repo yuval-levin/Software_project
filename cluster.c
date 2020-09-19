@@ -162,7 +162,7 @@ int main(int args, char** argv) {
 		panic(ERROR_OPEN_FAILED);
 
 	write_output_file(final_division, output);
-	/*print_result(final_division);*/
+	print_result(final_division);
 	fclose(output);
 
 	freeDivisionGroup(final_division); /*free O and inside*/
