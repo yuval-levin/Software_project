@@ -38,7 +38,7 @@ void add_row_of_size_n(struct _spmat *A, const double *row, int i, int n);
 struct spmat_node** get_private(struct _spmat* mat);
 void set_private(struct _spmat* mat, struct spmat_node** rows);
 void free_ll(struct _spmat *A);
-double sumTimesVectorHelper(struct spmat_node* cur_node, const double *v);
+double sum_times_vector_helper(struct spmat_node* cur_node, const double *v);
 void free_A(struct _spmat *A);
 
 #endif

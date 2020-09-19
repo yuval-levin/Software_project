@@ -11,7 +11,7 @@ double calcAiSi(double* vectorS, int changedIndex, struct _spmat* mat) {
 	struct spmat_node* cur_node;
 	cur_node = get_private(mat)[changedIndex];
 
-	return sumTimesVectorHelper(cur_node, vectorS);
+	return sum_times_vector_helper(cur_node, vectorS);
 }
 
 /*TODO: remove duplicate and add to module of matrix functions*/
