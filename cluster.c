@@ -94,6 +94,12 @@ static void write_output_file(struct division* div, FILE* output) {
 		curNode = curNode->next;
 	}
 }
+void free_graph(struct graph* graph)
+{
+	free(graph->vectorDegrees);
+	free(graph->degreesDividedByM);
+	free(graph);
+}
 
 int main(int args, char** argv) {
 	struct graph* inputGraph;
@@ -110,9 +116,10 @@ int main(int args, char** argv) {
 	input = fopen(argv[1], "rb");
 	if (input == NULL)
 		panic(ERROR_OPEN_FAILED);
+
 	create_graph(input, inputGraph);
 	fclose(input);
-	setvbuf(stdout, NULL, _IONBF, 0);
+
 	finalDivision = Algorithm3(inputGraph);
 
 	output = fopen(argv[2], "wb");
@@ -124,9 +131,7 @@ int main(int args, char** argv) {
 	fclose(output);
 
 	free_division_group(finalDivision); /*free O and inside*/
-	free(inputGraph->vectorDegrees);
-	free(inputGraph->degreesDividedByM);
-	free(inputGraph);
+	free_graph(inputGraph);
 
 	return 0;
 }
