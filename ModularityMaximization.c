@@ -5,7 +5,8 @@
 #include "error_codes.h"
 #include <time.h> /*todo: remove time etc*/
 
-
+/* calculates the result of multiplying the changedIndex-th row of
+ * mat by vectorS */
 double calcAiSi (double* vectorS, int changedIndex, struct _spmat* mat){
 	struct spmat_node* cur_node;
 	cur_node = get_private(mat)[changedIndex];
@@ -390,8 +391,6 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 
 		flipVectorEntry(vectorS, currentNode->data.num);
 
-		/*modChange = calculateChangeModularity(graph, g, vectorS,
-				sumKiSi, Q0, currentNode->data.num, &prevSAS);*/ /*TODO: fix or delete*/
 		modChange = calculateChangeModularityWithPrevSas(graph, g, vectorS,
 						sumKiSi, Q0, currentNode->data.num, prevSAS);
 
@@ -410,7 +409,6 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 	}
 	/*end = clock();*/
 	/*printf("unmoved LOOP took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
-
 }
 
 /*TODO: is DeltaModularity double int long?*/
