@@ -24,85 +24,81 @@ void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	free(row);
 }
 
-void create_graph(FILE* input, struct graph* new_graph) {
+void create_graph(FILE* input, struct graph* newGraph) {
 	struct _spmat* A;
-	double* vector_degrees;
+	double* vectorDegrees;
 	double* degreesDividedByM;
-	int i;
-	int k;
-	int n;
-	int cur_deg;
-	int deg_sum;
+	int i, k, n, curDeg, degSum;
 	/*allocating memory*/
 	k = fread(&n, sizeof(int), 1, input);
 	if (k != 1)
 		panic(ERROR_READ_FAILED);
 	A = spmat_allocate_list(n);
-	vector_degrees = (double*) malloc(n * sizeof(double));
-	if (vector_degrees == NULL)
+	vectorDegrees = (double*) malloc(n * sizeof(double));
+	if (vectorDegrees == NULL)
 		panic(ERROR_MALLOC_FAILED);
 
 	degreesDividedByM = (double*) malloc(n * sizeof(double));
 	if (degreesDividedByM == NULL)
 			panic(ERROR_MALLOC_FAILED);
 	/*reading input to struct*/
-	deg_sum = 0;
+	degSum = 0;
 	for (i = 0; i < n; i++) {
-		k = fread(&cur_deg, sizeof(int), 1, input);
+		k = fread(&curDeg, sizeof(int), 1, input);
 		if (k != 1)
 			panic(ERROR_READ_FAILED);
-		deg_sum += cur_deg;
-		vector_degrees[i] = cur_deg;
-		read_row(i, cur_deg, input, A);
+		degSum += curDeg;
+		vectorDegrees[i] = curDeg;
+		read_row(i, curDeg, input, A);
 	}
 	/*loop again, to calc degreesDividedByM. it Needs M, which is only calculated after prior loop*/
 		for (i = 0; i < n; i++) {
-			if(deg_sum < epsilon) panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
-			degreesDividedByM[i] = vector_degrees[i] / deg_sum; }
+			if(degSum < epsilon) panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
+			degreesDividedByM[i] = vectorDegrees[i] / degSum; }
 
 		/*initializing graph*/
-		new_graph->A = A;
-		new_graph->vectorDegrees = vector_degrees;
-		new_graph->M = deg_sum;
-		new_graph->degreesDividedByM = degreesDividedByM;
-		new_graph->numOfNodes = n;
+		newGraph->A = A;
+		newGraph->vectorDegrees = vectorDegrees;
+		newGraph->M = degSum;
+		newGraph->degreesDividedByM = degreesDividedByM;
+		newGraph->numOfNodes = n;
 }
 
 void write_output_file(struct division* div, FILE* output) {
-	int k, n, group_size;
-	int* group_members;
-	struct node* cur_node;
-	struct divisionGroup* cur_group;
+	int k, n, groupSize;
+	int* groupMembers;
+	struct node* curNode;
+	struct divisionGroup* curGroup;
 
 	n = div->len;
 	k = fwrite(&n, sizeof(int), 1, output);
 	if (k != 1)
 		panic(ERROR_WRITE_FAILED);
 
-	cur_node = div->divisions;
+	curNode = div->divisions;
 
 	/*write groups*/
-	while (cur_node != NULL) {
-		cur_group = cur_node->data.group;
-		group_size = cur_group->groupSize;
-		k = fwrite(&group_size, sizeof(int), 1, output);
+	while (curNode != NULL) {
+		curGroup = curNode->data.group;
+		groupSize = curGroup->groupSize;
+		k = fwrite(&groupSize, sizeof(int), 1, output);
 		if (k != 1)
 			panic(ERROR_WRITE_FAILED);
 
-		group_members = cur_group->groupMembers;
-		k = fwrite(group_members, sizeof(int), group_size, output);
-		if (k != group_size)
+		groupMembers = curGroup->groupMembers;
+		k = fwrite(groupMembers, sizeof(int), groupSize, output);
+		if (k != groupSize)
 			panic(ERROR_WRITE_FAILED);
 
-		cur_node = cur_node->next;
+		curNode = curNode->next;
 	}
 }
 
 void print_result(struct division* div) {
-	int n, group_size, i, j;
-	int* group_members;
-	struct node* cur_node;
-	struct divisionGroup* cur_group;
+	int n, groupSize, i, j;
+	int* groupMembers;
+	struct node* curNode;
+	struct divisionGroup* curGroup;
 
 	i = 1;
 
@@ -110,34 +106,34 @@ void print_result(struct division* div) {
 	printf("%s", "num of groups:  ");
 	printf("%d \n", n);
 
-	cur_node = div->divisions;
+	curNode = div->divisions;
 
 	/*write groups*/
-	while (cur_node != NULL) {
+	while (curNode != NULL) {
 		printf("%s", "group number ");
 		printf("%d", i);
-		cur_group = cur_node->data.group;
-		group_size = cur_group->groupSize;
+		curGroup = curNode->data.group;
+		groupSize = curGroup->groupSize;
 		printf("%s", " of size ");
-		printf("%d \n", group_size);
+		printf("%d \n", groupSize);
 		printf("%s", "group members: ");
-		group_members = cur_group->groupMembers;
+		groupMembers = curGroup->groupMembers;
 
-		for (j = 0; j < group_size; j++) {
+		for (j = 0; j < groupSize; j++) {
 			printf("%s", "  ");
-			printf("%d", group_members[j]);
+			printf("%d", groupMembers[j]);
 		}
-		cur_node = cur_node->next;
+		curNode = curNode->next;
 		i++;
 		printf("%s", "\n");
 	}
 }
 
 int main(int args, char** argv) {
-	struct graph* input_graph;
+	struct graph* inputGraph;
 	FILE* input;
 	FILE *output;
-	struct division* final_division;
+	struct division* finalDivision;
 	clock_t start, end;
 
 	start = clock();
@@ -145,30 +141,30 @@ int main(int args, char** argv) {
 
 	if (args != 3)
 		panic(ERROR_NUM_ARGS);
-	input_graph = (struct graph*) malloc(sizeof(struct graph));
-	if (input_graph == NULL)
+	inputGraph = (struct graph*) malloc(sizeof(struct graph));
+	if (inputGraph == NULL)
 		panic(ERROR_INPUT_NOT_FOUND);
 
 	input = fopen(argv[1], "rb");
 	if (input == NULL)
 		panic(ERROR_OPEN_FAILED);
-	create_graph(input, input_graph);
+	create_graph(input, inputGraph);
 	fclose(input);
 	/*setvbuf (stdout, NULL, _IONBF, 0);*/
-	final_division = Algorithm3(input_graph);
+	finalDivision = Algorithm3(inputGraph);
 
 	output = fopen(argv[2], "wb");
 	if (output == NULL)
 		panic(ERROR_OPEN_FAILED);
 
-	write_output_file(final_division, output);
-	print_result(final_division);
+	write_output_file(finalDivision, output);
+	print_result(finalDivision);
 	fclose(output);
 
-	freeDivisionGroup(final_division); /*free O and inside*/
-	free(input_graph->vectorDegrees);
-	free(input_graph->degreesDividedByM);
-	free(input_graph);
+	freeDivisionGroup(finalDivision); /*free O and inside*/
+	free(inputGraph->vectorDegrees);
+	free(inputGraph->degreesDividedByM);
+	free(inputGraph);
 	end = clock();
 	printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 	printf("%s", "done main\n");
