@@ -1,7 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
-
 #include "modules.h"
 #include "Algorithm3.h"
 #include "error_codes.h"
@@ -109,8 +107,6 @@ int main(int args, char** argv) {
 	FILE* input;
 	FILE *output;
 	struct division* finalDivision;
-	clock_t t = clock();
-	double time_taken;
 
 	if (args != 3)
 		panic(ERROR_NUM_ARGS);
@@ -138,8 +134,5 @@ int main(int args, char** argv) {
 	free_division_group(finalDivision); /*free O and inside*/
 	free_graph(inputGraph);
 
-	t = clock() - t;
-	time_taken = ((double)t) / CLOCKS_PER_SEC;
-	printf("Program took %f\n", time_taken);
 	return 0;
 }
