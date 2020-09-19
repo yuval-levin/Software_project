@@ -4,7 +4,7 @@
 #include "Algorithm3.h"
 #include "error_codes.h"
 #include "spmat.h"
-#include <time.h>
+
 
 static void read_row(int i, int n, FILE* input, struct _spmat* A) {
 	double* row;
@@ -107,10 +107,7 @@ int main(int args, char** argv) {
 	FILE* input;
 	FILE *output;
 	struct division* finalDivision;
-    clock_t start, end;
-    start = clock();
 
-    srand(time(NULL));
 	if (args != 3)
 		panic(ERROR_NUM_ARGS);
 	inputGraph = (struct graph*) malloc(sizeof(struct graph));
@@ -136,9 +133,6 @@ int main(int args, char** argv) {
 
 	free_division_group(finalDivision); /*free O and inside*/
 	free_graph(inputGraph);
-
-	 end = clock();
-	    printf("Run took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));
 
 	return 0;
 }
