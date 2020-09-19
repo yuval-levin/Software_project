@@ -6,7 +6,7 @@
 #include "spmat.h"
 #include "error_codes.h"
 
-double sum_times_vector_helper(struct spmat_node* curNode, const double *v) {
+double multiply_vector(struct spmat_node* curNode, const double *v) {
 	int index = 0;
 	double sum = 0;
 	struct spmat_node* cur;
@@ -32,7 +32,7 @@ void mult_ll(const struct _spmat *A, const double *v, double *result) {
 		cur_node = rows[rowInd];
 
 		/*sum all the relevant multiplications*/
-		sum = sum_times_vector_helper(cur_node, v);
+		sum = multiply_vector(cur_node, v);
 		result[rowInd] = sum;
 	}
 }
