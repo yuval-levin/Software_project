@@ -123,15 +123,14 @@ static double calculate_change_modularity_with_prev_sas(struct graph* graph,
 	sumAiSi = calc_ai_si(vectorS, changedIndex, g->groupSubmatrix);
 	currentSAS = *previousSAS + 4 * vectorSChangedIndex * sumAiSi;
 
-	if (update > 0)/* indicator: if positive, we update the SAS value*/
-	{
-		*previousSAS = currentSAS; /*update SAS*/
-	}
 	newModularityY = prevModularity
 			- 4 * vectorSChangedIndex * (degreeDividedByM[nodeNum])
 					* (sumKiSi + (degree * vectorSChangedIndex));
 	newModularityY = newModularityY + (currentSAS - *previousSAS);
-
+	if (update > 0)/* indicator: if positive, we update the SAS value*/
+	{
+		*previousSAS = currentSAS; /*update SAS*/
+	}
 	return newModularityY - prevModularity;
 }
 
