@@ -14,16 +14,13 @@ double calcAiSi(double* vectorS, int changedIndex, struct _spmat* mat) {
 	return multiply_vector(cur_node, vectorS);
 }
 
-/*TODO: remove duplicate and add to module of matrix functions*/
-double dotProduct(double* a, double* b, int col) {
+
+double dotProduct(double* vec1, double* vec2, int length) {
 	/*dot product of vectors a and b*/
 	int k;
-	double* vec1;
-	double* vec2;
+
 	double dot = 0;
-	vec1 = a;
-	vec2 = b;
-	for (k = 0; k < col; k++) {
+	for (k = 0; k < length; k++) {
 		dot += ((*vec1) * (*vec2));
 		vec1 += 1;
 		vec2 += 1;
@@ -142,7 +139,7 @@ double calculateChangeModularityWithPrevSas(struct graph* graph,
 	return newModularityY - prevModularity;
 }
 
-/*TODO: add explanation.*/
+
 double* secondArgumentInCalc(struct graph* graph, struct divisionGroup* g,
 		double sumKiSi) {
 	int i;
@@ -246,28 +243,6 @@ void freeUnmovedList(struct node* unmovedListHead, int sizeOfg) {
 	}
 }
 
-/* remove  todo*/
-void printG(struct divisionGroup* g) {
-	int n = g->groupSize;
-	int i;
-	struct spmat_node** rows = get_private(g->groupSubmatrix);
-	struct spmat_node* cur;
-	printf("\n %s", "group size: ");
-	printf("%d", n);
-	for (i = 0; i < n; i++) {
-		cur = rows[i];
-		if (cur == NULL)
-			printf("\n row %d is NULL", i);
-		else {
-			printf("\n row %d :", i);
-			while (cur != NULL) {
-				printf("\n data %d ", cur->data);
-				printf("name %d ", cur->node_name);
-				cur = cur->next;
-			}
-		}
-	}
-}
 
 double calcModularity(struct graph* graph, double* vectorS,
 		struct divisionGroup* g, double sumKiSi, double* curSAS) {
@@ -330,11 +305,9 @@ void unmovedLoop(struct graph* graph, struct divisionGroup* g,
 		prev = currentNode;
 		currentNode = currentNode->next;
 	}
-	/*end = clock();*/
-	/*printf("unmoved LOOP took %f seconds\n", ((double) (end - start) / CLOCKS_PER_SEC));*/
 }
 
-/*TODO: is DeltaModularity double int long?*/
+
 void modularityMaximization(struct graph* graph, double* vectorS,
 		struct divisionGroup* g) {
 
