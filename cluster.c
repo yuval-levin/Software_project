@@ -50,14 +50,14 @@ static void create_graph(FILE* input, struct graph* newGraph) {
 		vectorDegrees[i] = curDeg;
 		read_row(i, curDeg, input, A);
 	}
-	/*loop again, to calc degreesDividedByM. it Needs M, which is only calculated after prior loop*/
+	/* loop again, to calc degreesDividedByM. it Needs M, which is only calculated after prior loop*/
 	for (i = 0; i < n; i++) {
 		if (degSum < epsilon)
 			panic(ERROR_DIVISION_BY_ZERO); /*when M of graph is zero */
 		degreesDividedByM[i] = vectorDegrees[i] / degSum;
 	}
 
-	/*initializing graph*/
+	/* initializing graph*/
 	newGraph->A = A;
 	newGraph->vectorDegrees = vectorDegrees;
 	newGraph->M = degSum;
@@ -78,7 +78,7 @@ static void write_output_file(struct division* div, FILE* output) {
 
 	curNode = div->divisions;
 
-	/*write groups*/
+	/* write groups*/
 	while (curNode != NULL) {
 		curGroup = curNode->data.group;
 		groupSize = curGroup->groupSize;
