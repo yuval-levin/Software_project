@@ -57,25 +57,25 @@ static void update_vector_b(double* b, double* newB, int length) {
 	}
 }
 
-/*helper function
+/*
  * Calculates row "rowIndex" of product between sparse matrix (Adjacency matrix A) and b
  * when b is the vector from power_iteration that is constantly changed.
  * */
 static double spmat_product_with_vector_b(int rowIndex, double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double KjBjDividedByM, double KjDivdedByM, double* AtimesB) {
+		double KjBjDividedByM, double* AtimesB) {
 	double rowResult = 0;
 	double rowSum;
 	double ki;
 	double bi;
 
-	rowSum = 0;
-	ki = graph->vectorDegrees[rowIndex];
+	rowSum = g->group->sumOfRows[rowIndex];
+	ki = graph->vectorDegrees[g->group->groupMembers[rowIndex]];
 	bi = vector[rowIndex];
 
 	rowResult += AtimesB[rowIndex]; /*A times b*/
 	rowResult -= ((KjBjDividedByM) * ki);
-	rowResult -= ((rowSum - ki * KjDivdedByM) * bi);
+	rowResult -= ((rowSum) * bi);
 	rowResult += (g->norm * bi);
 
 	return rowResult;
@@ -83,17 +83,16 @@ static double spmat_product_with_vector_b(int rowIndex, double* vector,
 
 static void spmat_product_helper_KjBj_divided_by_M(double* vector,
 		struct shiftedDivisionGroup* g, struct graph* graph,
-		double* KjBjMultiply, double* KjBj) {
-	double sum = 0, sumMultiply = 0;
+		double* KjBjMultiply) {
+	double  sumMultiply = 0;
 	double* degreesDividedByM = graph->degreesDividedByM;
 	int i;
 	struct divisionGroup* group = g->group;
 	for (i = 0; i < group->groupSize; i++) {
 		sumMultiply += (vector[i] * degreesDividedByM[i]);
-		sum += degreesDividedByM[i];
 	}
 	*KjBjMultiply = sumMultiply;
-	*KjBj = sum;
+
 }
 
 /*helper function to product Ab_k,
@@ -102,18 +101,16 @@ static void spmat_product_helper_KjBj_divided_by_M(double* vector,
 void create_abk_vec(int rowLength, double* currentB, double* newB,
 		struct shiftedDivisionGroup* g, struct graph* graph) {
 	int i;
-	double Abk, KjBjDividedByM, KjDivdedByM;
+	double Abk, KjBjDividedByM;
 	double* AtimesB;
-	spmat_product_helper_KjBj_divided_by_M(currentB, g, graph, &KjBjDividedByM,
-			&KjDivdedByM); /*helper Sums for all rows*/
+	spmat_product_helper_KjBj_divided_by_M(currentB, g, graph, &KjBjDividedByM); /*helper Sums for all rows*/
 	AtimesB = (double*) malloc(sizeof(double) * g->group->groupSize);
 	mult_ll(g->group->groupSubmatrix, currentB, AtimesB);
 
 	for (i = 0; i < rowLength; i++) {
 
 		/*calculate vector Abk in current coordinate by doing dot prodct of current matrix row with current b vector */
-		Abk = spmat_product_with_vector_b(i, currentB, g, graph, KjBjDividedByM,
-				KjDivdedByM, AtimesB);
+		Abk = spmat_product_with_vector_b(i, currentB, g, graph, KjBjDividedByM, AtimesB);
 		/*updating vector Abk in current coordinate */
 		*newB = Abk;
 		/*move nextb to next coordinate */

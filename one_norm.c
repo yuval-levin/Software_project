@@ -3,21 +3,22 @@
 #include "modules.h"
 #include "spmat.h"
 
-/*helper function
+/*
  * calculates column sum of Adjacency matrix in column "column"
  */
 double column_sum(struct graph* graph, struct divisionGroup* g, int column) {
 	double sum = 0;
 	int cnt;
 	struct spmat_node* currentNode;
+
 	int* groupMembers = g->groupMembers;
 	double* vectorDegrees = graph->vectorDegrees;
 	int* sumOfRows = g->sumOfRows;
 	double secondArgu = graph->degreesDividedByM[column];
 	currentNode = get_private(g->groupSubmatrix)[column];
+
 	/*iterate over all rows*/
 	cnt = 0;
-
 	while (currentNode != NULL) { /*since matrix is sparse, we don't know how many rows there are */
 		sum = sum + (currentNode->data) - sumOfRows[column];
 		sum = sum - (vectorDegrees[groupMembers[cnt++]] * secondArgu);
